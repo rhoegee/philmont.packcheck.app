@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Philmont Gear Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="packcheck-theme.css">
+<style id="pc-tweak-styles">
+/* ── Header treatment: reversed cream bar ── */
+body[data-nav="cream"] nav{background:var(--pc-cream);border-bottom:1px solid var(--pc-line-2);}
+body[data-nav="cream"] .nav-logo{border-right-color:var(--pc-line);}
+body[data-nav="cream"] .brand-sub{border-left-color:var(--pc-line);}
+body[data-nav="cream"] .brand-sub b{color:var(--pc-anchor);}
+body[data-nav="cream"] .brand-sub span{color:#9a7b1e;}
+body[data-nav="cream"] .nav-tab{color:var(--pc-ink-soft);}
+body[data-nav="cream"] .nav-tab:hover{color:var(--pc-anchor);}
+body[data-nav="cream"] .nav-tab.active{color:var(--pc-anchor);border-bottom-color:var(--pc-accent);}
+body[data-nav="cream"] .nav-right{border-left-color:var(--pc-line);}
+body[data-nav="cream"] .nav-total-label{color:var(--pc-ink-soft);}
+body[data-nav="cream"] .nav-total-val{color:var(--pc-anchor);}
+body[data-nav="cream"] .nav-btn{border-color:var(--pc-line-2);color:var(--pc-ink-soft);}
+body[data-nav="cream"] .nav-btn:hover{border-color:var(--pc-accent);color:var(--pc-accent);}
+body[data-nav="cream"] .nav-btn.primary{background:var(--pc-accent);color:var(--pc-cream);border-color:var(--pc-accent);}
+body[data-nav="cream"] .theme-toggle{border-color:var(--pc-line-2);color:var(--pc-ink-soft);}
+body[data-nav="cream"] .theme-toggle:hover{border-color:var(--pc-accent);color:var(--pc-accent);}
+
+/* ── Gear-row layout: Comfort (roomy table) ── */
+body[data-gear-layout="comfort"] .gear-table td{padding:.85rem .85rem;font-size:1rem;}
+body[data-gear-layout="comfort"] .gear-table .td-name{font-size:1.02rem;}
+body[data-gear-layout="comfort"] .gear-table .td-notes{font-size:.92rem;}
+
+/* ── Gear-row layout: Cards (roomy card list) ── */
+body[data-gear-layout="cards"] .gear-table,
+body[data-gear-layout="cards"] .gear-table tbody{display:block;width:100%;min-width:0;}
+body[data-gear-layout="cards"] .gear-table thead{display:none;}
+body[data-gear-layout="cards"] .gear-table tr.data-row{
+  display:block;position:relative;background:var(--pc-surface);border:1px solid var(--pc-line);
+  border-radius:9px;margin:.55rem .9rem;padding:.7rem 2.6rem .7rem 2.5rem;}
+body[data-gear-layout="cards"] .gear-table tr.data-row:hover td{background:transparent;}
+body[data-gear-layout="cards"] .gear-table tr.data-row td{display:block;border:none!important;padding:.05rem 0;}
+body[data-gear-layout="cards"] .gear-table .td-name{font-family:var(--font-disp);font-weight:600;font-size:1.04rem;
+  white-space:normal;text-transform:uppercase;letter-spacing:.02em;margin-bottom:.15rem;}
+body[data-gear-layout="cards"] .gear-table .td-brand,
+body[data-gear-layout="cards"] .gear-table .td-qty,
+body[data-gear-layout="cards"] .gear-table .td-weight{display:inline-block;margin-right:.9rem;text-align:left!important;}
+body[data-gear-layout="cards"] .gear-table .td-weight{color:var(--pc-anchor);}
+body[data-gear-layout="cards"] .gear-table .td-notes{white-space:normal;margin-top:.2rem;}
+body[data-gear-layout="cards"] .gear-table .td-bar{display:none!important;}
+body[data-gear-layout="cards"] .gear-table tr.data-row > td:first-child{position:absolute;left:.7rem;top:.85rem;width:auto!important;padding:0!important;}
+body[data-gear-layout="cards"] .gear-table tr.data-row .td-actions{position:absolute;top:.6rem;right:.6rem;width:auto;}
+body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
+
+/* ── Day slider aligned over the bar chart (track widened to plot area; thumb = scout dot) ── */
+.day-slider-wrap{position:relative;height:20px;margin-bottom:.55rem;}
+#day-slider{position:absolute;top:2px;left:0;width:100%;height:7px;-webkit-appearance:none;appearance:none;
+  background:transparent;margin:0;padding:0;cursor:pointer;}
+#day-slider::-webkit-slider-runnable-track{height:7px;border-radius:999px;background:var(--pc-canvas);}
+#day-slider::-moz-range-track{height:7px;border-radius:999px;background:var(--pc-canvas);}
+#day-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--pc-accent);border:2px solid var(--pc-surface);box-shadow:0 1px 4px rgba(28,28,26,.32);margin-top:-5px;}
+#day-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--pc-accent);
+  border:2px solid var(--pc-surface);box-shadow:0 1px 4px rgba(28,28,26,.32);}
+</style>
+</head>
+<body>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay hidden" id="profile-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <svg viewBox="0 0 100 120"><polygon points="50,5 95,30 95,90 50,115 5,90 5,30" stroke="currentColor" stroke-width="4" fill="none"/><polygon points="50,18 83,35 83,82 50,99 17,82 17,35" fill="currentColor" opacity="0.15"/><text x="50" y="68" text-anchor="middle" font-size="32" fill="currentColor">⬡</text></svg>
+      Setup Your Profile
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Your Name</label>
+      <input class="modal-input" id="p-name" placeholder="Scout or Leader name" autocomplete="off">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Troop / Unit Number</label>
+      <input class="modal-input" id="p-troop" placeholder="e.g. Troop 42" autocomplete="off">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Council</label>
+      <input class="modal-input" id="p-council" placeholder="e.g. Los Angeles Area Council" autocomplete="off">
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Crew Number</label>
+        <input class="modal-input" id="p-crew-num" placeholder="e.g. 616-E or 616-12E" autocomplete="off" oninput="parseCrewNumber()">
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Start date (MMDD) + optional length + crew letter</div>
+        <div id="crew-hint" style="font-size:0.72rem;color:var(--green);margin-top:0.2rem;font-style:italic;"></div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Itinerary Number</label>
+        <input class="modal-input" id="p-itin-num" placeholder="e.g. 12-10 (optional)" autocomplete="off" oninput="parseItinNumber()">
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Sets trek length. Leave blank if not yet assigned.</div>
+        <div id="itin-hint" style="font-size:0.72rem;color:var(--green);margin-top:0.2rem;font-style:italic;"></div>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Arrival Date (auto-filled)</label>
+        <input class="modal-input" id="p-arrival" type="date" value="2026-06-16">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Trek Length (auto-filled)</label>
+        <select class="modal-input" id="p-trek-length">
+          <option value="12">12 days</option>
+          <option value="9">9 days</option>
+          <option value="7">7 days</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Optional: Day 0 Early Arrival?</label>
+      <select class="modal-input" id="p-day0">
+        <option value="no">No - arriving on Day 1</option>
+        <option value="yes">Yes - arriving a day early</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeProfileModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProfile()">Save Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg class="nav-logo-lockup" data-mark="word" data-w="cream" data-b="cream" data-c="scout" data-px="146"></svg>
+    <div class="brand-sub">
+      <b>Philmont Planner</b>
+      <span>Itinerary 12&#8209;10</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('gear',this)">Gear List</button>
+    <button class="nav-tab" onclick="showPage('crew',this)">Crew Gear</button>
+    <button class="nav-tab" onclick="showPage('calc',this)">Pack Weight</button>
+    <button class="nav-tab" onclick="showPage('itin',this)">Itinerary</button>
+    <button class="nav-tab" onclick="showPage('rules',this)">Rules & Reqs</button>
+  </div>
+  <div class="nav-right">
+    <button class="nav-profile empty" id="nav-profile" onclick="openProfileModal()" title="Set up / edit your profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+      <span id="nav-profile-name">Set Up Profile</span>
+    </button>
+    <div>
+      <div class="nav-total-label">Base Weight</div>
+      <div class="nav-total-val" id="nav-total">— oz</div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle Pine-dark mode" aria-label="Toggle dark mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="theme-icon"></svg>
+    </button>
+    <div class="nav-actions">
+      <button class="nav-btn primary" onclick="saveJSON()" title="Save gear list as JSON">Save</button>
+      <button class="nav-btn" onclick="document.getElementById('json-load').click()" title="Load JSON">Load</button>
+      <input type="file" id="json-load" accept=".json" style="display:none" onchange="loadJSON(event)">
+      <button class="nav-btn" onclick="document.getElementById('csv-load').click()" title="Import CSV">CSV</button>
+      <input type="file" id="csv-load" accept=".csv" style="display:none" onchange="loadCSV(event)">
+      <button class="nav-btn" onclick="exportExcel()" title="Export to Excel">Excel</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════ PAGE: GEAR ═══════════ -->
+<div class="page active" id="page-gear">
+  <div class="profile-card" id="profile-card" style="display:none;">
+    <div class="profile-info" id="profile-display">
+      <div class="profile-name empty">Click Edit to set up your profile</div>
+    </div>
+    <button class="profile-edit-btn" onclick="openProfileModal()">Edit</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Philmont Scout Ranch · 2026 Guidebook to Adventure</div>
+    <div class="hero-title">Personal <span>Gear</span></div>
+    <div class="hero-sub">Build your pack against the official Philmont recommended list. Every item, every ounce.</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-label">Base Weight</div><div class="stat-val" id="s-base">—</div><div class="stat-sub">ounces</div></div>
+    <div class="stat-box"><div class="stat-label">Pounds</div><div class="stat-val" id="s-lbs">—</div><div class="stat-sub">lbs + oz</div></div>
+    <div class="stat-box"><div class="stat-label">Items</div><div class="stat-val" id="s-items">—</div><div class="stat-sub">logged</div></div>
+    <div class="stat-box hide-sm"><div class="stat-label">Heaviest Item</div><div class="stat-val" id="s-heavy">—</div><div class="stat-sub" id="s-heavy-name">—</div></div>
+    <div class="stat-box hide-sm"><div class="stat-label">Target</div><div class="stat-val" id="s-target">20-25</div><div class="stat-sub">lbs recommended</div></div>
+  </div>
+
+  <div id="override-banner-wrap" style="display:none;">
+    <div class="override-banner">
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <span style="width:9px;height:9px;border-radius:2px;background:var(--pc-trim);flex-shrink:0;"></span>
+        <div>
+          <div class="override-label">Scale Override Active — calculated weight ignored</div>
+          <div class="override-note">Using your measured pack weight. Items still tracked for optimization.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <label style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">oz</label>
+        <input class="calc-input" id="override-oz" type="number" step="0.1" placeholder="oz" style="width:80px;" oninput="updateOverride()">
+        <button class="nav-btn" style="color:var(--pc-ink-soft);border-color:var(--pc-line-2);background:transparent;" onclick="clearOverride()">Clear Override</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap" style="justify-content:space-between;">
+    <span class="progress-label">Weighed your fully-packed bag on a scale? Override the estimate.</span>
+    <button class="nav-btn" id="override-toggle-btn" style="font-size:0.65rem;padding:0.3rem 0.8rem;border-color:var(--pc-line-2);color:var(--pc-ink-soft);background:transparent;" onclick="document.getElementById('override-banner-wrap').style.display='block';document.getElementById('override-oz').focus();">Scale Override</button>
+  </div>
+  <div class="two-col">
+    <div class="main-col" id="gear-sections"></div>
+    <div class="side-col">
+      <div class="side-title">Weight Distribution</div>
+      <div class="donut-wrap">
+        <canvas id="gear-donut" width="170" height="170" role="img" aria-label="Gear weight by category"></canvas>
+        <div class="donut-center">
+          <div class="donut-val" id="donut-val">—</div>
+          <div class="donut-lbl">lbs total</div>
+        </div>
+      </div>
+      <div class="legend" id="gear-legend"></div>
+      <hr class="side-divider">
+      <div class="side-title">Philmont Weight Target</div>
+      <div style="font-size:0.8rem;color:var(--muted2);margin-bottom:0.5rem;">Guidebook recommends 20–25 lbs base weight</div>
+      <div class="gauge-wrap">
+        <div class="gauge-label"><span>0</span><span>25 lbs target</span><span>35 lbs</span></div>
+        <div class="gauge-bar"><div class="gauge-fill" id="base-gauge" style="width:0%;background:var(--green)"></div></div>
+        <div class="gauge-note" id="gauge-note">Add gear to see your base weight</div>
+      </div>
+      <hr class="side-divider">
+      <div class="rules-banner">
+        <div class="rules-title">Prohibited on Trail</div>
+        <ul class="rules-list">
+          <li>No deodorant</li><li>No hammocks</li>
+          <li>No turkey bags</li><li>No bear spray/horns</li>
+          <li>No pulley systems</li><li>No drones</li>
+          <li>Avoid cotton layers</li><li>Tents required</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: CREW GEAR ═══════════ -->
+<div class="page" id="page-crew">
+  <div class="profile-card" id="crew-profile-card">
+    <div style="flex:1;">
+      <div style="font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.4rem;letter-spacing:0.06em;color:var(--text);">Crew Gear</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.25rem;">Shared equipment split among all crew members</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Total Crew Gear</div>
+      <div style="font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.4rem;color:var(--gold);" id="crew-total-display">— oz</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted2);" id="crew-per-person-display">— per person</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Shared Equipment · Split Among Crew</div>
+    <div class="hero-title">Crew <span>Gear</span></div>
+    <div class="hero-sub">Philmont-issued and crew-provided shared equipment. Weight split per person feeds into the Pack Weight calculator.</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-label">Total Crew Gear</div><div class="stat-val" id="cs-total">—</div><div class="stat-sub">ounces</div></div>
+    <div class="stat-box"><div class="stat-label">In Pounds</div><div class="stat-val" id="cs-lbs">—</div><div class="stat-sub">lbs + oz</div></div>
+    <div class="stat-box"><div class="stat-label">Per Person (÷8)</div><div class="stat-val" id="cs-per">—</div><div class="stat-sub">oz each</div></div>
+    <div class="stat-box hide-sm"><div class="stat-label">Adult Share</div><div class="stat-val" id="cs-adult">—</div><div class="stat-sub">oz (no tent)</div></div>
+    <div class="stat-box hide-sm"><div class="stat-label">Scout Share</div><div class="stat-val" id="cs-scout">—</div><div class="stat-sub">oz (w/ tent)</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="main-col" id="crew-sections"></div>
+    <div class="side-col">
+      <div class="side-title">Crew Configuration</div>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.25rem;">
+        <div class="calc-row"><span class="calc-label" style="font-size:0.85rem;">Adults (own tent)</span><input class="calc-input" id="crew-adults" type="number" value="3" min="1" max="6" onchange="updateCrewStats()"></div>
+        <div class="calc-row"><span class="calc-label" style="font-size:0.85rem;">Scouts (share tent)</span><input class="calc-input" id="crew-scouts" type="number" value="5" min="1" max="11" onchange="updateCrewStats()"></div>
+        <div style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:0.25rem;">Adults bring own tents — tent weight excluded from their share</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:0.85rem;margin-bottom:1.25rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.6rem;">Share Breakdown</div>
+        <div id="crew-share-breakdown" style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.85rem;color:var(--muted2);"></div>
+      </div>
+      <hr class="side-divider">
+      <div class="side-title">Weight by Category</div>
+      <div class="donut-wrap">
+        <canvas id="crew-donut" width="170" height="170" role="img" aria-label="Crew gear weight by category"></canvas>
+        <div class="donut-center">
+          <div class="donut-val" id="crew-donut-val">—</div>
+          <div class="donut-lbl">lbs total</div>
+        </div>
+      </div>
+      <div class="legend" id="crew-legend"></div>
+      <hr class="side-divider">
+      <div class="rules-banner">
+        <div class="rules-title">Philmont vs Crew Provided</div>
+        <ul class="rules-list">
+          <li>Tents, pots, bear system issued by Philmont</li>
+          <li>Stoves & fuel must be crew-provided</li>
+          <li>Dining fly substituted with Paria Siltarp</li>
+          <li>Adults bringing own tents</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: PACK WEIGHT ═══════════ -->
+<!-- ═══════════ PAGE: PACK WEIGHT ═══════════ -->
+<div class="page" id="page-calc">
+  <div class="hero">
+    <div class="hero-eyebrow">Pack Weight Simulator</div>
+    <div class="hero-title">How Heavy Is <span>Your Pack?</span></div>
+    <div class="hero-sub">Real trail weight day by day — personal gear, crew share, food depletion, and water.</div>
+  </div>
+  <div class="calc-wrap">
+    <div class="calc-grid">
+      <div class="calc-card">
+        <div class="calc-card-title">Trek Configuration</div>
+        <div class="calc-row"><span class="calc-label">Trek length (days)</span><input class="calc-input" id="trek-days" type="number" value="12" min="7" max="12" onchange="updateCalc()"></div>
+        <div class="calc-row"><span class="calc-label">Crew size</span><input class="calc-input" id="crew-size" type="number" value="8" min="8" max="12" onchange="updateCalc()"></div>
+        <div class="calc-row"><span class="calc-label">Crew gear total (oz)</span><input class="calc-input" id="crew-gear-oz" type="number" value="564.8" onchange="updateCalc()"></div>
+        <div class="calc-note">Auto-updates from Crew Gear tab</div>
+        <div class="calc-row"><span class="calc-label">Body weight (lbs)</span><input class="calc-input" id="body-weight" type="number" value="175" onchange="updateCalc()"></div>
+        <div style="margin-top:0.75rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.35rem;">Staff-Cooked Dinner Nights</div>
+          <input class="calc-input wide" id="staff-days" type="text" placeholder="e.g. 4" value="4" onchange="updateCalc()">
+          <div class="calc-note">Enter the day number(s) of any staff-cooked dinners on your itinerary - chuckwagon, family dinner, or similar. Comma separated.</div>
+        </div>
+      </div>
+      <div class="calc-card">
+        <div class="calc-card-title">Resupply &amp; Dry Camp Days</div>
+        <div style="font-size:0.82rem;color:var(--muted2);margin-bottom:0.6rem;">Click to cycle: <span style="color:var(--pc-anchor);font-weight:600;">pine = resupply</span> · <span style="color:#9a7b1e;font-weight:600;">gold = dry camp</span> · <span style="color:var(--pc-spruce);font-weight:600;">spruce = both</span></div>
+        <div class="day-grid" id="day-grid"></div>
+        <div class="day-legend-row">
+          <div class="day-legend-item"><div class="day-legend-sw" style="background:var(--pc-anchor)"></div>Resupply</div>
+          <div class="day-legend-item"><div class="day-legend-sw" style="background:var(--pc-trim)"></div>Dry (+3L)</div>
+          <div class="day-legend-item"><div class="day-legend-sw" style="background:#16857d"></div>Both</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wb-grid">
+      <div class="wb-card">
+        <div class="wb-title">Pack Weight — Day <span id="result-day">1</span> <span id="result-date" style="color:var(--muted)"></span></div>
+        <div id="weight-breakdown"></div>
+        <div class="gauge-wrap" style="margin-top:1rem;">
+          <div class="gauge-label"><span>Light</span><span>% of body weight</span><span>Heavy</span></div>
+          <div class="gauge-bar" style="height:9px;"><div class="gauge-fill" id="bw-gauge" style="width:0%;background:var(--green)"></div></div>
+          <div class="gauge-note" id="bw-note">—</div>
+        </div>
+      </div>
+      <div class="wb-card">
+        <div class="wb-title">Trek Weight Range</div>
+        <div id="range-display"></div>
+      </div>
+    </div>
+
+    <div class="chart-section" style="padding-left:0;padding-right:0;">
+      <div class="chart-title">Pack Weight Across All Days</div>
+      <div class="day-slider-wrap" id="day-slider-wrap">
+        <input type="range" id="day-slider" min="1" max="12" value="1" oninput="onDaySlider(this.value)">
+        <span class="slider-val" id="day-slider-val" hidden>Day 1</span>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="weight-chart" role="img" aria-label="Pack weight by day bar chart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: ITINERARY ═══════════ -->
+<div class="page" id="page-itin">
+  <div class="hero">
+    <div class="hero-eyebrow" id="itin-eyebrow">Itinerary 12-10 · Rugged · 62 Miles · South Country</div>
+    <div class="hero-title">Your <span>Trek</span></div>
+    <div class="hero-sub">Mount Phillips 11,736 ft · Tooth of Time 9,003 ft · Conservation at Beaubien Day 5 (7:30am)</div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="itin-table">
+      <thead>
+        <tr>
+          <th>Day / Date</th>
+          <th>Camp</th>
+          <th>Miles</th>
+          <th>Elevation</th>
+          <th>Difficulty</th>
+          <th>Flags</th>
+          <th class="hide-sm">Est. Pack</th>
+          <th>Meals</th>
+        </tr>
+      </thead>
+      <tbody id="itin-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE: RULES ═══════════ -->
+<div class="page" id="page-rules">
+  <div class="hero">
+    <div class="hero-eyebrow">2026 Guidebook to Adventure</div>
+    <div class="hero-title">Rules &amp; <span>Requirements</span></div>
+    <div class="hero-sub">Critical requirements from the official Philmont guidebook that affect your gear and planning.</div>
+  </div>
+  <div class="rules-grid">
+    <div class="rules-card">
+      <div class="rules-card-title">Pack Weight Guidelines</div>
+      <p>Target <strong>20–25 lbs base weight</strong> without food and water. Fully loaded pack should not exceed <strong>25–30% of body weight</strong>. On trail with food and water expect 35–50 lbs. Philmont elevation means 20–35% less oxygen than sea level — every pound matters.</p>
+    </div>
+    <div class="rules-card">
+      <div class="rules-card-title">Absolutely Prohibited</div>
+      <ul><li>Deodorant</li><li>Hammocks</li><li>Turkey bags</li><li>Bear spray or horns</li><li>Bear bag pulley systems</li><li>Drones</li><li>Fireworks</li><li>Sheath/fixed blade knives</li><li>Drugs &amp; alcohol</li><li>Radios/Bluetooth speakers</li><li>Video game devices</li><li>Hatchets</li></ul>
+    </div>
+    <div class="rules-card">
+      <div class="rules-card-title">Bear Bag — Everything Smellable</div>
+      <p>Food, toothbrush, toothpaste, lip balm, sunscreen, insect repellent, first aid kit — all go in the bear bag every night. <strong>Deodorant is prohibited entirely.</strong> Scented products must be applied well before dark so odors dissipate.</p>
+    </div>
+    <div class="rules-card">
+      <div class="rules-card-title">Clothing Rules</div>
+      <p><strong style="color:var(--red)">Avoid cotton</strong> — loses insulating value when wet, dries slowly. Wool and synthetics required at elevation. Long pants required for conservation, horseback riding, and pole climbing. Sleep clothes worn in sleeping bag only (bear protocol). Expect lows in the 30s at high elevations.</p>
+    </div>
+    <div class="rules-card">
+      <div class="rules-card-title">Water Requirements</div>
+      <p>Minimum <strong>4 liters personal capacity</strong> at all times plus 2L extra for dry camps. All water from all sources must be purified — Micropur tablets issued. Drink 6–8 quarts per day at altitude.</p>
+    </div>
+    <div class="rules-card">
+      <div class="rules-card-title">Itinerary 12-10 Specifics</div>
+      <p><strong>Dry camps:</strong> Day 7 (Comanche Peak) and Day 10 (Devils Wash Basin). Carry water from Clear Creek and Ute Gulch respectively.</p>
+      <p style="margin-top:0.5rem;"><strong>Burn areas:</strong> Crosses Ute Park Fire Recovery Zone — prepare for sun exposure and exposed terrain.</p>
+      <p style="margin-top:0.5rem;"><strong>Conservation:</strong> Day 4 at Beaubien, 7:30am, Forest Fuel Reduction. Long pants required.</p>
+      <p style="margin-top:0.5rem;"><strong>Max elevation:</strong> 11,115 ft. Aggressive hydration first 2–3 days.</p>
+    </div>
+  </div>
+</div>
+
+<script src="wordmark-core.js"></script>
+<script src="pc-icons.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// GLOBAL ERROR HANDLING
+// ═══════════════════════════════════════════════
+window.onerror = function(msg, src, line, col, err) {
+  console.error('[Philmont Planner Error]', msg, 'line:', line, err);
+  return false;
+};
+window.onunhandledrejection = function(e) {
+  console.error('[Philmont Planner Unhandled Promise]', e.reason);
+};
+
+// ═══════════════════════════════════════════════
+// CONSTANTS & DATA
+// ═══════════════════════════════════════════════
+
+// theme-aware CSS custom property reader (charts can't use var())
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+
+// ── Category → icon glyph maps (pc-icons.js keys) ──
+const CAT_ICON={bags:'pack',sleep:'sleep',equipment:'tent',clothing:'jacket',rain:'rain',
+  care:'soap',food:'cook',water:'bottle',utility:'knife',luxury:'chair'};
+const CREW_CAT_ICON={shelter:'tent',cook:'cook',bear:'bear',safety:'compass',sanitation:'trowel',
+  repair:'tape',consumables:'fuel',water:'bottle',misc:'box'};
+// Treatment per the App Brand Board §05: Camp Badge (B) on cream surfaces, reversed monoline in pine chrome.
+let GEAR_ICON_TREATMENT='auto';
+function catIconTile(key){
+  if(!key||!window.PCIcon)return '';
+  const dark=document.documentElement.dataset.theme==='dark';
+  let t=GEAR_ICON_TREATMENT;
+  if(t==='auto') t = dark ? 'rev' : 'B';
+  if(t==='rev'){
+    // Trail Monoline reversed in pine chrome — cream lines, scout accent, gold keyline tile
+    return `<div style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;`+
+      `border:1px solid rgba(214,169,63,.45);border-radius:8px;">`+
+      PCIcon.glyph(key,{ic:'#f4ecd8',ac:cssVar('--pc-accent')||'#d8323f',bw:6,size:18})+`</div>`;
+  }
+  return PCIcon.tile(key,t,30,18);
+}
+
+// Vivid categorical palette — Trailhead v2 "infographic" set. Boosted chroma + staggered value
+// so slices separate cleanly. Scout Red stays RESERVED (checked / key action), never a category.
+const COLORS = {
+  bags:'#1F8A4D',     // emerald
+  sleep:'#A83C72',    // berry
+  equipment:'#2E73C4',// cobalt
+  clothing:'#94B021', // olive-lime
+  rain:'#14A8A0',     // turquoise
+  care:'#E97B2E',     // pumpkin
+  food:'#5DAE37',     // grass
+  water:'#2BA8CC',    // sky cyan
+  utility:'#EBB019',  // golden amber
+  luxury:'#BC4B33'    // clay rust
+};
+
+// Philmont 2026 Menus
+const MENUS = {
+  breakfast:{
+    1:['Buffalo Chicken Bites','Amazin Goldens Blue Raspberry','Animal Crackers','Kodiak Chewy S\'Mores Bar','Strawberry Granola','Skratch Orange Drink Mix'],
+    2:['Original Smoked Hickory','Banana Chips','RXBAR Blueberry Protein','Caramel Rice Crisps','Chocolate Granola'],
+    3:['Honey Pepper Beef Stick','Instant Oatmeal Maple Brown Sugar','Snickerdoodle Protein Bar','Almond Sweet & Salty Bar','Sour Berries Cherries & Cranberries','Hot Cocoa Mix'],
+    4:['SBR Teriyaki Beef Jerky','Field Stone Granola','Pop Tarts Frosted Cinnamon','HS Waffle GF Salted Caramel','Tropical Treasure Fruit Blend'],
+    5:['Honey Pepper Turkey Bites','Whole Berry Blast Meal Bar','Darlington Granola Bites','Welch\'s Fruit Gummies','Trix Chewy Cereal Bar','Skratch Drink Mix Lemons & Limes'],
+    6:['Old #9 Jerky Stick','Amazin Raisin Strawberry','Animal Crackers','Kodiak Crunchy Choc Chip Granola Bar','Cinnamon Granola'],
+    7:['Sunflower Seed Butter','Belvita Blueberry Breakfast Biscuits','BBQ Beef Bites','Bob\'s PB Banana & Oats Bar','Chocolate Granola','Cran Raspberry Drink Mix'],
+    8:['Bold Teriyaki','Apple Cinnamon Bar','Vanilla Waffle','Peanut Butter Cup Protein Bar','Tropical Treasure Fruit Blend'],
+    9:['Pepperoni Bites','Original Instant Oatmeal','Pop Tarts Frosted Strawberry Crunchy Poppers','Kashi Chewy Granola Bar','Banana Chips','Sqwincher Watermelon'],
+    10:['SBR Sweet N\' Spicy Jerky','Bob\'s PB Jelly & Oats','Welch\'s Fruit Gummies','Blueberry Oat Snack Bar','Cocoa Puffs Cereal Bar'],
+  },
+  lunch:{
+    1:['Saltines','Chunk Chicken','Cheddar Goldfish','Crunchy PB Bar','Antioxidant Trail Mix','Sqwincher Mixed Berry'],
+    2:['Graham Crackers','Peanut Butter & Jelly','Sweet BBQ Snack Stick','Salted Sunflower Seeds','Lemon Lime Drink Mix'],
+    3:['Original Triscuit','Original Cheese Wedges','Caramel Almond & Sea Salt Bar','Spam','Cajun Style Trail Mix','Sqwincher Strawberry Lemonade'],
+    4:['Gluten Free Crackers','Chili Con Queso Cheese Cup','Chocolate Chip Energy Bar','Sea Salt Flavored Corn','Sweet Annie Brown Jerky','Orange Drink Mix'],
+    5:['Chicken In A Biskit','Sweet & Spicy Tuna','Raspberry Lemon Energy Bar','Cheez-its','Sweet & Salty Trail Mix','Fruit Punch Drink Mix'],
+    6:['Sea Salt Pita Chips','Smoked Gouda Cheese Cup','Strawberry Energy Chews','Pepperoni Sticks','PB Chocolate Trail Mix','Sqwincher Mixed Berry'],
+    7:['Wheat Thins','Chicken Salad','Chocolate Cherry Cashew Energy Bar','Cheddar Goldfish','Honey Roasted Sunflower Seeds','Lemon Lime Drink Mix'],
+    8:['Ritz Crackers','Cheese Sauce','Blueberry Almond Energy Bar','Beef Sausage Mini Bites','Hot & Spicy Corn','Sqwincher Grape'],
+    9:['Fire Roasted Tomato Triscuit','Zesty Lemon Pasta & Beans w/ Tuna','Pink Lemonade Energy Chews','Cheez-its','Energizer Trail Mix','Sqwincher Strawberry Lemonade'],
+    10:['Club Crackers','Pepperjack Cheese Wedges','Beef Salami Slices','Salted Watermelon Energy Chews','Cheddar Flavored Corn','Fruit Punch Drink Mix'],
+  },
+  dinner:{
+    1:['Beef Stroganoff','Goldfish Pretzels','Chocolate Chip Cookies'],
+    2:['Fettuccine Alfredo with Chicken','Cheddar Cheese Combos','Oreos'],
+    3:['Loaded Chili Mac','Honey Mustard & Onion Pretzel Pieces','Nutter Butters'],
+    4:['Four Cheese Mashed Potatoes with Chicken & Soup Mix','Marshmallow Squares'],
+    5:['Chicken Curry','Cinnamon Graham Goldfish','Hot Buffalo Wings Pretzel Pieces'],
+    6:['3-Cheese Mac & Cheese with Maple Bacon Jerky','Goldfish Pretzel','Maple Waffles'],
+    7:['Beef Ramen Noodles with Summer Sausage','Cheddar Pretzel Pieces','Lorna Doone Cookies'],
+    8:['Spaghetti with Meat Sauce','Pepperoni Pretzel Pieces','Oreos'],
+    9:['Creamy Tomato Pasta with Chicken','Jalapeno Pretzel Pieces','Cinnamon Graham Goldfish'],
+    10:['Stuffing Mix with Turkey & Cranberries','Turkey Spam','Chocolate Chip Waffles'],
+  }
+};
+
+// Itinerary 12-10
+const ITINERARY = [
+  // Day 1 = CHQ arrival ONLY. No hiking. Lunch + dinner at mess hall.
+  {day:1,camp:'Camping HQ',miles:0,gain:0,loss:0,type:'chq',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:true,d:true},
+   program:'Arrive CHQ (after breakfast) · Medical recheck · Gear shakedown · Opening campfire',
+   note:'Lunch & dinner provided at CHQ mess hall'},
+  // Day 2 = First trail day. Breakfast at CHQ, then hit the trail.
+  {day:2,camp:'Old Abreu',miles:3.1,gain:900,loss:420,type:'trail',dry:false,food:false,chuck:false,
+   staffMeals:{b:true,l:false,d:false},
+   program:'Breakfast @ CHQ · Ranger Training · Abreu Family Homestead · Cantina',
+   note:'Breakfast at CHQ. First carried meals: lunch + dinner'},
+  {day:3,camp:'Fish Camp',miles:7.2,gain:6520,loss:5210,type:'trail',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Trail camp — no services · Hardest day of trek',
+   note:'All meals carried'},
+  {day:4,camp:'Beaubien',miles:6.9,gain:3780,loss:3140,type:'staffed',dry:false,food:false,chuck:true,
+   staffMeals:{b:false,l:false,d:true},
+   program:'Lookout Peak · High Mountain Ranching · Campfire Show',
+   note:'Chuckwagon dinner provided · Conservation project tomorrow 7:30am'},
+  {day:5,camp:'Porcupine',miles:2.7,gain:1260,loss:1410,type:'trail',dry:false,food:true,chuck:false,conserv:true,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Conservation 7:30am - Forest Fuels Reduction at Beaubien · Passthrough Phillips Junction',
+   note:'Resupply at Phillips Junction'},
+  {day:6,camp:'Clear Creek',miles:6.8,gain:2960,loss:1830,type:'staffed',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Crooked Creek Pioneer Homestead · Taos Trappers',
+   note:'Collect extra water for Day 7 dry camp'},
+  {day:7,camp:'Comanche Peak',miles:6.0,gain:3210,loss:2420,type:'trail',dry:true,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Mount Phillips 11,736 ft · Comanche Peak summit',
+   note:'DRY CAMP — carry water from Clear Creek'},
+  {day:8,camp:'Cyphers Mine',miles:4.5,gain:1960,loss:3720,type:'staffed',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'St. Louis & Cimarron Mining Co. · Campfire Show',
+   note:'All meals carried'},
+  {day:9,camp:'Sawmill',miles:5.3,gain:3090,loss:3220,type:'staffed',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Rifle Shooting & Cartridge Reloading',
+   note:'All meals carried'},
+  {day:10,camp:'Devils Wash Basin',miles:8.7,gain:3470,loss:4190,type:'trail',dry:true,food:true,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Passthrough Ute Gulch commissary · Longest day',
+   note:'DRY CAMP + RESUPPLY — heaviest pack day. Carry water from Ute Gulch'},
+  {day:11,camp:'Harlan',miles:6.1,gain:1530,loss:2490,type:'staffed',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:false},
+   program:'Shotgun Shooting & Shotshell Reloading',
+   note:'All meals carried'},
+  {day:12,camp:'Return to CHQ',miles:4.1,gain:710,loss:1630,type:'chq',dry:false,food:false,chuck:false,
+   staffMeals:{b:false,l:false,d:true},
+   program:'Hike to Turkey Creek Trailhead · Closing campfire',
+   note:'Breakfast & lunch on trail. Dinner at CHQ mess hall'},
+];
+
+let gearData = {
+  bags:{label:'Bags',color:COLORS.bags,items:[
+    {name:'Gregory Baltoro 75L Backpack',brand:'Gregory',qty:1,oz:86.4,notes:''},
+    {name:'REI Flash 22L Daypack',brand:'REI',qty:1,oz:14.1,notes:'Summit days'},
+  ]},
+  sleep:{label:'Sleep System',color:COLORS.sleep,items:[
+    {name:'Outdoor Vitals 30° Sleep Quilt w/ Sack',brand:'Outdoor Vitals',qty:1,oz:23.6,notes:''},
+    {name:'Closed Cell Foam Sleeping Pad 1/8in',brand:'',qty:1,oz:4.1,notes:''},
+    {name:'Nemo Silla Elite Camp Pillow',brand:'Nemo',qty:1,oz:2.4,notes:'May swap for Fillo'},
+  ]},
+  equipment:{label:'Equipment',color:COLORS.equipment,items:[
+    {name:'Durston X Mid 1 Tent w/ Ground Cloth',brand:'Durston',qty:1,oz:27.2,notes:''},
+    {name:'Cascade Trekking Poles',brand:'Cascade',qty:1,oz:1.4,notes:''},
+    {name:'Ground Cloth 4x6',brand:'',qty:1,oz:1.0,notes:'Under tent'},
+  ]},
+  clothing:{label:'Clothing',color:COLORS.clothing,items:[
+    {name:'Camp Shoes',brand:'Keene',qty:1,oz:24.0,notes:'Evaluating lighter option'},
+    {name:'Gear Down Puffer',brand:'',qty:1,oz:12.4,notes:''},
+    {name:'REI Fleece Jacket',brand:'REI',qty:1,oz:11.9,notes:'Mid layer'},
+    {name:'Columbia Convertible Pants',brand:'Columbia',qty:1,oz:10.5,notes:'Required for conservation'},
+    {name:'Smartwool Hiking Socks',brand:'Smartwool',qty:3,unitOz:2.8,oz:8.4,notes:''},
+    {name:'Underwear',brand:'',qty:3,unitOz:2.6,oz:7.8,notes:''},
+    {name:'Sleep Shirt',brand:'',qty:1,oz:7.1,notes:'Bear protocol — sleep only'},
+    {name:'Thermal Base Layer Shirt',brand:'',qty:1,oz:5.9,notes:''},
+    {name:'Thermal Base Layer Pants',brand:'',qty:1,oz:5.0,notes:''},
+    {name:'Outdoor Vitals LS Shirt w/ Hood',brand:'Outdoor Vitals',qty:1,oz:4.6,notes:''},
+    {name:'T-Shirt Cotton Blend',brand:'',qty:1,oz:4.6,notes:'',warn:'cotton'},
+    {name:'REI Midway Crew Socks',brand:'REI',qty:1,oz:3.8,notes:'Camp socks'},
+    {name:'Sleep Shorts',brand:'',qty:1,oz:3.5,notes:'Bear protocol — sleep only'},
+    {name:'Scout Socks',brand:'',qty:1,oz:2.6,notes:''},
+    {name:'Sock Liners',brand:'',qty:2,unitOz:1.25,oz:2.5,notes:''},
+    {name:'North Face Gloves',brand:'North Face',qty:1,oz:1.7,notes:'Summit days'},
+    {name:'Merino Wool Cap',brand:'',qty:1,oz:1.7,notes:'Sleep & summit'},
+  ]},
+  rain:{label:'Rain Gear',color:COLORS.rain,items:[
+    {name:'North Face Rain Jacket',brand:'North Face',qty:1,oz:11.4,notes:'Keep accessible'},
+    {name:'REI Rain Pants',brand:'REI',qty:1,oz:10.5,notes:''},
+  ]},
+  care:{label:'Personal Care',color:COLORS.care,items:[
+    {name:'Personal Hygiene Kit',brand:'',qty:1,oz:9.9,notes:'Bear bag'},
+    {name:'Microfiber Towel',brand:'',qty:1,oz:6.4,notes:''},
+    {name:'Microfiber Face Cloth',brand:'',qty:1,oz:1.3,notes:''},
+  ]},
+  food:{label:'Food System',color:COLORS.food,items:[
+    {name:'Sea to Summit Insulated Mug w/ Lid',brand:'Sea to Summit',qty:1,oz:3.2,notes:''},
+    {name:'Snap Fold Bowl',brand:'',qty:1,oz:1.1,notes:''},
+    {name:'Toaks Titanium Spoon',brand:'Toaks',qty:1,oz:0.5,notes:''},
+  ]},
+  water:{label:'Water System',color:COLORS.water,items:[
+    {name:'HydraPak 4L Bladder (empty)',brand:'HydraPak',qty:1,oz:4.1,notes:'Primary carry'},
+    {name:'HydraPak 3L Bladder (empty)',brand:'HydraPak',qty:1,oz:3.3,notes:'Dry camp extra'},
+  ]},
+  utility:{label:'Utility',color:COLORS.utility,items:[
+    {name:'Umbrella',brand:'',qty:1,oz:7.9,notes:'Sun & rain'},
+    {name:'Assorted Stuff Sacks',brand:'',qty:1,oz:7.9,notes:''},
+    {name:'Nitecore Battery Pack',brand:'Nitecore',qty:1,oz:4.3,notes:'Phone & devices'},
+    {name:'Garmin inReach 2',brand:'Garmin',qty:1,oz:4.0,notes:'Emergency comms'},
+    {name:'Black Diamond Headlamp w/ Battery',brand:'Black Diamond',qty:1,oz:2.2,notes:'Essential'},
+    {name:'Nitecore Inflator',brand:'Nitecore',qty:1,oz:1.7,notes:''},
+    {name:'Work Gloves',brand:'',qty:1,oz:1.3,notes:'Conservation day'},
+    {name:'Bandana',brand:'',qty:1,oz:0.8,notes:''},
+    {name:'Personal First Aid Kit',brand:'',qty:1,oz:0.4,notes:'Bear bag'},
+  ]},
+  luxury:{label:'Luxury',color:COLORS.luxury,items:[
+    {name:'Helinox Chair Zero LT',brand:'Helinox',qty:1,oz:17.4,notes:'Camp comfort'},
+  ]},
+};
+
+const CREW_COLORS = {
+  shelter:'#1F8A4D',     // emerald
+  cook:'#E97B2E',        // pumpkin
+  bear:'#2E73C4',        // cobalt
+  safety:'#EBB019',      // golden amber
+  sanitation:'#14A8A0',  // turquoise
+  repair:'#A83C72',      // berry
+  consumables:'#94B021', // olive-lime
+  water:'#2BA8CC',       // sky cyan
+  misc:'#8C7A4E'         // ochre (catch-all, kept recessive)
+};
+
+let crewGearData = {
+  shelter:{label:'Shelter',color:CREW_COLORS.shelter,items:[
+    {name:'Half Dome 2p',brand:'REI',qty:1,unitOz:95,oz:95,notes:'Split between 2 people',source:'crew',isTent:true},
+    {name:'Half Dome 3p',brand:'REI',qty:1,unitOz:117,oz:117,notes:'Split between 3 people',source:'crew',isTent:true},
+    {name:'Dining Fly',brand:'Paria',qty:1,unitOz:30,oz:30,notes:'12x10 ft Paria siltarp, guy lines attached',source:'crew'},
+    {name:'Dining Fly Poles set of 2',brand:'',qty:1,unitOz:28,oz:28,notes:'',source:'crew'},
+    {name:'Ground Cloth (per tent)',brand:'',qty:0,unitOz:0,oz:0,notes:'Included with tent',source:'crew'},
+    {name:'Tent Stakes set of 8',brand:'',qty:1,unitOz:4,oz:4,notes:'Extra stakes, included w tarps and tents',source:'crew'},
+  ]},
+  cook:{label:'Cook System',color:CREW_COLORS.cook,items:[
+    {name:'Backpacking Stove - primary',brand:'MSR',qty:1,unitOz:16,oz:16,notes:'MSR Universal',source:'crew'},
+    {name:'Backpacking Stove - backup',brand:'MSR',qty:1,unitOz:12,oz:12,notes:'MSR Whisperlight',source:'crew'},
+    {name:'Jetboil',brand:'Jetboil',qty:1,unitOz:13,oz:13,notes:'Optional',source:'crew'},
+    {name:'Isobutane Fuel Canister 8oz',brand:'',qty:3,unitOz:4,oz:12,notes:'',source:'crew'},
+    {name:'Cooking Pot 8qt w/ Lid',brand:'Philmont',qty:1,unitOz:21.8,oz:21.8,notes:'',source:'philmont'},
+    {name:'Dishwashing Pot 8qt',brand:'Philmont',qty:1,unitOz:20,oz:20,notes:'No lid',source:'philmont'},
+    {name:'Large Spoon',brand:'Philmont',qty:1,unitOz:2.6,oz:2.6,notes:'',source:'philmont'},
+    {name:'Hot Pot Tongs',brand:'Philmont',qty:0,unitOz:3.5,oz:0,notes:'Multi-tool can substitute',source:'philmont'},
+    {name:'Food Strainer',brand:'Philmont',qty:0,unitOz:4,oz:0,notes:'',source:'philmont'},
+    {name:'Food Scraper',brand:'Philmont',qty:1,unitOz:4,oz:4,notes:'',source:'philmont'},
+    {name:'Kitchen Tarp',brand:'',qty:1,unitOz:2,oz:2,notes:'',source:'crew'},
+  ]},
+  bear:{label:'Bear System',color:CREW_COLORS.bear,items:[
+    {name:'Bear Rope',brand:'Philmont',qty:2,unitOz:17,oz:34,notes:'100ft 1/4in nylon',source:'philmont'},
+    {name:'Bear Bags',brand:'Philmont',qty:6,unitOz:3,oz:18,notes:'3 oz each; 5-8 issued',source:'philmont'},
+    {name:'Carabiner (climbing strength)',brand:'',qty:1,unitOz:1,oz:1,notes:'Must be climbing rated',source:'crew'},
+  ]},
+  safety:{label:'Safety & Navigation',color:CREW_COLORS.safety,items:[
+    {name:'Wound & Blister Care Kit',brand:'',qty:1,unitOz:25.5,oz:25.5,notes:'',source:'crew'},
+    {name:'Medications Kit',brand:'',qty:1,unitOz:13,oz:13,notes:'Tylenol, Ibuprofen, antacids, antihistamines',source:'crew'},
+    {name:'Sectional Maps',brand:'',qty:0,unitOz:2,oz:0,notes:'Philmont South sectional',source:'crew'},
+    {name:'Compass',brand:'',qty:2,unitOz:1,oz:2,notes:'Liquid filled rotating dial',source:'crew'},
+    {name:'Multi-Tool',brand:'',qty:1,unitOz:6,oz:6,notes:'',source:'crew'},
+  ]},
+  sanitation:{label:'Sanitation',color:CREW_COLORS.sanitation,items:[
+    {name:'Trowel/Shovel',brand:'',qty:1,unitOz:1,oz:1,notes:'',source:'crew'},
+    {name:'Dishwashing Soap',brand:'Philmont',qty:1,unitOz:4,oz:4,notes:'Resupply at commissary',source:'philmont'},
+    {name:'Hand Sanitizer',brand:'Philmont',qty:1,unitOz:4,oz:4,notes:'Resupply at commissary',source:'philmont'},
+    {name:'Scrub Pads',brand:'Philmont',qty:1,unitOz:1,oz:1,notes:'Resupply at commissary',source:'philmont'},
+    {name:'Toilet Paper',brand:'Philmont',qty:2,unitOz:3,oz:6,notes:'Resupply at commissary',source:'philmont'},
+    {name:'Plastic Trash Bags',brand:'Philmont',qty:0,unitOz:1,oz:0,notes:'Negligible',source:'philmont'},
+  ]},
+  repair:{label:'Repair Kit',color:CREW_COLORS.repair,items:[
+    {name:'Repair Kit',brand:'',qty:1,unitOz:3,oz:3,notes:'Sewing kit, thread, needle, tent repair',source:'crew'},
+  ]},
+  consumables:{label:'Shared Consumables',color:CREW_COLORS.consumables,items:[
+    {name:'Sunscreen SPF 25+',brand:'',qty:2,unitOz:3,oz:6,notes:'No aerosol',source:'crew'},
+    {name:'Insect Repellent',brand:'',qty:2,unitOz:3,oz:6,notes:'No aerosol',source:'crew'},
+    {name:'Foot Powder',brand:'',qty:1,unitOz:4,oz:4,notes:'',source:'crew'},
+    {name:'Nylon Cord 100ft 1/8in',brand:'',qty:2,unitOz:8,oz:16,notes:'Dining fly, clothesline, repairs',source:'crew'},
+    {name:'Matches/Lighter',brand:'',qty:4,unitOz:1,oz:4,notes:'Waterproof container',source:'crew'},
+  ]},
+  water:{label:'Water System',color:CREW_COLORS.water,items:[
+    {name:'4L Bladder',brand:'',qty:1,unitOz:4,oz:4,notes:'',source:'crew'},
+    {name:'MSR 6L Dromedary',brand:'MSR',qty:2,unitOz:8.7,oz:17.4,notes:'',source:'crew'},
+    {name:'Hydropack Filter',brand:'',qty:1,unitOz:1.8,oz:1.8,notes:'',source:'crew'},
+    {name:'Katadyn Tablets',brand:'Katadyn',qty:1,unitOz:0.7,oz:0.7,notes:'',source:'crew'},
+  ]},
+  misc:{label:'Misc',color:CREW_COLORS.misc,items:[
+    {name:'Solar Lamp (Lucy)',brand:'',qty:2,unitOz:4.5,oz:9,notes:'',source:'crew'},
+  ]},
+};
+
+let profile = {name:'',crew:'',troop:'',council:'',arrival:'2026-06-16',day0:false};
+let trekConfig = {days:12,crewSize:8,crewGearOz:564.8,bodyWeight:175,resupplyDays:[1,5,10],dryCampDays:[7,10],staffDays:[4]};
+let donutChart = null;
+let weightChart = null;
+let editingRow = null;
+
+// ═══════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════
+
+// Safe DOM accessor
+function getEl(id){ return document.getElementById(id); }
+function getVal(id, fallback){ var el=getEl(id); return el?el.value:fallback; }
+function setVal(id, val){ var el=getEl(id); if(el)el.value=val; }
+function setText(id, val){ var el=getEl(id); if(el)el.textContent=val; }
+
+// Safe number parser
+function safeFloat(val, fallback){
+  fallback = fallback !== undefined ? fallback : 0;
+  var n = parseFloat(val);
+  return (isNaN(n) || !isFinite(n)) ? fallback : n;
+}
+function safeInt(val, fallback){
+  fallback = fallback !== undefined ? fallback : 0;
+  var n = parseInt(val);
+  return (isNaN(n) || !isFinite(n)) ? fallback : n;
+}
+
+function ozToStr(oz){
+  oz = safeFloat(oz, 0);
+  if(oz < 0) oz = 0;
+  oz = Math.round(oz*10)/10;
+  const lbs=Math.floor(oz/16), rem=Math.round((oz%16)*10)/10;
+  return lbs>0?`${lbs} lb ${rem} oz`:`${rem} oz`;
+}
+function totalOz(){return Object.values(gearData).reduce((s,c)=>s+c.items.reduce((ss,i)=>ss+i.oz,0),0);}
+function catOz(key){return gearData[key].items.reduce((s,i)=>s+i.oz,0);}
+
+function getArrivalDate(){
+  try {
+    var d = new Date((profile.arrival||'2026-06-16')+'T12:00:00');
+    if(isNaN(d.getTime())) return new Date('2026-06-16T12:00:00');
+    return d;
+  } catch(e) { return new Date('2026-06-16T12:00:00'); }
+}
+function getDayDate(trekDay){
+  const arr=getArrivalDate();
+  const d=new Date(arr);
+  d.setDate(d.getDate()+(trekDay-1));
+  return d;
+}
+function formatDate(d){
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function getMealNum(date){
+  const day=date.getDate();
+  return day%10===0?10:day%10;
+}
+
+// ═══════════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════════
+
+function setSelectByValue(id, val){
+  var sel = getEl(id);
+  if(!sel) return;
+  var strVal = String(val);
+  for(var i=0; i<sel.options.length; i++){
+    if(sel.options[i].value === strVal){ sel.selectedIndex=i; return; }
+  }
+}
+
+function openProfileModal(){
+  setVal('p-name', profile.name||'');
+  setVal('p-troop', profile.troop||'');
+  setVal('p-council', profile.council||'');
+  setVal('p-arrival', profile.arrival||'2026-06-16');
+  setVal('p-crew-num', profile.crewNumber||'');
+  setVal('p-itin-num', profile.itinNumber||'');
+  setSelectByValue('p-trek-length', profile.trekLength||12);
+  setSelectByValue('p-day0', profile.day0?'yes':'no');
+  var modal = getEl('profile-modal');
+  if(modal) modal.classList.remove('hidden');
+}
+function closeProfileModal(){document.getElementById('profile-modal').classList.add('hidden');}
+function parseCrewNumber(){
+  try {
+    var el = getEl('p-crew-num');
+    if(!el) return;
+    var val = el.value.trim().toUpperCase();
+    if(!val || val.length < 3) return;
+    // Extract leading digits (3 or 4) - handles 616-E, 616-12E, 616E, 0616E
+    var dateMatch = val.match(/^([0-9]{3,4})/);
+    if(!dateMatch) return;
+    var digits = dateMatch[1];
+    var mm, dd;
+    if(digits.length === 4){
+      mm = digits.substring(0,2);
+      dd = digits.substring(2,4);
+    } else {
+      // 3 digits = single digit month e.g. 616 = June 16
+      mm = '0' + digits.substring(0,1);
+      dd = digits.substring(1,3);
+    }
+    var mmNum = parseInt(mm), ddNum = parseInt(dd);
+    if(mmNum>=1 && mmNum<=12 && ddNum>=1 && ddNum<=31){
+      setVal('p-arrival', '2026-'+mm+'-'+dd);
+      var crewHint = getEl('crew-hint');
+      if(crewHint) crewHint.textContent = 'Arrival: '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mmNum-1]+' '+parseInt(dd)+', 2026';
+    }
+    // Parse length - handles 616-12E, 616-9E, 1015-7A, also without hyphen like 616 12 E
+    var lenMatch = val.match(/[^0-9](7|9|12)[^0-9]/) || val.match(/[^0-9](7|9|12)$/);
+    if(lenMatch){
+      setSelectByValue('p-trek-length', lenMatch[1]);
+    }
+  } catch(e) { console.error('parseCrewNumber error:', e); }
+}
+
+function parseItinNumber(){
+  try {
+    var el = getEl('p-itin-num');
+    if(!el) return;
+    var val = el.value.trim();
+    var hint = getEl('itin-hint');
+    if(!val){ if(hint) hint.textContent=''; return; }
+    // Match leading 7, 9, or 12 optionally followed by separator and digits
+    var match = val.match(/^(7|9|12)[-\/]?[0-9]*$/) || val.match(/^(7|9|12)[-\/]/);
+    if(match){
+      setSelectByValue('p-trek-length', match[1]);
+      if(hint) hint.textContent = 'Parsed: ' + match[1] + '-day trek';
+    } else {
+      if(hint) hint.textContent = '';
+    }
+  } catch(e) { console.error('parseItinNumber error:', e); }
+}
+
+function saveProfile(){
+  try {
+    profile.name=(getVal('p-name','')||'').trim();
+    profile.troop=(getVal('p-troop','')||'').trim();
+    profile.council=(getVal('p-council','')||'').trim();
+    profile.arrival=getVal('p-arrival','2026-06-16')||'2026-06-16';
+    profile.crewNumber=(getVal('p-crew-num','')||'').trim().toUpperCase();
+    profile.itinNumber=(getVal('p-itin-num','')||'').trim();
+    profile.trekLength=safeInt(getVal('p-trek-length',12),12);
+    profile.day0=getVal('p-day0','no')==='yes';
+    trekConfig.days=profile.trekLength||12;
+    closeProfileModal();
+    renderProfileCard();
+    renderItinerary();
+    updateCalc();
+  } catch(e) { console.error('saveProfile error:', e); closeProfileModal(); }
+}
+
+function renderProfileCard(){
+  const el=document.getElementById('profile-display');
+  const card=document.getElementById('profile-card');
+  const navName=document.getElementById('nav-profile-name');
+  const navBtn=document.getElementById('nav-profile');
+  if(!profile.name){
+    if(card)card.style.display='none';
+    if(navName)navName.textContent='Set Up Profile';
+    if(navBtn)navBtn.classList.add('empty');
+    return;
+  }
+  if(card)card.style.display='';
+  if(navName)navName.textContent=profile.name;
+  if(navBtn)navBtn.classList.remove('empty');
+  const arrDate=getArrivalDate();
+  const displayStart=profile.day0?new Date(arrDate.getTime()-86400000):arrDate;
+  const departDate=new Date(arrDate.getTime()+12*86400000);
+  const daysUntil=Math.ceil((arrDate-new Date())/86400000);
+  el.innerHTML=`
+    <div class="profile-name">${profile.name}</div>
+    <div class="profile-meta">
+      ${profile.crewNumber?`<div class="profile-meta-item">Crew <span>${profile.crewNumber}</span></div>`:''}
+      ${profile.itinNumber?`<div class="profile-meta-item">Itinerary <span>${profile.itinNumber}</span></div>`:''}
+      ${profile.troop?`<div class="profile-meta-item">${profile.troop}</div>`:''}
+      ${profile.council?`<div class="profile-meta-item">${profile.council}</div>`:''}
+      <div class="profile-meta-item">${profile.day0?'Day 0 arrival':'Arrives'} <span>${formatDate(displayStart)}</span> · Departs <span>${formatDate(departDate)}</span></div>
+      ${daysUntil>0?`<div class="profile-meta-item"><span>${daysUntil}</span> days to go</div>`:''}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// GEAR PAGE
+// ═══════════════════════════════════════════════
+
+// ═══════════ CREW GEAR FUNCTIONS ═══════════
+
+function crewTotalOz(){
+  try {
+    var total = Object.values(crewGearData).reduce(function(s,c){
+      return s+c.items.reduce(function(ss,i){
+        var oz = safeFloat(i.oz, 0);
+        return ss+(i.included!==false ? oz : 0);
+      },0);
+    },0);
+    return safeFloat(total, 0);
+  } catch(e) { console.error('crewTotalOz error:', e); return 0; }
+}
+function crewCatOz(key){
+  return crewGearData[key].items.reduce((s,i)=>s+i.oz,0);
+}
+function tentOz(){
+  // Total tent weight from shelter category items marked isTent
+  return crewGearData.shelter.items.filter(i=>i.isTent).reduce((s,i)=>s+i.oz,0);
+}
+
+function updateCrewStats(){
+  const adults=Math.max(1,safeInt((getEl('crew-adults')||{value:3}).value,3));
+  const scouts=Math.max(1,safeInt((getEl('crew-scouts')||{value:5}).value,5));
+  const crewSize=adults+scouts;
+  const tot=crewTotalOz();
+  const tents=tentOz();
+  const nonTentOz=tot-tents;
+  const adultShare=nonTentOz/crewSize;
+  const scoutTentShare=tents/scouts; // scouts split tent weight among themselves
+  const scoutShare=nonTentOz/crewSize+scoutTentShare;
+
+  const lbs=Math.floor(tot/16),rem=Math.round((tot%16)*10)/10;
+  const perLbs=Math.floor(adultShare/16),perRem=Math.round((adultShare%16)*10)/10;
+
+  // Update stats bar
+  const csTotal=document.getElementById('cs-total');
+  const csLbs=document.getElementById('cs-lbs');
+  const csPer=document.getElementById('cs-per');
+  const csAdult=document.getElementById('cs-adult');
+  const csScout=document.getElementById('cs-scout');
+  if(csTotal)csTotal.textContent=Math.round(tot);
+  if(csLbs)csLbs.innerHTML=`${lbs}<span class="u">lb</span> ${rem}<span class="u">oz</span>`;
+  if(csPer)csPer.textContent=Math.round(adultShare);
+  if(csAdult)csAdult.textContent=ozToStr(Math.round(adultShare));
+  if(csScout)csScout.textContent=ozToStr(Math.round(scoutShare));
+
+  // Update header card
+  const ctd=document.getElementById('crew-total-display');
+  const cpd=document.getElementById('crew-per-person-display');
+  if(ctd)ctd.textContent=ozToStr(tot);
+  if(cpd)cpd.textContent=`Adult: ${ozToStr(Math.round(adultShare))} · Scout: ${ozToStr(Math.round(scoutShare))}`;
+
+  // Update breakdown panel
+  const bd=document.getElementById('crew-share-breakdown');
+  if(bd)bd.innerHTML=`
+    <div style="display:flex;justify-content:space-between;"><span>Total crew gear</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text)">${ozToStr(Math.round(tot))}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span>Tent weight (scouts)</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text)">${ozToStr(Math.round(tents))}</span></div>
+    <div style="height:1px;background:var(--border);margin:0.25rem 0;"></div>
+    <div style="display:flex;justify-content:space-between;"><span style="color:var(--gold2)">Adult share (${adults})</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--gold2)">${ozToStr(Math.round(adultShare))}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span style="color:var(--blue)">Scout share (${scouts})</span><span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--blue)">${ozToStr(Math.round(scoutShare))}</span></div>`;
+
+  // Update pack weight calculator crew gear input
+  const cgInput=document.getElementById('crew-gear-oz');
+  if(cgInput)cgInput.value=Math.round(tot);
+
+  updateCrewDonut();
+}
+
+let crewDonutChart=null;
+function updateCrewDonut(){
+  const tot=crewTotalOz();
+  const dv=document.getElementById('crew-donut-val');
+  if(dv)dv.textContent=(tot/16).toFixed(1);
+  const labels=Object.values(crewGearData).map(c=>c.label);
+  const data=Object.keys(crewGearData).map(k=>crewCatOz(k));
+  const colors=Object.values(crewGearData).map(c=>c.color);
+  const canvas=document.getElementById('crew-donut');
+  if(!canvas)return;
+  if(crewDonutChart)crewDonutChart.destroy();
+  crewDonutChart=new Chart(canvas,{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:3,borderColor:cssVar('--pc-chart-border'),hoverOffset:4}]},
+    options:{responsive:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{enabled:false}}}
+  });
+  const legend=document.getElementById('crew-legend');
+  if(!legend)return;
+  legend.innerHTML='';
+  Object.entries(crewGearData).forEach(([k,cat])=>{
+    const cOz=crewCatOz(k),pct=tot>0?Math.round(cOz/tot*100):0;
+    legend.innerHTML+=`<div class="legend-row">
+      <div class="legend-dot" style="background:${cat.color}"></div>
+      <div class="legend-name">${cat.label}</div>
+      <div class="legend-val">${ozToStr(cOz)}</div>
+      <div class="legend-pct">${pct}%</div>
+    </div>`;
+  });
+}
+
+let crewEditingRow=null;
+
+function renderCrewGear(){
+  const container=document.getElementById('crew-sections');
+  if(!container)return;
+  container.innerHTML='';
+  // Migrate unitOz
+  Object.values(crewGearData).forEach(cat=>{
+    cat.items.forEach(item=>{
+      if(item.unitOz===undefined)item.unitOz=item.oz/item.qty;
+    });
+  });
+  const tot=crewTotalOz();
+  const maxCat=Math.max(...Object.values(crewGearData).map(c=>c.items.reduce((s,i)=>s+i.oz,0)));
+
+  Object.entries(crewGearData).forEach(([key,cat])=>{
+    const cOz=crewCatOz(key);
+    const pct=tot>0?Math.round(cOz/tot*100):0;
+    const barPct=maxCat>0?Math.round(cOz/maxCat*100):0;
+    const maxItem=cat.items.length>0?Math.max(...cat.items.map(i=>i.oz)):1;
+
+    const section=document.createElement('div');
+    section.className='gear-section';
+
+    const rows=cat.items.map((item,idx)=>{
+      if(crewEditingRow&&crewEditingRow.key===key&&crewEditingRow.idx===idx){
+        const unitWt=item.unitOz||item.oz;
+        return `<tr class="edit-row">
+          <td></td>
+          <td><input class="edit-input wide" id="cei-name" value="${item.name}"></td>
+          <td><input class="edit-input med" id="cei-brand" value="${item.brand}"></td>
+          <td><input class="edit-input narrow" id="cei-qty" type="number" value="${item.qty}" oninput="updateCrewEditTotal()"></td>
+          <td>
+            <input class="edit-input narrow" id="cei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');updateCrewEditTotal();" placeholder="oz">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:2px;">unit · total: <span id="crew-edit-total">${ozToStr(item.oz)}</span></div>
+          </td>
+          <td><input class="edit-input med" id="cei-notes" value="${item.notes||''}"></td>
+          <td></td>
+          <td class="td-actions">
+            <button class="action-btn" onclick="saveCrewEdit('${key}',${idx})">✓</button>
+            <button class="action-btn" onclick="cancelCrewEdit()">✕</button>
+          </td>
+        </tr>`;
+      }
+      const ipct=Math.round(item.oz/maxItem*100);
+      const crewChecked=item.included!==false;
+      const srcBadge=item.source==='philmont'?`<span style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);background:var(--bg3);padding:0.1rem 0.3rem;border-radius:2px;margin-left:4px;">PHI</span>`:'';
+      return `<tr class="data-row ${crewChecked?'':' unchecked'}">
+        <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" ${crewChecked?'checked':''} onchange="toggleCrewItem('${key}',${idx},this.checked)"></td>
+        <td class="td-name">${item.name}${srcBadge}</td>
+        <td class="td-brand">${item.brand}</td>
+        <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
+        <td class="td-weight">${ozToStr(item.oz)}</td>
+        <td class="td-notes">${item.notes||''}</td>
+        <td class="td-bar"><div class="item-bar"><div class="item-bar-fill" style="width:${ipct}%;background:${cat.color}"></div></div></td>
+        <td class="td-actions">
+          <button class="action-btn" onclick="startCrewEdit('${key}',${idx})" title="Edit"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="action-btn del" onclick="removeCrewItem('${key}',${idx})" title="Delete">✕</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    section.innerHTML=`
+      <div class="section-header" onclick="toggleCrewSection('${key}','tog-c-${key}','body-c-${key}')">
+        <div class="section-head-left">
+          <div class="section-icon">${catIconTile(CREW_CAT_ICON[key])}</div>
+          <div class="section-name">${cat.label}</div>
+        </div>
+        <div class="section-meta">
+          <div class="section-weight">${ozToStr(cOz)}</div>
+          <div class="section-pct">${pct}%</div>
+          <div class="section-toggle open" id="tog-c-${key}">▶</div>
+        </div>
+      </div>
+      <div class="section-bar"><div class="section-bar-fill" style="width:${barPct}%;background:${cat.color}"></div></div>
+      <div class="gear-body open" id="body-c-${key}">
+        <table class="gear-table">
+          <colgroup>
+            <col style="width:24px">
+            <col style="width:170px">
+            <col style="width:80px">
+            <col style="width:32px">
+            <col style="width:95px">
+            <col style="width:110px">
+            <col style="width:40px">
+            <col style="width:48px">
+          </colgroup>
+          <thead><tr>
+            <th style="padding:0.45rem 2px;"></th>
+            <th>Item</th><th>Brand</th><th style="text-align:center">Qty</th>
+            <th style="text-align:right">Weight</th><th>Notes</th><th></th><th></th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="add-row">
+          <input class="add-input" style="flex:2;min-width:0;" id="cai-name-${key}" placeholder="Item name" onkeydown="if(event.key==='Enter')addCrewItem('${key}')">
+          <input class="add-input" style="flex:1;min-width:0;" id="cai-brand-${key}" placeholder="Brand">
+          <input class="add-input narrow" id="cai-qty-${key}" placeholder="Qty" value="1">
+          <input class="add-input narrow" id="cai-oz-${key}" placeholder="oz" oninput="this.value=this.value.replace(/[^0-9.]/g,'');">
+          <input class="add-input" style="flex:1.2;min-width:0;" id="cai-notes-${key}" placeholder="Notes (optional)">
+          <button class="add-btn" onclick="addCrewItem('${key}')">+ Add</button>
+        </div>
+      </div>`;
+    container.appendChild(section);
+  });
+  updateCrewStats();
+}
+
+function toggleCrewSection(key,togId,bodyId){
+  const body=document.getElementById(bodyId);
+  const tog=document.getElementById(togId);
+  if(body)body.classList.toggle('open');
+  if(tog)tog.classList.toggle('open');
+}
+function startCrewEdit(key,idx){crewEditingRow={key,idx};renderCrewGear();}
+function cancelCrewEdit(){crewEditingRow=null;renderCrewGear();}
+function toggleCrewItem(key,idx,checked){
+  crewGearData[key].items[idx].included=checked;
+  renderCrewGear();
+  updateCrewStats();
+}
+function updateCrewEditTotal(){
+  const qty=parseInt(document.getElementById('cei-qty')?.value)||1;
+  const unitOz=parseFloat(document.getElementById('cei-oz')?.value)||0;
+  const el=document.getElementById('crew-edit-total');
+  if(el)el.textContent=ozToStr(unitOz*qty);
+}
+function saveCrewEdit(key,idx){
+  const name=document.getElementById('cei-name').value.trim();
+  if(!name){cancelCrewEdit();return;}
+  const qty=parseInt(document.getElementById('cei-qty').value)||1;
+  const unitOz=parseFloat(document.getElementById('cei-oz').value)||0;
+  crewGearData[key].items[idx]={
+    ...crewGearData[key].items[idx],
+    name,
+    brand:document.getElementById('cei-brand').value.trim(),
+    qty,unitOz,
+    oz:unitOz*qty,
+    notes:document.getElementById('cei-notes').value.trim(),
+  };
+  crewEditingRow=null;
+  renderCrewGear();
+}
+function addCrewItem(key){
+  try {
+    var nameEl=getEl('cai-name-'+key);
+    if(!nameEl)return;
+    var name=nameEl.value.trim();
+    if(!name)return;
+    var qty=Math.max(1,safeInt((getEl('cai-qty-'+key)||{value:1}).value,1));
+    var totalOzInput=Math.max(0,safeFloat((getEl('cai-oz-'+key)||{value:0}).value,0));
+    var unitOz=qty>0?totalOzInput/qty:0;
+    crewGearData[key].items.push({
+      name:name,
+      brand:(getEl('cai-brand-'+key)||{value:''}).value.trim(),
+      qty:qty,
+      unitOz:unitOz,
+      oz:totalOzInput,
+      notes:(getEl('cai-notes-'+key)||{value:''}).value.trim(),
+      source:'crew',
+      included:true
+    });
+    renderCrewGear();
+  } catch(e) { console.error('addCrewItem error:', e); }
+}
+function removeCrewItem(key,idx){
+  if(!confirm(`Remove "${crewGearData[key].items[idx].name}"?`))return;
+  crewGearData[key].items.splice(idx,1);
+  renderCrewGear();
+}
+
+function renderGear(){
+  // Ensure all items have unitOz set (migration for items without it)
+  Object.values(gearData).forEach(cat=>{
+    cat.items.forEach(item=>{
+      if(item.unitOz===undefined){
+        item.unitOz=item.oz/item.qty;
+      }
+    });
+  });
+  const container=document.getElementById('gear-sections');
+  container.innerHTML='';
+  const tot=totalOzActive();
+  const maxCat=Math.max(...Object.values(gearData).map(c=>c.items.reduce((s,i)=>s+i.oz,0)));
+
+  Object.entries(gearData).forEach(([key,cat])=>{
+    const cOz=catOz(key);
+    const pct=tot>0?Math.round(cOz/tot*100):0;
+    const barPct=maxCat>0?Math.round(cOz/maxCat*100):0;
+    const maxItem=cat.items.length>0?Math.max(...cat.items.map(i=>i.oz)):1;
+
+    const section=document.createElement('div');
+    section.className='gear-section';
+    section.id=`sec-${key}`;
+
+    const rows=cat.items.map((item,idx)=>{
+      if(editingRow&&editingRow.key===key&&editingRow.idx===idx){
+        const unitWt=item.unitOz||item.oz;
+      return `<tr class="edit-row">
+          <td><input class="edit-input wide" id="ei-name" value="${item.name}"></td>
+          <td><input class="edit-input med" id="ei-brand" value="${item.brand}"></td>
+          <td><input class="edit-input narrow" id="ei-qty" type="number" value="${item.qty}" oninput="updateEditTotal()"></td>
+          <td>
+            <input class="edit-input narrow" id="ei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');updateEditTotal();" placeholder="oz">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:2px;">unit wt · total: <span id="edit-total">${ozToStr(item.oz)}</span></div>
+          </td>
+          <td><input class="edit-input med" id="ei-notes" value="${item.notes||''}"></td>
+          <td></td>
+          <td class="td-actions">
+            <button class="action-btn" onclick="saveEdit('${key}',${idx})" title="Save">✓</button>
+            <button class="action-btn" onclick="cancelEdit()" title="Cancel">✕</button>
+          </td>
+        </tr>`;
+      }
+      const ipct=Math.round(item.oz/maxItem*100);
+      const isChecked=item.included!==false;
+      const isCotton=item.warn==='cotton'||/\bcotton\b/i.test(item.name);
+      const cottonFlag=isCotton?`<span class="cotton-warn">cotton</span>`:'';
+      return `<tr class="data-row ${isChecked?'':'unchecked'}">
+        <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" ${isChecked?'checked':''} onchange="toggleItem('${key}',${idx},this.checked)"></td>
+        <td class="td-name">${item.name}${cottonFlag}</td>
+        <td class="td-brand">${item.brand}</td>
+        <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
+        <td class="td-weight">${ozToStr(item.oz)}</td>
+        <td class="td-notes">${item.notes||''}</td>
+        <td class="td-bar"><div class="item-bar"><div class="item-bar-fill" style="width:${ipct}%;background:${cat.color}"></div></div></td>
+        <td class="td-actions">
+          <button class="action-btn" onclick="startEdit('${key}',${idx})" title="Edit"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+          <button class="action-btn del" onclick="removeItem('${key}',${idx})" title="Delete">✕</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    section.innerHTML=`
+      <div class="section-header" onclick="toggleSection('${key}')">
+        <div class="section-head-left">
+          <div class="section-icon">${catIconTile(CAT_ICON[key])}</div>
+          <div class="section-name">${cat.label}</div>
+        </div>
+        <div class="section-meta">
+          <div class="section-weight">${ozToStr(cOz)}</div>
+          <div class="section-pct">${pct}%</div>
+          <div class="section-toggle open" id="tog-${key}">▶</div>
+        </div>
+      </div>
+      <div class="section-bar"><div class="section-bar-fill" style="width:${barPct}%;background:${cat.color}"></div></div>
+      <div class="gear-body open" id="body-${key}">
+        <table class="gear-table">
+          <colgroup>
+            <col style="width:24px">
+            <col style="width:170px">
+            <col style="width:80px">
+            <col style="width:32px">
+            <col style="width:95px">
+            <col style="width:110px">
+            <col style="width:40px">
+            <col style="width:48px">
+          </colgroup>
+          <thead><tr>
+            <th style="padding:0.45rem 2px;"></th>
+            <th>Item</th><th>Brand</th><th style="text-align:center">Qty</th>
+            <th style="text-align:right">Weight</th><th>Notes</th><th></th><th></th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="add-row">
+          <input class="add-input" style="flex:2;min-width:0;" id="ai-name-${key}" placeholder="Item name" onkeydown="if(event.key==='Enter')addItem('${key}')">
+          <input class="add-input" style="flex:1;min-width:0;" id="ai-brand-${key}" placeholder="Brand">
+          <input class="add-input narrow" id="ai-qty-${key}" placeholder="Qty" value="1">
+          <input class="add-input narrow" id="ai-oz-${key}" placeholder="oz" oninput="this.value=this.value.replace(/[^0-9.]/g,'');">
+          <input class="add-input" style="flex:1.2;min-width:0;" id="ai-notes-${key}" placeholder="Notes (optional)">
+          <button class="add-btn" onclick="addItem('${key}')">+ Add</button>
+        </div>
+      </div>`;
+    container.appendChild(section);
+  });
+  updateStats();
+  updateDonut();
+}
+
+function toggleSection(key){
+  const body=document.getElementById(`body-${key}`);
+  const tog=document.getElementById(`tog-${key}`);
+  body.classList.toggle('open');
+  tog.classList.toggle('open');
+}
+function startEdit(key,idx){editingRow={key,idx};renderGear();}
+function cancelEdit(){editingRow=null;renderGear();}
+function updateEditTotal(){
+  const qty=parseInt(document.getElementById('ei-qty')?.value)||1;
+  const unitOz=parseFloat(document.getElementById('ei-oz')?.value)||0;
+  const totalEl=document.getElementById('edit-total');
+  if(totalEl)totalEl.textContent=ozToStr(unitOz*qty);
+}
+function saveEdit(key,idx){
+  const name=document.getElementById('ei-name').value.trim();
+  if(!name){cancelEdit();return;}
+  const qty=parseInt(document.getElementById('ei-qty').value)||1;
+  const unitOz=parseFloat(document.getElementById('ei-oz').value)||0;
+  gearData[key].items[idx]={
+    name,
+    brand:document.getElementById('ei-brand').value.trim(),
+    qty,
+    unitOz,
+    oz:unitOz*qty, // total = unit * qty
+    notes:document.getElementById('ei-notes').value.trim(),
+    warn:gearData[key].items[idx].warn
+  };
+  editingRow=null;
+  renderGear();updateCalc();
+}
+function addItem(key){
+  try {
+    var nameEl=getEl('ai-name-'+key);
+    if(!nameEl)return;
+    var name=nameEl.value.trim();
+    if(!name)return;
+    var qty=Math.max(1,safeInt((getEl('ai-qty-'+key)||{value:1}).value,1));
+    var totalOzInput=Math.max(0,safeFloat((getEl('ai-oz-'+key)||{value:0}).value,0));
+    var unitOz=qty>0?totalOzInput/qty:0;
+    gearData[key].items.push({
+      name:name,
+      brand:(getEl('ai-brand-'+key)||{value:''}).value.trim(),
+      qty:qty,
+      unitOz:unitOz,
+      oz:totalOzInput,
+      notes:(getEl('ai-notes-'+key)||{value:''}).value.trim(),
+      included:true
+    });
+    renderGear();
+    updateCalc();
+  } catch(e) { console.error('addItem error:', e); }
+}
+function removeItem(key,idx){
+  if(!confirm(`Remove "${gearData[key].items[idx].name}"?`))return;
+  gearData[key].items.splice(idx,1);
+  renderGear();updateCalc();
+}
+
+let overrideOz=null;
+
+function toggleItem(key,idx,checked){
+  gearData[key].items[idx].included=checked;
+  renderGear();updateCalc();
+}
+
+function updateOverride(){
+  try {
+    var el=getEl('override-oz');
+    if(!el)return;
+    var val=safeFloat(el.value, NaN);
+    overrideOz=(isNaN(val)||val<0)?null:val;
+    updateStats();
+  } catch(e) { console.error('updateOverride error:', e); }
+}
+
+function clearOverride(){
+  overrideOz=null;
+  document.getElementById('override-oz').value='';
+  document.getElementById('override-banner-wrap').style.display='none';
+  updateStats();
+}
+
+function totalOzActive(){
+  try {
+    var total = Object.values(gearData).reduce(function(s,c){
+      return s+c.items.reduce(function(ss,i){
+        var oz = safeFloat(i.oz, 0);
+        return ss+(i.included!==false ? oz : 0);
+      },0);
+    },0);
+    return safeFloat(total, 0);
+  } catch(e) { console.error('totalOzActive error:', e); return 0; }
+}
+
+function updateProgress(){
+  var allItems=Object.values(gearData).flatMap(function(c){return c.items;});
+  var total=allItems.length;
+  var weighed=allItems.filter(function(i){return i.oz>0;}).length;
+  var pct=total>0?Math.round(weighed/total*100):0;
+  var fill=document.getElementById('progress-fill');
+  var label=document.getElementById('progress-label');
+  if(fill)fill.style.width=pct+'%';
+  if(label)label.textContent=pct+'% of items weighed ('+weighed+'/'+total+')';
+  if(fill)fill.style.background=pct>=90?'var(--green)':pct>=60?'var(--gold)':'var(--warn)';
+}
+
+function updateStats(){
+  var rawTot=totalOzActive();
+  const tot=overrideOz!==null?overrideOz:rawTot;
+  const lbs=Math.floor(tot/16),rem=Math.round((tot%16)*10)/10;
+  const items=Object.values(gearData).reduce((s,c)=>s+c.items.length,0);
+  const activeItems=Object.values(gearData).flatMap(c=>c.items).filter(i=>i.included!==false&&i.oz>0);
+  const heavy=activeItems.length>0?activeItems.reduce((a,b)=>a.oz>b.oz?a:b):null;
+  document.getElementById('s-base').textContent=Math.round(tot);
+  document.getElementById('s-lbs').innerHTML=`${lbs}<span class="u">lb</span> ${rem}<span class="u">oz</span>`;
+  document.getElementById('s-items').textContent=items;
+  document.getElementById('nav-total').textContent=`${lbs} lb ${rem} oz`;
+  if(heavy){
+    document.getElementById('s-heavy').textContent=ozToStr(heavy.oz);
+    document.getElementById('s-heavy-name').textContent=heavy.name.substring(0,22)+(heavy.name.length>22?'…':'');
+  } else {
+    document.getElementById('s-heavy').textContent='—';
+    document.getElementById('s-heavy-name').textContent='—';
+  }
+  const lbsVal=tot/16;
+  const gaugePct=Math.min(100,(lbsVal/35)*100);
+  const gauge=document.getElementById('base-gauge');
+  gauge.style.width=gaugePct+'%';
+  gauge.style.background=lbsVal<=25?'var(--green)':lbsVal<=30?'var(--warn)':'var(--red)';
+  var overrideNote=overrideOz!==null?' (scale override active)':'';
+  document.getElementById('gauge-note').textContent=
+    lbsVal<=25?`${lbs} lb ${rem} oz — within Philmont's 20–25 lb target ✓`:
+    lbsVal<=30?`${lbs} lb ${rem} oz — slightly over target, consider cuts`:
+    `${lbs} lb ${rem} oz — over recommended limit`;
+}
+
+function updateDonut(){
+  const tot=totalOzActive();
+  document.getElementById('donut-val').textContent=(tot/16).toFixed(1);
+  const labels=Object.values(gearData).map(c=>c.label);
+  const data=Object.keys(gearData).map(k=>gearData[k].items.reduce((s,i)=>s+(i.included!==false?i.oz:0),0));
+  const colors=Object.values(gearData).map(c=>c.color);
+  if(donutChart)donutChart.destroy();
+  donutChart=new Chart(document.getElementById('gear-donut'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:3,borderColor:cssVar('--pc-chart-border'),hoverOffset:4}]},
+    options:{responsive:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{enabled:false}}}
+  });
+  const legend=document.getElementById('gear-legend');
+  legend.innerHTML='';
+  Object.entries(gearData).forEach(([k,cat])=>{
+    const cOz=catOz(k),pct=tot>0?Math.round(cOz/tot*100):0;
+    legend.innerHTML+=`<div class="legend-row">
+      <div class="legend-dot" style="background:${cat.color}"></div>
+      <div class="legend-name">${cat.label}</div>
+      <div class="legend-val">${ozToStr(cOz)}</div>
+      <div class="legend-pct">${pct}%</div>
+    </div>`;
+  });
+}
+
+// ═══════════════════════════════════════════════
+// PACK WEIGHT CALCULATOR
+// ═══════════════════════════════════════════════
+
+function initDayGrid(){
+  const grid=document.getElementById('day-grid');
+  grid.innerHTML='';
+  for(let d=1;d<=trekConfig.days;d++){
+    const cell=document.createElement('div');
+    cell.className='day-cell';
+    cell.id=`dc-${d}`;
+    if(trekConfig.resupplyDays.includes(d))cell.classList.add('resupply');
+    if(trekConfig.dryCampDays.includes(d))cell.classList.add('dry');
+    cell.innerHTML=`<span class="day-num">${d}</span><span class="day-icon" id="di-${d}">${getDayIcon(d)}</span>`;
+    cell.onclick=()=>cycleDay(d);
+    grid.appendChild(cell);
+  }
+}
+function getDayIcon(d){
+  const r=trekConfig.resupplyDays.includes(d),dry=trekConfig.dryCampDays.includes(d);
+  return r&&dry?'R·D':r?'R':dry?'D':'';
+}
+function cycleDay(d){
+  const r=trekConfig.resupplyDays.includes(d),dry=trekConfig.dryCampDays.includes(d);
+  const cell=document.getElementById(`dc-${d}`);
+  if(!r&&!dry){trekConfig.resupplyDays.push(d);cell.classList.add('resupply');}
+  else if(r&&!dry){trekConfig.dryCampDays.push(d);cell.classList.add('dry');}
+  else if(r&&dry){trekConfig.resupplyDays=trekConfig.resupplyDays.filter(x=>x!==d);cell.classList.remove('resupply');}
+  else{trekConfig.dryCampDays=trekConfig.dryCampDays.filter(x=>x!==d);cell.classList.remove('dry');}
+  document.getElementById(`di-${d}`).textContent=getDayIcon(d);
+  updateCalc();
+}
+
+function getFoodOzForDay(day){
+  const rDays=[...trekConfig.resupplyDays].sort((a,b)=>a-b);
+  let segEnd=trekConfig.days+1;
+  for(let i=0;i<rDays.length;i++){if(rDays[i]>day){segEnd=rDays[i];break;}}
+  const daysRemaining=Math.min(segEnd-day,trekConfig.days-day+1);
+  // subtract staff meals from this day
+  const staffBonus=trekConfig.staffDays.includes(day)?-0.67:0;
+  return Math.max(0,(daysRemaining*32)+(staffBonus*16));
+}
+function getWaterOzForDay(day){
+  try {
+    return(trekConfig.dryCampDays.includes(safeInt(day,1))?7:3.5)*35.274;
+  } catch(e) { return 3.5*35.274; }
+}
+function getPackOzForDay(day){
+  try {
+    var base = overrideOz!==null ? safeFloat(overrideOz,0) : totalOzActive();
+    var crewSize = Math.max(1, safeInt(trekConfig.crewSize, 8));
+    var crewShare = safeFloat(trekConfig.crewGearOz, 0) / crewSize;
+    var food = getFoodOzForDay(day);
+    var water = getWaterOzForDay(day);
+    var total = base + crewShare + food + water;
+    return safeFloat(total, 0);
+  } catch(e) { console.error('getPackOzForDay error:', e); return 0; }
+}
+
+function updateCalc(){
+  try {
+  trekConfig.days=Math.max(7,Math.min(12,safeInt(getVal('trek-days',12),12)));
+  trekConfig.crewSize=Math.max(1,Math.min(12,safeInt(getVal('crew-size',8),8)));
+  trekConfig.crewGearOz=Math.max(0,safeFloat(getVal('crew-gear-oz',373),373));
+  trekConfig.bodyWeight=Math.max(50,safeFloat(getVal('body-weight',175),175));
+  const sStr=getVal('staff-days','')||'';
+  trekConfig.staffDays=sStr.split(',').map(function(s){return safeInt(s.trim(),NaN);}).filter(function(n){return !isNaN(n);});
+  document.getElementById('day-slider').max=trekConfig.days;
+  const day=Math.min(parseInt(document.getElementById('day-slider').value)||1,trekConfig.days);
+  onDaySlider(day);
+  updateDayChart();
+  renderItinerary();
+  } catch(e) { console.error('updateCalc error:', e); }
+}
+
+function onDaySlider(day){
+  day=parseInt(day);
+  document.getElementById('day-slider').value=day;
+  document.getElementById('day-slider-val').textContent=`Day ${day}`;
+  document.getElementById('result-day').textContent=day;
+  const d=getDayDate(day);
+  document.getElementById('result-date').textContent=`· ${formatDate(d)}`;
+
+  const baseOz=overrideOz!==null?overrideOz:totalOzActive();
+  const crewOz=trekConfig.crewGearOz/trekConfig.crewSize;
+  const foodOz=getFoodOzForDay(day);
+  const waterOz=getWaterOzForDay(day);
+  const packOz=baseOz+crewOz+foodOz+waterOz;
+  const bwPct=Math.round((packOz/16/trekConfig.bodyWeight)*100);
+  const isDry=trekConfig.dryCampDays.includes(day);
+  const isR=trekConfig.resupplyDays.includes(day);
+
+  document.getElementById('weight-breakdown').innerHTML=`
+    <div class="wb-row"><span class="wb-label">Personal gear (base)</span><span class="wb-val">${ozToStr(baseOz)}</span></div>
+    <div class="wb-row"><span class="wb-label">Crew gear share (÷${trekConfig.crewSize})</span><span class="wb-val">${ozToStr(crewOz)}</span></div>
+    <div class="wb-row"><span class="wb-label">Food ${isR?'· resupply day':''}</span><span class="wb-val">${ozToStr(foodOz)}</span></div>
+    <div class="wb-row"><span class="wb-label">Water ${isDry?'· dry camp 7L':'· standard 3.5L'}</span><span class="wb-val">${ozToStr(waterOz)}</span></div>
+    <div class="wb-row total"><span class="wb-label">Total Pack Weight</span><span class="wb-val">${ozToStr(packOz)}</span></div>`;
+
+  const bwPct2=Math.min(100,(bwPct/40)*100);
+  const bwG=document.getElementById('bw-gauge');
+  bwG.style.width=bwPct2+'%';
+  bwG.style.background=bwPct<=25?'var(--green)':bwPct<=30?'var(--warn)':'var(--red)';
+  document.getElementById('bw-note').textContent=`${bwPct}% of body weight — Philmont recommends max 25–30%`;
+
+  const allW=Array.from({length:trekConfig.days},(_,i)=>getPackOzForDay(i+1));
+  const minOz=Math.min(...allW),maxOz=Math.max(...allW);
+  const minDay=allW.indexOf(minOz)+1,maxDay=allW.indexOf(maxOz)+1;
+  const maxDayFlags=[];
+  if(trekConfig.resupplyDays.includes(maxDay))maxDayFlags.push('resupply');
+  if(trekConfig.dryCampDays.includes(maxDay))maxDayFlags.push('dry camp');
+  const maxDayNote=maxDayFlags.length?` — ${maxDayFlags.join(' + ')} day`:'';
+  document.getElementById('range-display').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:0.85rem;margin-top:0.35rem;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.2rem;">Lightest Day (Day ${minDay})</div>
+        <div class="range-val" style="color:var(--green)">${ozToStr(Math.round(minOz))}</div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.2rem;">Heaviest Day (Day ${maxDay})</div>
+        <div class="range-val" style="color:var(--red)">${ozToStr(Math.round(maxOz))}</div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--muted2);font-style:italic;">Day ${maxDay} is your heaviest day${maxDayNote}.</div>
+    </div>`;
+}
+
+function updateDayChart(){
+  const days=Array.from({length:trekConfig.days},(_,i)=>i+1);
+  const weights=days.map(d=>Math.round((getPackOzForDay(d)/16)*10)/10);
+  // Sequential value ramp: light grass (lightest pack day) → deep pine (heaviest).
+  // The single heaviest day pops in Scout Red (sanctioned key-data accent).
+  const maxW=Math.max(...weights), minW=Math.min(...weights);
+  const accent=cssVar('--pc-accent');
+  const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
+  const lo=[150,196,86], hi=[31,120,72];        // #96C456 → #1F7848
+  const bgColors=weights.map(w=>{
+    if(w>=maxW) return accent;                    // heaviest day
+    const t=maxW===minW?0.5:(w-minW)/(maxW-minW);
+    return `rgb(${lerp(lo[0],hi[0],t)},${lerp(lo[1],hi[1],t)},${lerp(lo[2],hi[2],t)})`;
+  });
+  if(weightChart)weightChart.destroy();
+  weightChart=new Chart(document.getElementById('weight-chart'),{
+    type:'bar',
+    plugins:[{id:'sliderAlign',afterLayout(chart){alignDaySlider(chart);}}],
+    data:{labels:days.map(d=>`D${d}`),datasets:[{label:'Pack (lbs)',data:weights,backgroundColor:bgColors,borderWidth:0,borderRadius:2}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      onResize:()=>requestAnimationFrame(alignDaySlider),
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:ctx=>`${ctx.raw} lbs`,
+        afterLabel:ctx=>{const d=ctx.dataIndex+1;const f=[];if(trekConfig.resupplyDays.includes(d))f.push('Resupply');if(trekConfig.dryCampDays.includes(d))f.push('Dry camp');return f.length?f.join(' · '):'';}
+      }}},
+      scales:{
+        x:{ticks:{color:cssVar('--pc-ink-soft'),font:{family:'JetBrains Mono',size:9}},grid:{color:cssVar('--pc-grid')}},
+        y:{ticks:{color:cssVar('--pc-ink-soft'),font:{family:'JetBrains Mono',size:9},callback:v=>`${v} lb`},grid:{color:cssVar('--pc-grid')},min:0}
+      }
+    }
+  });
+  requestAnimationFrame(alignDaySlider);
+}
+
+// Widen the day slider to match the chart's plot area so the scout thumb lines up with each day's bar.
+function alignDaySlider(chart){
+  chart=chart||weightChart;
+  const sl=document.getElementById('day-slider');
+  if(!sl||!chart||!chart.chartArea)return;
+  const ca=chart.chartArea;
+  const plotW=ca.right-ca.left;
+  if(!(plotW>0))return;
+  const n=trekConfig.days, thumb=16, half=thumb/2;
+  const barC1=ca.left+(0.5/n)*plotW;          // center of first day's bar
+  const barCn=ca.left+((n-0.5)/n)*plotW;      // center of last day's bar
+  sl.style.left=(barC1-half)+'px';
+  sl.style.width=((barCn-barC1)+thumb)+'px';
+}
+// ═══════════════════════════════════════════════
+// ITINERARY PAGE
+// ═══════════════════════════════════════════════
+
+function getItinScores(){
+  return ITINERARY.filter(function(d){return d.miles>0;}).map(function(d){return d.miles*(d.gain/1000);});
+}
+
+function getDifficultyRating(miles,gain){
+  if(miles===0)return null;
+  var score=miles*(gain/1000);
+  var scores=getItinScores().slice().sort(function(a,b){return a-b;});
+  if(scores.length===0)return{cls:'diff-easy',label:'Light',note:''};
+  var rank=scores.filter(function(s){return s<=score;}).length;
+  var pct=rank/scores.length;
+  if(pct<=0.25)return{cls:'diff-easy',label:'Light',note:''};
+  if(pct<=0.60)return{cls:'diff-mod',label:'Moderate',note:''};
+  if(pct<=0.85)return{cls:'diff-hard',label:'Challenging',note:'Start early, pace carefully'};
+  return{cls:'diff-vhard',label:'Very Challenging',note:'Hardest day of the trek -- early start essential'};
+}
+
+function renderItinerary(){
+  const tbody=document.getElementById('itin-body');
+  tbody.innerHTML='';
+  // Update eyebrow with correct date range
+  const startDate=profile.day0?new Date(getArrivalDate().getTime()-86400000):getArrivalDate();
+  const endDate=new Date(getArrivalDate().getTime()+12*86400000); // Day 13
+  const eyebrow=document.getElementById('itin-eyebrow');
+  if(eyebrow)eyebrow.textContent=`Itinerary 12-10 · Rugged · 62 Miles · South Country · ${formatDate(startDate)} – ${formatDate(endDate)}`;
+
+  // Day 0 row if early arrival selected
+  if(profile.day0){
+    const day0Date=new Date(getArrivalDate().getTime()-86400000);
+    const tr0=document.createElement('tr');
+    tr0.innerHTML=`
+      <td>
+        <div class="itin-day" style="color:var(--muted)">0</div>
+        <div class="itin-date">${formatDate(day0Date)}</div>
+      </td>
+      <td>
+        <div class="itin-camp">Camping HQ</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">Early arrival · Optional</div>
+        <div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">Arrive early — lunch & dinner at CHQ</div>
+      </td>
+      <td class="itin-miles">—</td>
+      <td class="itin-elev">—</td>
+      <td>—</td>
+      <td><span class="badge badge-chq">CHQ</span></td>
+      <td class="hide-sm">—</td>
+      <td>
+        <div class="menu-block">
+          <div style="font-size:0.75rem;color:var(--muted2)">🍽 Lunch @ CHQ</div>
+          <div style="font-size:0.75rem;color:var(--muted2)">🍽 Dinner @ CHQ</div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr0);
+  }
+
+  ITINERARY.forEach(day=>{
+    const date=getDayDate(day.day);
+    const mealNum=getMealNum(date);
+    const net=day.gain-day.loss;
+    const diff=getDifficultyRating(day.miles,day.gain);
+    const packOz=getPackOzForDay(day.day);
+    const packLbs=packOz/16;
+    const packClass=packLbs>40?'heavy':packLbs<30?'light':'';
+
+    // Badges
+    let badges='';
+    if(day.type==='chq')badges+=`<span class="badge badge-chq">CHQ</span>`;
+    if(day.type==='staffed')badges+=`<span class="badge badge-staff">Staffed</span>`;
+    if(day.food)badges+=`<span class="badge badge-food">Resupply</span>`;
+    if(day.dry)badges+=`<span class="badge badge-dry">Dry Camp</span>`;
+    if(day.chuck)badges+=`<span class="badge badge-chuck">Chuckwagon</span>`;
+    if(day.conserv)badges+=`<span class="badge badge-conserv">Conservation</span>`;
+
+    // Meals
+    let mealsHtml='';
+    if(day.type==='chq'||day.staffMeals.b||day.staffMeals.l||day.staffMeals.d){
+      mealsHtml+='<div class="menu-block">';
+      if(day.staffMeals.b)mealsHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">☕ Breakfast @ CHQ</div>`;
+      if(day.staffMeals.l)mealsHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">🍽 Lunch @ CHQ</div>`;
+      if(day.staffMeals.d&&!day.chuck)mealsHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">🍽 Dinner @ CHQ</div>`;
+      if(day.chuck)mealsHtml+=`<div style="font-size:0.75rem;color:var(--gold)">🍖 Chuckwagon Dinner</div>`;
+      mealsHtml+='</div>';
+    }
+
+    // Carried meals
+    // Day 1: CHQ only, no carried meals
+    // Day 2: breakfast at CHQ, carries lunch + dinner
+    // Day 12: carries breakfast + lunch on trail, dinner at CHQ
+    const isDay1=day.day===1;
+    const isDay12=day.day===12;
+    const carriesB=day.day>=3&&!day.staffMeals.b||isDay12;
+    const carriesL=!day.staffMeals.l&&!isDay1&&day.day>=2;
+    const carriesBreakfastDay12=false; // handled by carriesB above
+    const carriesD=!day.staffMeals.d&&!day.chuck&&!isDay1&&!isDay12&&day.type!=='chq';
+
+    if(carriesB||carriesL||carriesD){
+      mealsHtml+=`<div class="menu-block" style="margin-top:0.3rem;">`;
+      if((carriesB||carriesBreakfastDay12)&&MENUS.breakfast[mealNum]){
+        mealsHtml+=`<div class="menu-meal">Breakfast #${mealNum}</div>`;
+        mealsHtml+=`<div class="menu-items">${MENUS.breakfast[mealNum].join(', ')}</div>`;
+      }
+      if(carriesL&&MENUS.lunch[mealNum]){
+        mealsHtml+=`<div class="menu-meal" style="margin-top:0.3rem;">Lunch #${mealNum}</div>`;
+        mealsHtml+=`<div class="menu-items">${MENUS.lunch[mealNum].join(', ')}</div>`;
+      }
+      if(carriesD&&MENUS.dinner[mealNum]){
+        mealsHtml+=`<div class="menu-meal" style="margin-top:0.3rem;">Dinner #${mealNum}</div>`;
+        mealsHtml+=`<div class="menu-items"><strong style="color:var(--text);font-weight:600;">${MENUS.dinner[mealNum][0]}</strong>${MENUS.dinner[mealNum].length>1?' · '+MENUS.dinner[mealNum].slice(1).join(', '):''}</div>`;
+      }
+      mealsHtml+=`</div>`;
+    }
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>
+        <div class="itin-day">${day.day}</div>
+        <div class="itin-date">${formatDate(date)}</div>
+      </td>
+      <td>
+        <div class="itin-camp ${day.type==='staffed'?'staffed':''}">${day.camp}</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${day.program}</div>
+        ${day.note?`<div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">${day.note}</div>`:''}
+      </td>
+      <td class="itin-miles">${day.miles>0?day.miles+' mi':''}</td>
+      <td class="itin-elev">
+        ${day.miles>0?`
+          <div class="${net>=0?'net-up':'net-dn'}">Net: ${net>=0?'+':''}${net.toLocaleString()} ft</div>
+          <div>↑ ${day.gain.toLocaleString()} ft</div>
+          <div>↓ ${day.loss.toLocaleString()} ft</div>
+        `:'—'}
+      </td>
+      <td>
+        ${diff?`<div><span class="itin-diff ${diff.cls}">${diff.label}</span></div>${diff.note?`<div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">${diff.note}</div>`:''}`:'' }
+      </td>
+      <td>${badges}</td>
+      <td class="itin-pack ${packClass} hide-sm">${day.miles>0?ozToStr(Math.round(packOz)):''}</td>
+      <td>${mealsHtml}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// IMPORT / EXPORT
+// ═══════════════════════════════════════════════
+
+function saveJSON(){
+  try {
+    const data={profile,gearData,crewGearData,trekConfig,overrideOz};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='philmont-gear-'+(profile.name||'planner')+'.json';
+    a.click();
+  } catch(e) { console.error('saveJSON error:', e); alert('Error saving file. Please try again.'); }
+}
+
+function loadJSON(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data||typeof data!=='object') throw new Error('Invalid file format');
+      if(data.profile)profile=data.profile;
+      if(data.gearData)gearData=data.gearData;
+      if(data.crewGearData)crewGearData=data.crewGearData;
+      if(data.trekConfig){
+        trekConfig=data.trekConfig;
+        // Sync DOM inputs so updateCalc() reads the loaded values instead of overwriting them
+        setVal('trek-days', trekConfig.days||12);
+        setVal('crew-size', trekConfig.crewSize||8);
+        setVal('crew-gear-oz', trekConfig.crewGearOz||373);
+        setVal('body-weight', trekConfig.bodyWeight||175);
+        setVal('staff-days', Array.isArray(trekConfig.staffDays)?trekConfig.staffDays.join(','):'');
+      }
+      if(data.overrideOz!==undefined&&data.overrideOz!==null){
+        overrideOz=data.overrideOz;
+        document.getElementById('override-banner-wrap').style.display='block';
+        document.getElementById('override-oz').value=overrideOz;
+      }
+      renderProfileCard();renderGear();renderCrewGear();initDayGrid();updateCalc();renderItinerary();
+      alert('Gear list loaded successfully.');
+    }catch(e){console.error('loadJSON error:',e);alert('Error loading file. Please check it is a valid Philmont Planner JSON file.');}
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+function loadCSV(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    let imported=0;
+    lines.slice(1).forEach(line=>{
+      const cols=line.split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+      if(cols.length<2)return;
+      const name=cols[0],brand=cols[1]||'',qty=parseInt(cols[2])||1,oz=parseFloat(cols[3])||0,notes=cols[4]||'';
+      if(!name||!oz)return;
+      // Default to utility if no category match
+      const cat='utility';
+      gearData[cat].items.push({name,brand,qty,oz,notes});
+      imported++;
+    });
+    renderGear();updateCalc();
+    alert(`Imported ${imported} items into Utility. You can drag them to other categories.`);
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+
+  // Sheet 1: Gear List
+  const gearRows=[['Category','Item','Brand','Qty','Weight (oz)','Lbs + Oz','Notes']];
+  Object.entries(gearData).forEach(([key,cat])=>{
+    cat.items.forEach(item=>{
+      const lbs=Math.floor(item.oz/16),rem=Math.round((item.oz%16)*10)/10;
+      gearRows.push([cat.label,item.name,item.brand,item.qty,item.oz,`${lbs} lb ${rem} oz`,item.notes||'']);
+    });
+    const subOz=catOz(key);
+    const subLbs=Math.floor(subOz/16),subRem=Math.round((subOz%16)*10)/10;
+    gearRows.push([`${cat.label} SUBTOTAL`,'','','',subOz,`${subLbs} lb ${subRem} oz`,'']);
+    gearRows.push([]);
+  });
+  const totOz=totalOz();
+  const totLbs=Math.floor(totOz/16),totRem=Math.round((totOz%16)*10)/10;
+  gearRows.push(['TOTAL PERSONAL GEAR','','','',totOz,`${totLbs} lb ${totRem} oz`,'']);
+  const ws1=XLSX.utils.aoa_to_sheet(gearRows);
+  XLSX.utils.book_append_sheet(wb,ws1,'Personal Gear');
+
+  // Sheet 2: Pack Weight by Day
+  const pwRows=[['Day','Date','Camp','Miles','Food (oz)','Water (oz)','Crew Share (oz)','Base Gear (oz)','Total (oz)','Total (lbs+oz)','Dry Camp','Resupply']];
+  // Day 0 row if early arrival selected
+  if(profile.day0){
+    const day0Date=new Date(getArrivalDate().getTime()-86400000);
+    const tr0=document.createElement('tr');
+    tr0.innerHTML=`
+      <td>
+        <div class="itin-day" style="color:var(--muted)">0</div>
+        <div class="itin-date">${formatDate(day0Date)}</div>
+      </td>
+      <td>
+        <div class="itin-camp">Camping HQ</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">Early arrival · Optional</div>
+        <div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">Arrive early — lunch & dinner at CHQ</div>
+      </td>
+      <td class="itin-miles">—</td>
+      <td class="itin-elev">—</td>
+      <td>—</td>
+      <td><span class="badge badge-chq">CHQ</span></td>
+      <td class="hide-sm">—</td>
+      <td>
+        <div class="menu-block">
+          <div style="font-size:0.75rem;color:var(--muted2)">🍽 Lunch @ CHQ</div>
+          <div style="font-size:0.75rem;color:var(--muted2)">🍽 Dinner @ CHQ</div>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr0);
+  }
+
+  ITINERARY.forEach(day=>{
+    const date=getDayDate(day.day);
+    const foodOz=getFoodOzForDay(day.day);
+    const waterOz=getWaterOzForDay(day.day);
+    const crewOz=trekConfig.crewGearOz/trekConfig.crewSize;
+    const baseOz=overrideOz!==null?overrideOz:totalOzActive();
+    const packOz=baseOz+crewOz+foodOz+waterOz;
+    const lbs=Math.floor(packOz/16),rem=Math.round((packOz%16)*10)/10;
+    pwRows.push([
+      day.day,formatDate(date),day.camp,day.miles,
+      Math.round(foodOz*10)/10,Math.round(waterOz*10)/10,
+      Math.round(crewOz*10)/10,Math.round(baseOz*10)/10,
+      Math.round(packOz*10)/10,`${lbs} lb ${rem} oz`,
+      day.dry?'Yes':'',trekConfig.resupplyDays.includes(day.day)?'Yes':''
+    ]);
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(pwRows);
+  XLSX.utils.book_append_sheet(wb,ws2,'Pack Weight by Day');
+
+  // Sheet 3: Crew Gear
+  const crewRows=[['Category','Item','Brand','Qty','Unit Weight (oz)','Total Weight (oz)','Source','Notes']];
+  Object.entries(crewGearData).forEach(([key,cat])=>{
+    cat.items.forEach(item=>{
+      crewRows.push([cat.label,item.name,item.brand,item.qty,item.unitOz||item.oz,item.oz,item.source==='philmont'?'Philmont Issued':'Crew Provided',item.notes||'']);
+    });
+    const subOz=crewCatOz(key);
+    crewRows.push([`${cat.label} SUBTOTAL`,'','','','',subOz,'','']);
+    crewRows.push([]);
+  });
+  const crewTot=crewTotalOz();
+  crewRows.push(['TOTAL CREW GEAR','','','','',crewTot,'','']);
+  const ws3=XLSX.utils.aoa_to_sheet(crewRows);
+  XLSX.utils.book_append_sheet(wb,ws3,'Crew Gear');
+
+  XLSX.writeFile(wb,`philmont-gear-${profile.name||'planner'}.xlsx`);
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════
+// THEME (light default · Pine-dark toggle)
+// ═══════════════════════════════════════════════
+const SUN_ICON='<circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.4M12 19.4v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/>';
+const MOON_ICON='<path d="M20.5 13.2A8.3 8.3 0 1 1 10.8 3.5 6.5 6.5 0 0 0 20.5 13.2Z"/>';
+function applyThemeIcon(){
+  const dark=document.documentElement.dataset.theme==='dark';
+  const ic=document.getElementById('theme-icon');
+  if(ic) ic.innerHTML = dark ? SUN_ICON : MOON_ICON; // glyph shows what you'll switch TO
+}
+function rerenderForTheme(){
+  // rebuild everything that reads CSS vars or icon treatment
+  try{renderGear();}catch(e){}
+  try{renderCrewGear();}catch(e){}
+  try{updateCalc();}catch(e){}
+  try{renderItinerary();}catch(e){}
+}
+function toggleTheme(){
+  const root=document.documentElement;
+  if(root.dataset.theme==='dark') root.removeAttribute('data-theme');
+  else root.dataset.theme='dark';
+  try{localStorage.setItem('pc-theme', root.dataset.theme||'light');}catch(e){}
+  applyThemeIcon();
+  rerenderForTheme();
+}
+function initTheme(){
+  let saved=null;
+  try{saved=localStorage.getItem('pc-theme');}catch(e){}
+  if(saved==='dark') document.documentElement.dataset.theme='dark';
+  applyThemeIcon();
+}
+
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='calc'){initDayGrid();updateCalc();}
+  if(name==='itin')renderItinerary();
+  if(name==='crew'){renderCrewGear();}
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+
+// Show profile modal on first load if no name set
+// ═══════════════════════════════════════════════
+// TWEAKS BRIDGE (driven by the React Tweaks panel)
+// ═══════════════════════════════════════════════
+window.PCApply = {
+  navTreatment(v){
+    document.body.dataset.nav = (v==='cream') ? 'cream' : 'pine';
+    const lk=document.querySelector('.nav-logo-lockup');
+    if(lk){
+      if(v==='cream'){ lk.dataset.w='pine'; lk.dataset.b='pine'; lk.dataset.c='scout'; }
+      else { lk.dataset.w='cream'; lk.dataset.b='cream'; lk.dataset.c='scout'; }
+      if(window.PCWordmark)PCWordmark.render();
+    }
+  },
+  gearLayout(v){ document.body.dataset.gearLayout = v||'table'; },
+  iconStyle(v){ GEAR_ICON_TREATMENT = v||'auto'; try{renderGear();}catch(e){} try{renderCrewGear();}catch(e){} },
+  iconGlyph(cat,key){
+    if(cat in CAT_ICON) CAT_ICON[cat]=key;
+    if(cat in CREW_CAT_ICON) CREW_CAT_ICON[cat]=key;
+    try{renderGear();}catch(e){} try{renderCrewGear();}catch(e){}
+  }
+};
+
+window.onload=()=>{
+  try{initTheme();}catch(e){console.error('initTheme error:',e);}
+  try{if(window.PCWordmark)PCWordmark.render();}catch(e){console.error('wordmark error:',e);}
+  try{renderGear();}catch(e){console.error('renderGear error:',e);}
+  try{renderCrewGear();}catch(e){console.error('renderCrewGear error:',e);}
+  try{renderProfileCard();}catch(e){console.error('renderProfileCard error:',e);}
+  try{initDayGrid();}catch(e){console.error('initDayGrid error:',e);}
+  try{updateCalc();}catch(e){console.error('updateCalc error:',e);}
+  try{renderItinerary();}catch(e){console.error('renderItinerary error:',e);}
+  if(!profile.name)openProfileModal();
+};
+</script>
+</body>
+</html>
