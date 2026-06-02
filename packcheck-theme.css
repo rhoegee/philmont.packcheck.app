@@ -462,3 +462,33 @@ input[type=range]{flex:1;accent-color:var(--pc-accent);}
 /* ── UTIL ──────────────────────────────────────────── */
 @media(max-width:860px){.hide-sm{display:none!important;}.two-col{grid-template-columns:1fr;}
   .calc-grid,.wb-grid,.rules-grid{grid-template-columns:1fr;}}
+
+/* ── MOBILE (phones ≤640px) ─────────────────────────── */
+@media(max-width:640px){
+  /* Nav: logo row + tabs row */
+  nav{flex-wrap:wrap;min-height:0;}
+  .nav-logo{padding:0 .75rem;border-right:none;flex:none;}
+  .brand-sub{display:none;}
+  .nav-right{flex:1;justify-content:flex-end;border-left:none;padding:0 .5rem;gap:.5rem;}
+  .nav-actions,.nav-total-label,.nav-total-val{display:none!important;}
+  .nav-profile span{display:none;}
+  .nav-profile{padding:.36rem .4rem;max-width:none;}
+  .nav-tabs{order:3;flex:0 0 100%;border-top:1px solid rgba(244,236,216,.14);
+    -webkit-overflow-scrolling:touch;}
+
+  /* Hero */
+  .hero{padding:1rem 1.25rem;}
+  .hero-title{font-size:2rem;}
+
+  /* Stats: wrap into 2-up grid */
+  .stats-row{flex-wrap:wrap;}
+  .stat-box{flex:1 1 45%;min-width:0;border-bottom:1px solid var(--pc-line);}
+
+  /* Gear table: hide brand + notes columns, let remaining fill width */
+  .gear-table{table-layout:auto;}
+  .gear-table th:nth-child(3),.gear-table td:nth-child(3),
+  .gear-table th:nth-child(6),.gear-table td:nth-child(6){display:none;}
+
+  /* Side panel below gear: visual separator */
+  .side-col{border-top:2px solid var(--pc-accent);padding:1rem;}
+}
