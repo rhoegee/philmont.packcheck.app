@@ -2022,7 +2022,7 @@ window.PCApply = {
 // GOOGLE SHEET CREW GEAR FETCH
 // ═══════════════════════════════════════════════
 
-const DEFAULT_SHEET_ID = '1vjzeKb9pxhhrosyP75Au3aGLpML73-RmJBU_JeFBqd0';
+const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYwPYRlHgM08bg9AOZzWSpXbWhhxCVlHyIu_aMjaqiwVwkwnMNPMmH5m2FTBdDUW-V5MmXn26W-Sf5/pub?gid=114457742&single=true&output=csv';
 
 const CREW_CAT_MAP = {
   'shelter': 'shelter',
@@ -2104,8 +2104,7 @@ function setCrewSyncStatus(text) {
 
 async function fetchCrewSheet() {
   const params = new URLSearchParams(window.location.search);
-  const sheetId = params.get('sheet') || DEFAULT_SHEET_ID;
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+  const url = params.get('sheet') || DEFAULT_SHEET_URL;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
