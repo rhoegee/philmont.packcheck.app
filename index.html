@@ -1975,20 +1975,64 @@ function loadCSV(event){
   if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
+    // Parse CSV respecting quoted fields
+    function parseLine(line){
+      const cols=[];let cur='',inQ=false;
+      for(let i=0;i<line.length;i++){
+        const ch=line[i];
+        if(ch==='"'){inQ=!inQ;}
+        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+        else{cur+=ch;}
+      }
+      cols.push(cur.trim());
+      return cols;
+    }
     const lines=e.target.result.split('\n').filter(l=>l.trim());
-    let imported=0;
+    if(lines.length<2){alert('CSV appears empty.');return;}
+
+    // Build category lookup: label (lowercase) and key → key
+    const catByLabel={};
+    Object.entries(gearData).forEach(([key,cat])=>{
+      catByLabel[cat.label.toLowerCase()]=key;
+      catByLabel[key]=key;
+    });
+
+    // Parse header row to find column indices
+    const headers=parseLine(lines[0]).map(h=>h.toLowerCase().replace(/[^a-z]/g,''));
+    const col=name=>headers.findIndex(h=>h.includes(name));
+    const iCat=col('cat'), iName=col('item')<0?col('name'):col('item');
+    const iBrand=col('brand'), iQty=col('qty'), iOz=col('oz'), iNotes=col('note');
+
+    let imported=0, skipped=0, fallback=0;
     lines.slice(1).forEach(line=>{
-      const cols=line.split(',').map(c=>c.trim().replace(/^"|"$/g,''));
-      if(cols.length<2)return;
-      const name=cols[0],brand=cols[1]||'',qty=parseInt(cols[2])||1,oz=parseFloat(cols[3])||0,notes=cols[4]||'';
-      if(!name||!oz)return;
-      // Default to utility if no category match
-      const cat='utility';
-      gearData[cat].items.push({name,brand,qty,oz,notes});
+      const c=parseLine(line);
+      const name=(iName>=0?c[iName]:c[0]||'').trim();
+      if(!name)return;
+      // Skip subtotal rows
+      if(name.toUpperCase().includes('SUBTOTAL'))return;
+
+      const brand=(iBrand>=0?c[iBrand]:'')||'';
+      const qty=parseInt(iQty>=0?c[iQty]:'1')||1;
+      const oz=parseFloat(iOz>=0?c[iOz]:'0')||0;
+      const notes=(iNotes>=0?c[iNotes]:'')||'';
+      if(!oz){skipped++;return;}
+
+      // Match category
+      let catKey='utility';
+      if(iCat>=0&&c[iCat]){
+        const raw=c[iCat].trim().toLowerCase();
+        catKey=catByLabel[raw]||catByLabel[Object.keys(catByLabel).find(k=>raw.includes(k))||'']||'utility';
+        if(catKey==='utility'&&raw)fallback++;
+      }
+
+      gearData[catKey].items.push({name,brand,qty,oz,notes,included:false});
       imported++;
     });
-    renderGear();updateCalc();
-    alert(`Imported ${imported} items into Utility. You can drag them to other categories.`);
+    saveData();renderGear();updateCalc();
+    let msg=`Imported ${imported} item${imported!==1?'s':''}.`;
+    if(skipped)msg+=` ${skipped} skipped (no weight).`;
+    if(fallback)msg+=` ${fallback} placed in Utility (category not recognized).`;
+    alert(msg);
   };
   reader.readAsText(file);
   event.target.value='';
