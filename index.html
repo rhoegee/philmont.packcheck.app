@@ -11,6 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <link rel="stylesheet" href="packcheck-theme.css">
 <style id="pc-tweak-styles">
 /* ── Header treatment: reversed cream bar ── */
@@ -2686,13 +2687,16 @@ function showSendToPhone(){
   const wrap=document.getElementById('qr-canvas-wrap');
   const errEl=document.getElementById('qr-error');
   wrap.innerHTML='';errEl.style.display='none';
-  // Use Google Charts API — no JS library needed, just an image URL
-  const img=document.createElement('img');
-  img.style.cssText='width:250px;height:250px;border-radius:6px;';
-  img.alt='QR Code';
-  img.onerror=()=>{wrap.innerHTML='';errEl.style.display='block';errEl.textContent='QR generation failed. Copy the link below and open it on your phone.';};
-  img.src='https://chart.googleapis.com/chart?chs=256x256&cht=qr&choe=UTF-8&chld=M|1&chl='+encodeURIComponent(shareUrl);
-  wrap.appendChild(img);
+  // QRious: canvas-based, client-side, error correction L = max data capacity
+  const canvas=document.createElement('canvas');
+  wrap.appendChild(canvas);
+  try{
+    new QRious({element:canvas,value:shareUrl,size:248,level:'L'});
+  }catch(e){
+    wrap.innerHTML='';
+    errEl.style.display='block';
+    errEl.textContent='Data too large for QR ('+shareUrl.length+' chars). Copy the link below and open it on your phone.';
+  }
   document.getElementById('qr-modal').style.display='flex';
 }
 function closeQRModal(){document.getElementById('qr-modal').style.display='none';}
