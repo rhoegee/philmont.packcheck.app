@@ -70,10 +70,10 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;overflow-x:hidden;}
+html{scroll-behavior:smooth;overflow-x:clip;}
 body{
   background-color:var(--pc-bg);color:var(--pc-ink);
-  font-family:var(--font-body);font-weight:400;min-height:100vh;overflow-x:hidden;
+  font-family:var(--font-body);font-weight:400;min-height:100vh;overflow-x:clip;
   -webkit-font-smoothing:antialiased;
 }
 /* subtle paper grain on light grounds */
