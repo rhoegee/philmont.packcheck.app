@@ -1377,14 +1377,17 @@ function renderGear(){
       const isChecked=item.included===true;
       const isCotton=item.warn==='cotton'||/\bcotton\b/i.test(item.name);
       const cottonFlag=isCotton?`<span class="cotton-warn">cotton</span>`:'';
-      return `<tr class="data-row ${isChecked?'':'unchecked'}" ondblclick="startEdit('${key}',${idx})">
-        <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" ${isChecked?'checked':''} onchange="toggleItem('${key}',${idx},this.checked)"></td>
+      return `<tr class="data-row ${isChecked?'':'unchecked'}" ondblclick="startEdit('${key}',${idx})" data-key="${key}" data-idx="${idx}">
+        <td style="width:24px;text-align:center;padding:0.45rem 2px;">
+          <input type="checkbox" class="item-check" ${isChecked?'checked':''} onchange="toggleItem('${key}',${idx},this.checked)" onclick="event.stopPropagation()">
+        </td>
         <td class="td-name">${item.name}${cottonFlag}</td>
         <td class="td-brand">${item.brand}</td>
         <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
         <td class="td-weight">${ozToStr(item.oz)}</td>
         <td class="td-notes" ${item.notes?`title="${item.notes}"`:''}>${item.notes||''}</td>
         <td class="td-actions">
+          <input type="checkbox" class="sel-check" title="Select for batch delete" onchange="updateBatchBar()" onclick="event.stopPropagation()">
           <button class="action-btn del" onclick="removeItem('${key}',${idx})" title="Delete">✕</button>
         </td>
       </tr>`;
@@ -2028,7 +2031,7 @@ function loadCSV(event){
       gearData[catKey].items.push({name,brand,qty,oz,notes,included:false});
       imported++;
     });
-    saveData();renderGear();updateCalc();
+    saveLocal();renderGear();updateCalc();
     let msg=`Imported ${imported} item${imported!==1?'s':''}.`;
     if(skipped)msg+=` ${skipped} skipped (no weight).`;
     if(fallback)msg+=` ${fallback} placed in Utility (category not recognized).`;
@@ -2513,6 +2516,48 @@ window.onload=()=>{
   if(!hasSaved) fetchPersonalDefaults();
   window.addEventListener('beforeunload', saveLocal);
 };
+
+function updateBatchBar(){
+  const sel=document.querySelectorAll('#gear-sections .sel-check:checked');
+  const bar=document.getElementById('batch-bar');
+  if(!bar)return;
+  if(sel.length===0){bar.classList.add('hidden');return;}
+  bar.classList.remove('hidden');
+  document.getElementById('batch-count').textContent=sel.length+' item'+(sel.length!==1?'s':'')+' selected';
+}
+
+function batchDelete(){
+  const sel=[...document.querySelectorAll('#gear-sections .sel-check:checked')];
+  if(!sel.length)return;
+  if(!confirm(`Delete ${sel.length} selected item${sel.length!==1?'s':''}?`))return;
+  // Collect {key,idx} pairs, sort descending so splice doesn't shift indices
+  const pairs=sel.map(cb=>{
+    const row=cb.closest('tr');
+    return{key:row.dataset.key,idx:parseInt(row.dataset.idx)};
+  }).sort((a,b)=>b.idx-a.idx);
+  pairs.forEach(({key,idx})=>gearData[key].items.splice(idx,1));
+  saveLocal();renderGear();updateCalc();
+  document.getElementById('batch-bar').classList.add('hidden');
+}
+
+function clearBatchSelection(){
+  document.querySelectorAll('#gear-sections .sel-check:checked').forEach(cb=>cb.checked=false);
+  updateBatchBar();
+}
 </script>
+
+<div id="batch-bar" class="hidden" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  background:var(--pc-anchor);color:#f4ecd8;border-radius:8px;padding:0.65rem 1.2rem;
+  display:flex;align-items:center;gap:1rem;box-shadow:0 4px 20px rgba(0,0,0,.35);z-index:500;">
+  <span id="batch-count" style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;"></span>
+  <button onclick="batchDelete()" style="background:var(--pc-accent);color:#fff;border:none;border-radius:5px;
+    padding:0.35rem 0.85rem;font-family:var(--font-body);font-size:0.82rem;font-weight:600;cursor:pointer;">
+    Delete Selected
+  </button>
+  <button onclick="clearBatchSelection()" style="background:transparent;color:#f4ecd8;border:1px solid rgba(244,236,216,.4);
+    border-radius:5px;padding:0.35rem 0.7rem;font-family:var(--font-body);font-size:0.82rem;cursor:pointer;">
+    Cancel
+  </button>
+</div>
 </body>
 </html>
