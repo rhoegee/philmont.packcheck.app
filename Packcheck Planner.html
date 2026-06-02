@@ -264,6 +264,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     <div class="hero-eyebrow">Shared Equipment · Split Among Crew</div>
     <div class="hero-title">Crew <span>Gear</span></div>
     <div class="hero-sub">Philmont-issued and crew-provided shared equipment. Weight split per person feeds into the Pack Weight calculator.</div>
+    <div id="crew-sync-status" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.5rem;"></div>
   </div>
 
   <div class="stats-row">
@@ -2017,6 +2018,112 @@ window.PCApply = {
   }
 };
 
+// ═══════════════════════════════════════════════
+// GOOGLE SHEET CREW GEAR FETCH
+// ═══════════════════════════════════════════════
+
+const DEFAULT_SHEET_ID = '1vjzeKb9pxhhrosyP75Au3aGLpML73-RmJBU_JeFBqd0';
+
+const CREW_CAT_MAP = {
+  'shelter': 'shelter',
+  'cook system': 'cook',
+  'bear system': 'bear',
+  'safety & navigation': 'safety',
+  'safety and navigation': 'safety',
+  'sanitation': 'sanitation',
+  'repair kit': 'repair',
+  'shared consumables': 'consumables',
+  'water system': 'water',
+  'misc': 'misc',
+};
+
+function parseCrewCSV(csv) {
+  const lines = csv.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return null;
+
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
+  const colIdx = name => headers.indexOf(name);
+  const iCat = colIdx('category');
+  const iItem = colIdx('item');
+  const iBrand = colIdx('brand');
+  const iQty = colIdx('qty');
+  const iUnitOz = headers.findIndex(h => h.includes('unit weight'));
+  const iTotalOz = headers.findIndex(h => h.includes('total weight'));
+  const iSource = colIdx('source');
+  const iNotes = colIdx('notes');
+
+  if (iCat < 0 || iItem < 0) return null;
+
+  // Build fresh category structure preserving labels/colors from existing crewGearData
+  const fresh = {};
+  Object.entries(crewGearData).forEach(([k, v]) => {
+    fresh[k] = { label: v.label, color: v.color, items: [] };
+  });
+
+  for (let r = 1; r < lines.length; r++) {
+    // Respect quoted commas in CSV
+    const cols = [];
+    let cur = '', inQ = false;
+    for (const ch of lines[r]) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+
+    const get = i => (i >= 0 && i < cols.length ? cols[i].replace(/^"|"$/g, '').trim() : '');
+    const catRaw = get(iCat).toLowerCase();
+    const catKey = CREW_CAT_MAP[catRaw];
+    if (!catKey || !fresh[catKey]) continue;
+
+    const name = get(iItem);
+    if (!name) continue;
+
+    const qty = parseFloat(get(iQty)) || 1;
+    const unitOz = parseFloat(get(iUnitOz)) || 0;
+    const totalOzRaw = parseFloat(get(iTotalOz));
+    const oz = !isNaN(totalOzRaw) ? totalOzRaw : unitOz * qty;
+    const sourceRaw = get(iSource).toUpperCase();
+    const source = sourceRaw === 'PHI' ? 'philmont' : 'crew';
+
+    fresh[catKey].items.push({
+      name, brand: get(iBrand), qty, unitOz, oz,
+      notes: get(iNotes), source, included: true,
+    });
+  }
+
+  // Reject if every category is empty (parse likely failed)
+  const total = Object.values(fresh).reduce((s, c) => s + c.items.length, 0);
+  return total > 0 ? fresh : null;
+}
+
+function setCrewSyncStatus(text) {
+  const el = document.getElementById('crew-sync-status');
+  if (el) el.textContent = text;
+}
+
+async function fetchCrewSheet() {
+  const params = new URLSearchParams(window.location.search);
+  const sheetId = params.get('sheet') || DEFAULT_SHEET_ID;
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const csv = await res.text();
+    const parsed = parseCrewCSV(csv);
+    if (!parsed) throw new Error('parse failed');
+    crewGearData = parsed;
+    const now = new Date();
+    const stamp = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    setCrewSyncStatus(`Crew gear synced ${stamp}`);
+    try { renderCrewGear(); } catch(e) {}
+    try { updateCalc(); } catch(e) {}
+  } catch(e) {
+    // Silent fallback — hardcoded crewGearData remains in place
+    console.warn('Crew sheet fetch failed, using fallback data:', e.message);
+  }
+}
+
 window.onload=()=>{
   try{initTheme();}catch(e){console.error('initTheme error:',e);}
   try{if(window.PCWordmark)PCWordmark.render();}catch(e){console.error('wordmark error:',e);}
@@ -2027,6 +2134,7 @@ window.onload=()=>{
   try{updateCalc();}catch(e){console.error('updateCalc error:',e);}
   try{renderItinerary();}catch(e){console.error('renderItinerary error:',e);}
   if(!profile.name)openProfileModal();
+  fetchCrewSheet();
 };
 </script>
 </body>
