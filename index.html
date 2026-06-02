@@ -345,13 +345,6 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     </div>
   </div>
 
-  <div class="profile-card" id="profile-card" style="display:none;">
-    <div class="profile-info" id="profile-display">
-      <div class="profile-name empty">Click Edit to set up your profile</div>
-    </div>
-    <button class="profile-edit-btn" onclick="openProfileModal()">Edit</button>
-  </div>
-
   <div class="hero">
     <div class="hero-eyebrow">Philmont Scout Ranch · 2026 Guidebook to Adventure</div>
     <div class="hero-title">Personal <span>Gear</span></div>
@@ -1059,33 +1052,15 @@ function saveProfile(){
 }
 
 function renderProfileCard(){
-  const el=document.getElementById('profile-display');
-  const card=document.getElementById('profile-card');
   const navName=document.getElementById('nav-profile-name');
   const navBtn=document.getElementById('nav-profile');
   if(!profile.name){
-    if(card)card.style.display='none';
     if(navName)navName.textContent='Set Up Profile';
     if(navBtn)navBtn.classList.add('empty');
     return;
   }
-  if(card)card.style.display='';
   if(navName)navName.textContent=profile.name;
   if(navBtn)navBtn.classList.remove('empty');
-  const arrDate=getArrivalDate();
-  const displayStart=profile.day0?new Date(arrDate.getTime()-86400000):arrDate;
-  const departDate=new Date(arrDate.getTime()+12*86400000);
-  const daysUntil=Math.ceil((arrDate-new Date())/86400000);
-  el.innerHTML=`
-    <div class="profile-name">${profile.name}</div>
-    <div class="profile-meta">
-      ${profile.crewNumber?`<div class="profile-meta-item">Crew <span>${profile.crewNumber}</span></div>`:''}
-      ${profile.itinNumber?`<div class="profile-meta-item">Itinerary <span>${profile.itinNumber}</span></div>`:''}
-      ${profile.troop?`<div class="profile-meta-item">${profile.troop}</div>`:''}
-      ${profile.council?`<div class="profile-meta-item">${profile.council}</div>`:''}
-      <div class="profile-meta-item">${profile.day0?'Day 0 arrival':'Arrives'} <span>${formatDate(displayStart)}</span> · Departs <span>${formatDate(departDate)}</span></div>
-      ${daysUntil>0?`<div class="profile-meta-item"><span>${daysUntil}</span> days to go</div>`:''}
-    </div>`;
 }
 
 // ═══════════════════════════════════════════════

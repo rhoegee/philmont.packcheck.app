@@ -182,7 +182,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .profile-edit-btn:hover{border-color:var(--pc-accent);color:var(--pc-accent);}
 
 /* ── HERO ──────────────────────────────────────────── */
-.hero{padding:1.4rem 2rem 1.2rem;border-bottom:1px solid var(--pc-line);}
+.hero{padding:1.4rem 2rem 1.2rem;border-bottom:1px solid var(--pc-line);border-left:6px solid var(--pc-accent);}
 .hero-eyebrow{font-family:var(--font-mono);font-size:.66rem;color:var(--pc-accent);
   text-transform:uppercase;letter-spacing:.16em;margin-bottom:.55rem;font-weight:500;}
 .hero-title{font-family:var(--font-disp);font-weight:700;font-size:3.5rem;letter-spacing:.01em;
