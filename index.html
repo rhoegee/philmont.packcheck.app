@@ -316,8 +316,8 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="theme-icon"></svg>
     </button>
     <div class="nav-actions">
-      <button class="nav-btn primary" onclick="saveJSON()" title="Save gear list as JSON">Save</button>
-      <button class="nav-btn" onclick="document.getElementById('json-load').click()" title="Load JSON">Load</button>
+      <button class="nav-btn primary" onclick="saveJSON()" title="Save gear list to file">Save</button>
+      <button class="nav-btn" onclick="document.getElementById('json-load').click()" title="Load a previously saved file">Load</button>
       <input type="file" id="json-load" accept=".json" style="display:none" onchange="loadJSON(event)">
       <button class="nav-btn" onclick="document.getElementById('csv-load').click()" title="Import CSV">CSV</button>
       <input type="file" id="csv-load" accept=".csv" style="display:none" onchange="loadCSV(event)">
