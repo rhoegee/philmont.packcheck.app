@@ -2018,6 +2018,9 @@ function loadCSV(event){
     console.log('[CSV import] col map — cat:',iCat,'name:',iName,'brand:',iBrand,'qty:',iQty,'oz:',iOz,'notes:',iNotes);
 
     if(iName<0){alert('Could not find an Item or Name column in this CSV.\nHeaders found: '+rawHeaders.join(', '));return;}
+
+    const replace=confirm('Replace all existing gear with this import?\n\nOK = replace everything\nCancel = add to existing items');
+    if(replace) Object.values(gearData).forEach(cat=>cat.items=[]);
     if(iOz<0){alert('Could not find a Weight column in this CSV.\nHeaders found: '+rawHeaders.join(', '));return;}
 
     let imported=0, skipped=0, fallback=0;
