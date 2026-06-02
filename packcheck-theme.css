@@ -233,7 +233,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 
 /* ── GEAR TABLE ────────────────────────────────────── */
 /* border-collapse:separate required for position:sticky to work on td/th */
-.gear-table{width:100%;min-width:480px;border-collapse:separate;border-spacing:0;table-layout:fixed;}
+.gear-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;}
 .gear-table th{font-family:var(--font-mono);font-size:.56rem;text-transform:uppercase;letter-spacing:.09em;
   color:var(--pc-ink-faint);padding:.5rem .85rem;text-align:left;border-bottom:1px solid var(--pc-line);
   background:var(--pc-bg);font-weight:500;}
@@ -242,14 +242,6 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .gear-table tr.data-row{cursor:pointer;touch-action:manipulation;}
 .gear-table tr.data-row:hover td{background:var(--pc-surface-raised);}
 .gear-table tr.edit-row td{background:var(--pc-bg);padding:.35rem .5rem;}
-/* Sticky first and last columns so checkbox and ✕ are always visible */
-.gear-table td:first-child,.gear-table th:first-child{position:sticky;left:0;z-index:2;background:var(--pc-surface);}
-.gear-table td:last-child,.gear-table th:last-child{position:sticky;right:0;z-index:2;background:var(--pc-surface);}
-.gear-table th:first-child,.gear-table th:last-child{background:var(--pc-bg);}
-.gear-table tr.data-row:hover td:first-child,
-.gear-table tr.data-row:hover td:last-child{background:var(--pc-surface-raised);}
-.gear-table tr.unchecked td:first-child,
-.gear-table tr.unchecked td:last-child{background:var(--pc-surface);}
 .td-name{color:var(--pc-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400;}
 .td-brand{font-family:var(--font-mono);font-size:.62rem;color:var(--pc-ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .td-qty{font-family:var(--font-mono);font-size:.64rem;color:var(--pc-ink-soft);text-align:center!important;}
