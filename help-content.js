@@ -109,12 +109,12 @@ const HELP_CONTENT = [
         a: "Crew gear is equipment shared across the whole crew — tents, crew cook sets, bear bags, etc. Packcheck divides the weight equally per person so you can see your true share."
       },
       {
-        q: "Can I edit the crew gear?",
-        a: "Yes. Go to the Crew Gear tab and edit items the same way as personal gear."
-      },
-      {
         q: "Hey wait a second, my crew gear changed. I didn't touch anything.",
         a: "That's right. Your Lead Advisor has the ability to update the crew gear list for everyone on the trek. It updates automatically every time you refresh the app."
+      },
+      {
+        q: "Can I edit the crew gear?",
+        a: "Yes, but if the Lead Advisor makes an update it will override your changes. You should consider the crew gear list \"locked\"."
       }
     ]
   },
