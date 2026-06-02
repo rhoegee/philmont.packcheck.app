@@ -289,7 +289,8 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 
 /* ── BATCH SELECT ─────────────────────────────────── */
 .sel-check{width:14px;height:14px;margin-right:4px;vertical-align:middle;cursor:pointer;accent-color:var(--pc-accent);}
-#batch-bar.hidden{display:none!important;}
+#batch-bar{display:flex;}
+#batch-bar.hidden{display:none;}
 
 /* ── ADD ROW ───────────────────────────────────────── */
 .add-row{display:flex;gap:.45rem;padding:.65rem .85rem;background:var(--pc-bg);border-top:1px solid var(--pc-line);}
