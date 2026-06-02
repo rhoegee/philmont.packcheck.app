@@ -1217,7 +1217,7 @@ function renderCrewGear(){
         <td class="td-brand">${item.brand}</td>
         <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
         <td class="td-weight">${ozToStr(item.oz)}</td>
-        <td class="td-notes">${item.notes||''}</td>
+        <td class="td-notes" ${item.notes?`title="${item.notes}"`:''}>${item.notes||''}</td>
         <td class="td-actions">
           <button class="action-btn del" onclick="removeCrewItem('${key}',${idx})" title="Delete">✕</button>
         </td>
@@ -1383,7 +1383,7 @@ function renderGear(){
         <td class="td-brand">${item.brand}</td>
         <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
         <td class="td-weight">${ozToStr(item.oz)}</td>
-        <td class="td-notes">${item.notes||''}</td>
+        <td class="td-notes" ${item.notes?`title="${item.notes}"`:''}>${item.notes||''}</td>
         <td class="td-actions">
           <button class="action-btn del" onclick="removeItem('${key}',${idx})" title="Delete">✕</button>
         </td>
