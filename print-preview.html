@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Layout Options — Packcheck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#2e2e2c;font-family:'Lora',serif;padding:2rem;}
+  h1{color:#f4ecd8;font-family:'Oswald',sans-serif;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;}
+  .chooser-label{color:#9a8a72;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;margin-bottom:2rem;}
+  .options{display:flex;gap:2.5rem;align-items:flex-start;flex-wrap:wrap;}
+  .option-wrap{flex:1;min-width:280px;max-width:380px;}
+  .option-label{color:#f4ecd8;font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem;}
+  .option-desc{color:#9a8a72;font-family:'JetBrains Mono',monospace;font-size:.62rem;margin-bottom:.9rem;line-height:1.5;}
+
+  /* Page mockup — scaled letter page */
+  .page{
+    background:#fff;
+    width:100%;
+    aspect-ratio:8.5/11;
+    padding:0.7rem 0.75rem;
+    font-size:5.5px;
+    overflow:hidden;
+    border-radius:3px;
+    box-shadow:0 8px 32px rgba(0,0,0,.5);
+    position:relative;
+  }
+
+  /* ── SHARED HEADER ── */
+  .ph{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:.5em;border-bottom:1.5px solid #2e4a39;margin-bottom:.5em;}
+  .ph-logo{display:flex;flex-direction:column;gap:.15em;}
+  .ph-wordmark{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.5em;letter-spacing:.04em;color:#2e4a39;text-transform:uppercase;}
+  .ph-wordmark span{color:#c5172b;}
+  .ph-tagline{font-family:'JetBrains Mono',monospace;font-size:.8em;color:#7a6a52;letter-spacing:.06em;text-transform:uppercase;}
+  .ph-right{text-align:right;}
+  .ph-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:1.1em;color:#1c1c1a;text-transform:uppercase;letter-spacing:.04em;}
+  .ph-meta{font-family:'JetBrains Mono',monospace;font-size:.75em;color:#7a6a52;margin-top:.1em;line-height:1.5;}
+  .ph-trek{font-family:'JetBrains Mono',monospace;font-size:.7em;color:#2e4a39;font-weight:600;margin-top:.15em;}
+
+  /* ── OPTION A — Single column ── */
+  .oa-cat{margin-bottom:.45em;}
+  .oa-cat-hd{background:#2e4a39;color:#f4ecd8;font-family:'Oswald',sans-serif;font-weight:600;font-size:.9em;letter-spacing:.08em;text-transform:uppercase;padding:.22em .4em;display:flex;justify-content:space-between;}
+  .oa-cat-hd span{font-size:.75em;opacity:.75;}
+  .oa-row{display:flex;align-items:center;padding:.18em .3em;border-bottom:1px solid #e8e0d0;gap:.35em;}
+  .oa-row:last-child{border-bottom:none;}
+  .oa-cb{width:.9em;height:.9em;border:1px solid #aaa;flex-shrink:0;}
+  .oa-name{flex:3;font-size:.85em;color:#1c1c1a;}
+  .oa-brand{flex:1.5;font-family:'JetBrains Mono',monospace;font-size:.7em;color:#7a6a52;}
+  .oa-wt{flex:1;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.75em;color:#2e4a39;font-weight:600;}
+  .oa-note{flex:2;font-family:'JetBrains Mono',monospace;font-size:.65em;color:#9a8a72;font-style:italic;}
+
+  /* ── OPTION B — Two column ── */
+  .ob-cols{display:grid;grid-template-columns:1fr 1fr;gap:.4em;}
+  .ob-cat{margin-bottom:.3em;}
+  .ob-cat-hd{font-family:'Oswald',sans-serif;font-weight:700;font-size:.85em;letter-spacing:.07em;text-transform:uppercase;color:#fff;padding:.2em .35em;margin-bottom:.1em;}
+  .ob-row{display:flex;align-items:center;padding:.12em .25em;border-bottom:1px solid #e8e0d0;gap:.25em;}
+  .ob-cb{width:.8em;height:.8em;border:1px solid #aaa;flex-shrink:0;}
+  .ob-name{flex:1;font-size:.78em;color:#1c1c1a;}
+  .ob-wt{font-family:'JetBrains Mono',monospace;font-size:.68em;color:#555;white-space:nowrap;}
+
+  /* ── OPTION C — Cards ── */
+  .oc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.35em;}
+  .oc-card{border-radius:2px;overflow:hidden;border:1px solid #e0d8cc;}
+  .oc-card-hd{display:flex;justify-content:space-between;align-items:center;padding:.25em .4em;}
+  .oc-cat-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:.9em;letter-spacing:.06em;text-transform:uppercase;color:#fff;}
+  .oc-cat-wt{font-family:'JetBrains Mono',monospace;font-size:.7em;color:rgba(255,255,255,.8);}
+  .oc-row{display:flex;align-items:center;padding:.16em .35em;border-bottom:1px solid #ece5d8;gap:.3em;}
+  .oc-row:last-child{border-bottom:none;}
+  .oc-cb{width:.85em;height:.85em;border:1px solid #bbb;flex-shrink:0;border-radius:1px;}
+  .oc-name{flex:1;font-size:.78em;color:#1c1c1a;}
+  .oc-wt{font-family:'JetBrains Mono',monospace;font-size:.68em;color:#555;white-space:nowrap;}
+  .oc-brand{font-family:'JetBrains Mono',monospace;font-size:.62em;color:#9a8a72;}
+
+  /* summary bar */
+  .summary{display:flex;gap:1em;margin-top:.5em;padding:.35em .5em;background:#f5f0e8;border-top:1.5px solid #2e4a39;}
+  .sum-item{text-align:center;}
+  .sum-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.1em;color:#2e4a39;}
+  .sum-lbl{font-family:'JetBrains Mono',monospace;font-size:.65em;color:#7a6a52;text-transform:uppercase;letter-spacing:.05em;}
+
+  .footer-rule{border:none;border-top:1px solid #ddd;margin:.4em 0 .25em;}
+  .footer-txt{font-family:'JetBrains Mono',monospace;font-size:.65em;color:#aaa;text-align:center;}
+</style>
+</head>
+<body>
+
+<h1>Packcheck — Print Layout Options</h1>
+<p class="chooser-label">Three layout mockups using your actual brand colors and fonts. Pick your favorite.</p>
+
+<div class="options">
+
+  <!-- ══════════════════════════════════════════
+       OPTION A — Single column
+  ══════════════════════════════════════════ -->
+  <div class="option-wrap">
+    <div class="option-label">Option A — Single Column</div>
+    <div class="option-desc">Full-width category headers · Item rows with checkbox, name, brand, weight, notes · Easy to scan on trail</div>
+    <div class="page">
+
+      <!-- Header -->
+      <div class="ph">
+        <div class="ph-logo">
+          <div class="ph-wordmark">PACK<span>CHECK</span></div>
+          <div class="ph-tagline">Philmont Edition · 2026</div>
+        </div>
+        <div class="ph-right">
+          <div class="ph-name">Alex Martinez</div>
+          <div class="ph-meta">Crew 616-E · Verdugo Hills Council<br>Itinerary 12-10 · Jun 16–27, 2026</div>
+          <div class="ph-trek">Base: 18 lb 4 oz · Target: 20–25 lb ✓</div>
+        </div>
+      </div>
+
+      <!-- Bags -->
+      <div class="oa-cat">
+        <div class="oa-cat-hd">Bags <span>86 oz</span></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Backpack (65-75L recommended)</div><div class="oa-brand">Gregory</div><div class="oa-wt">86 oz</div><div class="oa-note">Baltoro 75</div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Daypack (summit days)</div><div class="oa-brand">REI</div><div class="oa-wt">14 oz</div><div class="oa-note">Flash 22L</div></div>
+      </div>
+
+      <!-- Sleep -->
+      <div class="oa-cat">
+        <div class="oa-cat-hd">Sleep System <span>30 oz</span></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Sleep Quilt 30°</div><div class="oa-brand">Outdoor Vitals</div><div class="oa-wt">23 oz</div><div class="oa-note"></div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Sleeping Pad</div><div class="oa-brand"></div><div class="oa-wt">4 oz</div><div class="oa-note">Closed cell foam</div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Camp Pillow</div><div class="oa-brand">Nemo</div><div class="oa-wt">2 oz</div><div class="oa-note"></div></div>
+      </div>
+
+      <!-- Equipment -->
+      <div class="oa-cat">
+        <div class="oa-cat-hd">Equipment <span>30 oz</span></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Tent w/ Ground Cloth</div><div class="oa-brand">Durston</div><div class="oa-wt">27 oz</div><div class="oa-note">X-Mid 1</div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Trekking Poles</div><div class="oa-brand">Cascade</div><div class="oa-wt">1 oz</div><div class="oa-note"></div></div>
+      </div>
+
+      <!-- Clothing (truncated) -->
+      <div class="oa-cat">
+        <div class="oa-cat-hd">Clothing <span>106 oz</span></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Camp Shoes</div><div class="oa-brand">Keene</div><div class="oa-wt">24 oz</div><div class="oa-note"></div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Down Puffer</div><div class="oa-brand"></div><div class="oa-wt">12 oz</div><div class="oa-note"></div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Fleece Jacket</div><div class="oa-brand">REI</div><div class="oa-wt">12 oz</div><div class="oa-note">Mid layer</div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Convertible Pants</div><div class="oa-brand">Columbia</div><div class="oa-wt">10 oz</div><div class="oa-note">Required conservation</div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Hiking Socks ×3</div><div class="oa-brand">Smartwool</div><div class="oa-wt">8 oz</div><div class="oa-note"></div></div>
+      </div>
+
+      <!-- Rain -->
+      <div class="oa-cat">
+        <div class="oa-cat-hd">Rain Gear <span>22 oz</span></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Rain Jacket</div><div class="oa-brand">North Face</div><div class="oa-wt">11 oz</div><div class="oa-note">Keep accessible</div></div>
+        <div class="oa-row"><div class="oa-cb"></div><div class="oa-name">Rain Pants</div><div class="oa-brand">REI</div><div class="oa-wt">10 oz</div><div class="oa-note"></div></div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary">
+        <div class="sum-item"><div class="sum-val">18.4</div><div class="sum-lbl">lbs base</div></div>
+        <div class="sum-item"><div class="sum-val">294</div><div class="sum-lbl">oz total</div></div>
+        <div class="sum-item"><div class="sum-val">26</div><div class="sum-lbl">items</div></div>
+        <div class="sum-item" style="margin-left:auto;text-align:right;"><div class="sum-val" style="color:#c5172b;">Crew 616-E</div><div class="sum-lbl">Jun 16 · 12 days</div></div>
+      </div>
+
+      <hr class="footer-rule">
+      <div class="footer-txt">packcheck.app · Philmont Scout Ranch 2026</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       OPTION B — Two column compact
+  ══════════════════════════════════════════ -->
+  <div class="option-wrap">
+    <div class="option-label">Option B — Two Column</div>
+    <div class="option-desc">Categories flow two-up · More fits per page · Compact packing-slip feel</div>
+    <div class="page">
+
+      <!-- Header -->
+      <div class="ph">
+        <div class="ph-logo">
+          <div class="ph-wordmark">PACK<span>CHECK</span></div>
+          <div class="ph-tagline">Philmont Edition · 2026</div>
+        </div>
+        <div class="ph-right">
+          <div class="ph-name">Alex Martinez</div>
+          <div class="ph-meta">Crew 616-E · Itinerary 12-10<br>Jun 16–27, 2026 · Base 18 lb 4 oz</div>
+        </div>
+      </div>
+
+      <div class="ob-cols">
+
+        <div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#5a4a2e;">Bags</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Backpack 75L</div><div class="ob-wt">86 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Daypack 22L</div><div class="ob-wt">14 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#2e4a39;">Sleep System</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Quilt 30°</div><div class="ob-wt">23 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Sleeping Pad</div><div class="ob-wt">4 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Camp Pillow</div><div class="ob-wt">2 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#3a4a2e;">Equipment</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Tent w/ Ground Cloth</div><div class="ob-wt">27 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Trekking Poles</div><div class="ob-wt">1 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#2e3a4a;">Rain Gear</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Rain Jacket</div><div class="ob-wt">11 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Rain Pants</div><div class="ob-wt">10 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#4a2e3a;">Personal Care</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Hygiene Kit</div><div class="ob-wt">10 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Microfiber Towel</div><div class="ob-wt">6 oz</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#2e4a4a;">Clothing</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Camp Shoes</div><div class="ob-wt">24 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Down Puffer</div><div class="ob-wt">12 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Fleece Jacket</div><div class="ob-wt">12 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Convertible Pants</div><div class="ob-wt">10 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Hiking Socks ×3</div><div class="ob-wt">8 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Underwear ×3</div><div class="ob-wt">8 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">LS Shirt w/ Hood</div><div class="ob-wt">5 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Thermal Base Top</div><div class="ob-wt">6 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Thermal Base Bottom</div><div class="ob-wt">5 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#4a3a2e;">Food System</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Insulated Mug</div><div class="ob-wt">3 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Snap Fold Bowl</div><div class="ob-wt">1 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Titanium Spoon</div><div class="ob-wt">0.5 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#2a4a3a;">Water System</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">HydraPak 4L Bladder</div><div class="ob-wt">4 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">HydraPak 3L Bladder</div><div class="ob-wt">3 oz</div></div>
+          </div>
+          <div class="ob-cat">
+            <div class="ob-cat-hd" style="background:#3a3a4a;">Utility</div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Umbrella</div><div class="ob-wt">8 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Battery Pack</div><div class="ob-wt">4 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Garmin inReach</div><div class="ob-wt">4 oz</div></div>
+            <div class="ob-row"><div class="ob-cb"></div><div class="ob-name">Headlamp</div><div class="ob-wt">2 oz</div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="summary" style="margin-top:.3em;">
+        <div class="sum-item"><div class="sum-val">18.4</div><div class="sum-lbl">lbs base</div></div>
+        <div class="sum-item"><div class="sum-val">294</div><div class="sum-lbl">oz total</div></div>
+        <div class="sum-item"><div class="sum-val">26</div><div class="sum-lbl">items</div></div>
+        <div class="sum-item" style="margin-left:auto;text-align:right;"><div class="sum-val" style="color:#c5172b;">Crew 616-E</div><div class="sum-lbl">Jun 16 · 12 days</div></div>
+      </div>
+      <hr class="footer-rule">
+      <div class="footer-txt">packcheck.app · Philmont Scout Ranch 2026</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       OPTION C — Category cards
+  ══════════════════════════════════════════ -->
+  <div class="option-wrap">
+    <div class="option-label">Option C — Category Cards</div>
+    <div class="option-desc">Each category in a bordered card with colored header · Closest to the app's visual language</div>
+    <div class="page">
+
+      <!-- Header -->
+      <div class="ph">
+        <div class="ph-logo">
+          <div class="ph-wordmark">PACK<span>CHECK</span></div>
+          <div class="ph-tagline">Philmont Edition · 2026</div>
+        </div>
+        <div class="ph-right">
+          <div class="ph-name">Alex Martinez</div>
+          <div class="ph-meta">Crew 616-E · Itinerary 12-10<br>Jun 16–27, 2026</div>
+          <div class="ph-trek">18 lb 4 oz · 26 items</div>
+        </div>
+      </div>
+
+      <div class="oc-grid">
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#5a4a2e;">
+            <span class="oc-cat-name">Bags</span><span class="oc-cat-wt">100 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Backpack 75L<br><span class="oc-brand">Gregory</span></div><div class="oc-wt">86 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Daypack 22L<br><span class="oc-brand">REI</span></div><div class="oc-wt">14 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#2e4a39;">
+            <span class="oc-cat-name">Sleep System</span><span class="oc-cat-wt">30 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Quilt 30°<br><span class="oc-brand">Outdoor Vitals</span></div><div class="oc-wt">23 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Sleeping Pad<br><span class="oc-brand">—</span></div><div class="oc-wt">4 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Camp Pillow<br><span class="oc-brand">Nemo</span></div><div class="oc-wt">2 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#3a4a2e;">
+            <span class="oc-cat-name">Equipment</span><span class="oc-cat-wt">30 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Tent w/ Ground Cloth<br><span class="oc-brand">Durston X-Mid 1</span></div><div class="oc-wt">27 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Trekking Poles<br><span class="oc-brand">Cascade</span></div><div class="oc-wt">1 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#2e3a4a;">
+            <span class="oc-cat-name">Rain Gear</span><span class="oc-cat-wt">22 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Rain Jacket<br><span class="oc-brand">North Face</span></div><div class="oc-wt">11 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Rain Pants<br><span class="oc-brand">REI</span></div><div class="oc-wt">10 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#4a3a2e;">
+            <span class="oc-cat-name">Clothing</span><span class="oc-cat-wt">106 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Camp Shoes<br><span class="oc-brand">Keene</span></div><div class="oc-wt">24 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Down Puffer<br><span class="oc-brand">—</span></div><div class="oc-wt">12 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Fleece Jacket<br><span class="oc-brand">REI</span></div><div class="oc-wt">12 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Convertible Pants<br><span class="oc-brand">Columbia</span></div><div class="oc-wt">10 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Hiking Socks ×3<br><span class="oc-brand">Smartwool</span></div><div class="oc-wt">8 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#4a2e3a;">
+            <span class="oc-cat-name">Personal Care</span><span class="oc-cat-wt">18 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Hygiene Kit<br><span class="oc-brand">Bear bag</span></div><div class="oc-wt">10 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Microfiber Towel<br><span class="oc-brand">—</span></div><div class="oc-wt">6 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Face Cloth<br><span class="oc-brand">—</span></div><div class="oc-wt">1 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#2a4a3a;">
+            <span class="oc-cat-name">Water System</span><span class="oc-cat-wt">7 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">HydraPak 4L<br><span class="oc-brand">HydraPak</span></div><div class="oc-wt">4 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">HydraPak 3L<br><span class="oc-brand">HydraPak</span></div><div class="oc-wt">3 oz</div></div>
+        </div>
+
+        <div class="oc-card">
+          <div class="oc-card-hd" style="background:#3a3a4a;">
+            <span class="oc-cat-name">Utility</span><span class="oc-cat-wt">22 oz</span>
+          </div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Umbrella<br><span class="oc-brand">—</span></div><div class="oc-wt">8 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Battery Pack<br><span class="oc-brand">Nitecore</span></div><div class="oc-wt">4 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Garmin inReach<br><span class="oc-brand">Garmin</span></div><div class="oc-wt">4 oz</div></div>
+          <div class="oc-row"><div class="oc-cb"></div><div class="oc-name">Headlamp<br><span class="oc-brand">Black Diamond</span></div><div class="oc-wt">2 oz</div></div>
+        </div>
+
+      </div>
+
+      <div class="summary" style="margin-top:.35em;">
+        <div class="sum-item"><div class="sum-val">18.4</div><div class="sum-lbl">lbs base</div></div>
+        <div class="sum-item"><div class="sum-val">294</div><div class="sum-lbl">oz total</div></div>
+        <div class="sum-item"><div class="sum-val">26</div><div class="sum-lbl">items</div></div>
+        <div class="sum-item" style="margin-left:auto;text-align:right;"><div class="sum-val" style="color:#c5172b;">Crew 616-E</div><div class="sum-lbl">Jun 16 · 12 days</div></div>
+      </div>
+      <hr class="footer-rule">
+      <div class="footer-txt">packcheck.app · Philmont Scout Ranch 2026</div>
+
+    </div>
+  </div>
+
+</div><!-- end options -->
+
+</body>
+</html>
