@@ -880,6 +880,7 @@ function saveProfile(){
     renderProfileCard();
     renderItinerary();
     updateCalc();
+    scheduleAutoSave();
   } catch(e) { console.error('saveProfile error:', e); closeProfileModal(); }
 }
 
@@ -1325,7 +1326,7 @@ function saveEdit(key,idx){
     warn:gearData[key].items[idx].warn
   };
   editingRow=null;
-  renderGear();updateCalc();
+  renderGear();updateCalc();scheduleAutoSave();
 }
 function addItem(key){
   try {
@@ -1347,19 +1348,20 @@ function addItem(key){
     });
     renderGear();
     updateCalc();
+    scheduleAutoSave();
   } catch(e) { console.error('addItem error:', e); }
 }
 function removeItem(key,idx){
   if(!confirm(`Remove "${gearData[key].items[idx].name}"?`))return;
   gearData[key].items.splice(idx,1);
-  renderGear();updateCalc();
+  renderGear();updateCalc();scheduleAutoSave();
 }
 
 let overrideOz=null;
 
 function toggleItem(key,idx,checked){
   gearData[key].items[idx].included=checked;
-  renderGear();updateCalc();
+  renderGear();updateCalc();scheduleAutoSave();
 }
 
 function updateOverride(){
@@ -1368,7 +1370,7 @@ function updateOverride(){
     if(!el)return;
     var val=safeFloat(el.value, NaN);
     overrideOz=(isNaN(val)||val<0)?null:val;
-    updateStats();
+    updateStats();scheduleAutoSave();
   } catch(e) { console.error('updateOverride error:', e); }
 }
 
@@ -1376,7 +1378,7 @@ function clearOverride(){
   overrideOz=null;
   document.getElementById('override-oz').value='';
   document.getElementById('override-banner-wrap').style.display='none';
-  updateStats();
+  updateStats();scheduleAutoSave();
 }
 
 function totalOzActive(){
@@ -1530,6 +1532,7 @@ function updateCalc(){
   onDaySlider(day);
   updateDayChart();
   renderItinerary();
+  scheduleAutoSave();
   } catch(e) { console.error('updateCalc error:', e); }
 }
 
@@ -2018,6 +2021,7 @@ window.PCApply = {
 // ═══════════════════════════════════════════════
 
 const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYwPYRlHgM08bg9AOZzWSpXbWhhxCVlHyIu_aMjaqiwVwkwnMNPMmH5m2FTBdDUW-V5MmXn26W-Sf5/pub?gid=114457742&single=true&output=csv';
+const DEFAULT_PERSONAL_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYwPYRlHgM08bg9AOZzWSpXbWhhxCVlHyIu_aMjaqiwVwkwnMNPMmH5m2FTBdDUW-V5MmXn26W-Sf5/pub?gid=918676065&single=true&output=csv';
 
 const CREW_CAT_MAP = {
   'shelter': 'shelter',
@@ -2139,9 +2143,135 @@ async function fetchCrewSheet() {
   }
 }
 
+// ═══════════════════════════════════════════════
+// LOCAL STORAGE AUTO-SAVE
+// ═══════════════════════════════════════════════
+
+const LOCAL_KEY = 'packcheck-planner-v1';
+let _saveTimer = null;
+
+function saveLocal() {
+  try {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify({
+      profile, gearData, trekConfig, overrideOz
+    }));
+  } catch(e) { console.warn('saveLocal error:', e); }
+}
+
+function scheduleAutoSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveLocal, 800);
+}
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (saved.profile) Object.assign(profile, saved.profile);
+    if (saved.gearData) gearData = saved.gearData;
+    if (saved.trekConfig) {
+      Object.assign(trekConfig, saved.trekConfig);
+      setVal('trek-days', trekConfig.days||12);
+      setVal('crew-size', trekConfig.crewSize||8);
+      setVal('crew-gear-oz', trekConfig.crewGearOz||373);
+      setVal('body-weight', trekConfig.bodyWeight||175);
+      setVal('staff-days', Array.isArray(trekConfig.staffDays)?trekConfig.staffDays.join(','):'');
+    }
+    if (saved.overrideOz !== undefined && saved.overrideOz !== null) {
+      overrideOz = saved.overrideOz;
+      const el = document.getElementById('override-oz');
+      if (el) el.value = overrideOz;
+    }
+    return true;
+  } catch(e) { console.warn('loadLocal error:', e); return false; }
+}
+
+const PERSONAL_CAT_MAP = {
+  'bags': 'bags',
+  'sleep system': 'sleep',
+  'sleep': 'sleep',
+  'equipment': 'equipment',
+  'clothing': 'clothing',
+  'rain gear': 'rain',
+  'rain': 'rain',
+  'personal care': 'care',
+  'care': 'care',
+  'food system': 'food',
+  'food': 'food',
+  'water system': 'water',
+  'water': 'water',
+  'utility': 'utility',
+  'luxury': 'luxury',
+};
+
+async function fetchPersonalDefaults() {
+  try {
+    const res = await fetch(DEFAULT_PERSONAL_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const csv = await res.text();
+    const lines = csv.split(/\r?\n/).filter(l => l.trim());
+
+    // Find header row
+    let headerIdx = -1;
+    for (let i = 0; i < Math.min(lines.length, 10); i++) {
+      const lower = lines[i].toLowerCase();
+      if (lower.includes('category') && lower.includes('item')) { headerIdx = i; break; }
+    }
+    if (headerIdx < 0) throw new Error('no header row');
+
+    const headers = splitCSVLine(lines[headerIdx]).map(h => h.toLowerCase());
+    const colIdx = name => headers.indexOf(name);
+    const iCat = colIdx('category');
+    const iItem = colIdx('item');
+    const iBrand = colIdx('brand');
+    const iQty = colIdx('qty');
+    const iUnitOz = headers.findIndex(h => h.includes('unit weight'));
+    const iTotalOz = headers.findIndex(h => h.includes('total weight'));
+    const iNotes = colIdx('notes');
+    const iWarn = colIdx('warn');
+    if (iCat < 0 || iItem < 0) throw new Error('missing columns');
+
+    // Build fresh gearData preserving labels/colors
+    const fresh = {};
+    Object.entries(gearData).forEach(([k, v]) => {
+      fresh[k] = { label: v.label, color: v.color, items: [] };
+    });
+
+    for (let r = headerIdx + 1; r < lines.length; r++) {
+      const cols = splitCSVLine(lines[r]);
+      const get = i => (i >= 0 && i < cols.length ? cols[i] : '');
+      const catRaw = get(iCat).toLowerCase().trim();
+      if (!catRaw) continue;
+      if (catRaw.includes('subtotal') || catRaw.includes('total')) continue;
+      if (catRaw === catRaw.toUpperCase() && catRaw.length > 1) continue;
+      const catKey = PERSONAL_CAT_MAP[catRaw];
+      if (!catKey || !fresh[catKey]) continue;
+      const name = get(iItem);
+      if (!name) continue;
+      const qty = parseFloat(get(iQty)) || 1;
+      const unitOz = parseFloat(get(iUnitOz)) || 0;
+      const totalOzRaw = parseFloat(get(iTotalOz));
+      const oz = !isNaN(totalOzRaw) && totalOzRaw > 0 ? totalOzRaw : unitOz * qty;
+      const item = { name, brand: get(iBrand), qty, unitOz, oz, notes: get(iNotes), included: true };
+      if (iWarn >= 0 && get(iWarn)) item.warn = get(iWarn);
+      fresh[catKey].items.push(item);
+    }
+
+    const total = Object.values(fresh).reduce((s, c) => s + c.items.length, 0);
+    if (total === 0) throw new Error('no items parsed');
+    gearData = fresh;
+    try { renderGear(); } catch(e) {}
+    try { updateCalc(); } catch(e) {}
+  } catch(e) {
+    console.warn('Personal gear defaults fetch failed, using hardcoded defaults:', e.message);
+  }
+}
+
 window.onload=()=>{
   try{initTheme();}catch(e){console.error('initTheme error:',e);}
   try{if(window.PCWordmark)PCWordmark.render();}catch(e){console.error('wordmark error:',e);}
+  const hasSaved = loadLocal();
   try{renderGear();}catch(e){console.error('renderGear error:',e);}
   try{renderCrewGear();}catch(e){console.error('renderCrewGear error:',e);}
   try{renderProfileCard();}catch(e){console.error('renderProfileCard error:',e);}
@@ -2150,6 +2280,8 @@ window.onload=()=>{
   try{renderItinerary();}catch(e){console.error('renderItinerary error:',e);}
   if(!profile.name)openProfileModal();
   fetchCrewSheet();
+  if(!hasSaved) fetchPersonalDefaults();
+  window.addEventListener('beforeunload', saveLocal);
 };
 </script>
 </body>
