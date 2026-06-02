@@ -182,7 +182,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .profile-edit-btn:hover{border-color:var(--pc-accent);color:var(--pc-accent);}
 
 /* ── HERO ──────────────────────────────────────────── */
-.hero{padding:3.2rem 2rem 2.8rem;border-bottom:1px solid var(--pc-line);}
+.hero{padding:1.4rem 2rem 1.2rem;border-bottom:1px solid var(--pc-line);}
 .hero-eyebrow{font-family:var(--font-mono);font-size:.66rem;color:var(--pc-accent);
   text-transform:uppercase;letter-spacing:.16em;margin-bottom:.55rem;font-weight:500;}
 .hero-title{font-family:var(--font-disp);font-weight:700;font-size:3.5rem;letter-spacing:.01em;
@@ -431,6 +431,7 @@ input[type=range]{flex:1;accent-color:var(--pc-accent);}
 .badge-chuck{background:rgba(197,23,43,.12);color:var(--pc-accent);border:1px solid rgba(197,23,43,.28);}
 .badge-chq{background:rgba(28,28,26,.08);color:var(--pc-ink-soft);border:1px solid var(--pc-line-2);}
 .badge-conserv{background:rgba(46,74,57,.14);color:var(--pc-anchor);border:1px solid rgba(46,74,57,.3);}
+.badge-fuel{background:rgba(180,100,20,.14);color:#a05a10;border:1px solid rgba(180,100,20,.35);}
 [data-theme="dark"] .badge-dry,[data-theme="dark"] .diff-mod{color:var(--pc-trim);}
 [data-theme="dark"] .badge-conserv{color:var(--pc-cream);}
 

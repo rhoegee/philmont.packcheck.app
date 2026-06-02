@@ -553,7 +553,7 @@ const ITINERARY = [
    staffMeals:{b:false,l:false,d:true},
    program:'Lookout Peak · High Mountain Ranching · Campfire Show',
    note:'Chuckwagon dinner provided · Conservation project tomorrow 7:30am'},
-  {day:5,camp:'Porcupine',miles:2.7,gain:1260,loss:1410,type:'trail',dry:false,food:true,chuck:false,conserv:true,
+  {day:5,camp:'Porcupine',miles:2.7,gain:1260,loss:1410,type:'trail',dry:false,food:true,chuck:false,conserv:true,fuel:true,
    staffMeals:{b:false,l:false,d:false},
    program:'Conservation 7:30am - Forest Fuels Reduction at Beaubien · Passthrough Phillips Junction',
    note:'Resupply at Phillips Junction'},
@@ -569,7 +569,7 @@ const ITINERARY = [
    staffMeals:{b:false,l:false,d:false},
    program:'St. Louis & Cimarron Mining Co. · Campfire Show',
    note:'All meals carried'},
-  {day:9,camp:'Sawmill',miles:5.3,gain:3090,loss:3220,type:'staffed',dry:false,food:false,chuck:false,
+  {day:9,camp:'Sawmill',miles:5.3,gain:3090,loss:3220,type:'staffed',dry:false,food:false,fuel:true,chuck:false,
    staffMeals:{b:false,l:false,d:false},
    program:'Rifle Shooting & Cartridge Reloading',
    note:'All meals carried'},
@@ -936,8 +936,7 @@ function crewCatOz(key){
   return crewGearData[key].items.reduce((s,i)=>s+i.oz,0);
 }
 function tentOz(){
-  // Total tent weight from shelter category items marked isTent
-  return crewGearData.shelter.items.filter(i=>i.isTent).reduce((s,i)=>s+i.oz,0);
+  return crewGearData.shelter.items.filter(i=>i.isTent||/tent|dome/i.test(i.name)).reduce((s,i)=>s+i.oz,0);
 }
 
 function updateCrewStats(){
@@ -1097,11 +1096,11 @@ function renderCrewGear(){
         <table class="gear-table">
           <colgroup>
             <col style="width:24px">
-            <col style="width:170px">
-            <col style="width:80px">
-            <col style="width:32px">
-            <col style="width:95px">
-            <col style="width:110px">
+            <col style="width:155px">
+            <col style="width:120px">
+            <col style="width:26px">
+            <col style="width:90px">
+            <col style="width:140px">
             <col style="width:40px">
             <col style="width:48px">
           </colgroup>
@@ -1269,11 +1268,11 @@ function renderGear(){
         <table class="gear-table">
           <colgroup>
             <col style="width:24px">
-            <col style="width:170px">
-            <col style="width:80px">
-            <col style="width:32px">
-            <col style="width:95px">
-            <col style="width:110px">
+            <col style="width:155px">
+            <col style="width:120px">
+            <col style="width:26px">
+            <col style="width:90px">
+            <col style="width:140px">
             <col style="width:40px">
             <col style="width:48px">
           </colgroup>
@@ -1714,6 +1713,7 @@ function renderItinerary(){
     if(day.dry)badges+=`<span class="badge badge-dry">Dry Camp</span>`;
     if(day.chuck)badges+=`<span class="badge badge-chuck">Chuckwagon</span>`;
     if(day.conserv)badges+=`<span class="badge badge-conserv">Conservation</span>`;
+    if(day.fuel)badges+=`<span class="badge badge-fuel">⛽ Fuel Resupply</span>`;
 
     // Meals
     let mealsHtml='';
