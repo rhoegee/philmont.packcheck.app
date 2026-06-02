@@ -1978,20 +1978,24 @@ function loadCSV(event){
   if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
-    // Parse CSV respecting quoted fields
-    function parseLine(line){
-      const cols=[];let cur='',inQ=false;
-      for(let i=0;i<line.length;i++){
-        const ch=line[i];
-        if(ch==='"'){inQ=!inQ;}
-        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+    // Full CSV parser — handles quoted fields containing commas AND newlines
+    function parseCSV(text){
+      const rows=[];let row=[],cur='',inQ=false;
+      const t=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+      for(let i=0;i<t.length;i++){
+        const ch=t[i];
+        if(ch==='"'){
+          if(inQ&&t[i+1]==='"'){cur+='"';i++;}  // escaped quote
+          else inQ=!inQ;
+        } else if(ch===','&&!inQ){row.push(cur.trim());cur='';}
+        else if(ch==='\n'&&!inQ){row.push(cur.trim());if(row.some(c=>c))rows.push(row);row=[];cur='';}
         else{cur+=ch;}
       }
-      cols.push(cur.trim());
-      return cols;
+      row.push(cur.trim());if(row.some(c=>c))rows.push(row);
+      return rows;
     }
-    const lines=e.target.result.split('\n').filter(l=>l.trim());
-    if(lines.length<2){alert('CSV appears empty.');return;}
+    const rows=parseCSV(e.target.result);
+    if(rows.length<2){alert('CSV appears empty.');return;}
 
     // Build category lookup: label (lowercase) and key → key
     const catByLabel={};
@@ -2001,7 +2005,7 @@ function loadCSV(event){
     });
 
     // Parse header row to find column indices
-    const rawHeaders=parseLine(lines[0]);
+    const rawHeaders=rows[0];
     const headers=rawHeaders.map(h=>h.toLowerCase().replace(/[^a-z]/g,''));
     console.log('[CSV import] headers:', rawHeaders);
     const col=(...names)=>{for(const n of names){const i=headers.findIndex(h=>h.includes(n));if(i>=0)return i;}return -1;};
@@ -2009,7 +2013,7 @@ function loadCSV(event){
     const iName=col('item','name');
     const iBrand=col('brand');
     const iQty=col('qty','quantity');
-    const iOz=col('oz','weight','gram');  // oz, weightoz, weight, grams
+    const iOz=col('oz','weight','gram');
     const iNotes=col('note','desc','comment');
     console.log('[CSV import] col map — cat:',iCat,'name:',iName,'brand:',iBrand,'qty:',iQty,'oz:',iOz,'notes:',iNotes);
 
@@ -2017,12 +2021,11 @@ function loadCSV(event){
     if(iOz<0){alert('Could not find a Weight column in this CSV.\nHeaders found: '+rawHeaders.join(', '));return;}
 
     let imported=0, skipped=0, fallback=0;
-    lines.slice(1).forEach(line=>{
-      const c=parseLine(line);
+    rows.slice(1).forEach(c=>{
       const name=(c[iName]||'').trim();
       if(!name)return;
-      // Skip subtotal/blank rows
-      if(/subtotal|^-+$/.test(name.toUpperCase()))return;
+      // Skip subtotal/total/blank rows
+      if(/subtotal|^total/i.test(name))return;
 
       const brand=(iBrand>=0?c[iBrand]:'')||'';
       const qty=parseInt(iQty>=0?c[iQty]:'1')||1;
