@@ -210,8 +210,8 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     </div>
   </div>
   <div class="progress-bar-wrap" style="justify-content:space-between;">
-    <span class="progress-label">Weighed your fully-packed bag on a scale? Override the estimate.</span>
-    <button class="nav-btn" id="override-toggle-btn" style="font-size:0.65rem;padding:0.3rem 0.8rem;border-color:var(--pc-line-2);color:var(--pc-ink-soft);background:transparent;" onclick="document.getElementById('override-banner-wrap').style.display='block';document.getElementById('override-oz').focus();">Scale Override</button>
+    <span class="progress-label" style="font-size:0.85rem;">Weighed your fully-packed bag on a scale? Override the estimate.</span>
+    <button class="nav-btn primary" id="override-toggle-btn" style="font-size:0.75rem;padding:0.3rem 0.9rem;" onclick="document.getElementById('override-banner-wrap').style.display='block';document.getElementById('override-oz').focus();">Scale Override</button>
   </div>
   <div class="two-col">
     <div class="main-col" id="gear-sections"></div>
@@ -251,9 +251,10 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
 <div class="page" id="page-crew">
   <div class="profile-card" id="crew-profile-card">
     <div style="flex:1;">
-      <div style="font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.4rem;letter-spacing:0.06em;color:var(--text);">Crew Gear</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.25rem;">Philmont-issued and crew-provided shared equipment. Weight split per person feeds into the Pack Weight calculator.</div>
-      <div id="crew-sync-status" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.2rem;"></div>
+      <div class="hero-eyebrow">Shared Equipment · Split Among Crew</div>
+      <div class="hero-title" style="font-size:1.4rem;margin:0.1rem 0 0.15rem;">Crew <span>Gear</span></div>
+      <div class="hero-sub" style="font-size:0.78rem;margin:0;">Philmont-issued and crew-provided shared equipment. Weight split per person feeds into the Pack Weight calculator.</div>
+      <div id="crew-sync-status" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.25rem;"></div>
     </div>
     <div style="text-align:right;">
       <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Total Crew Gear</div>
