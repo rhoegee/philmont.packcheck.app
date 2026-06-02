@@ -11,7 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <link rel="stylesheet" href="packcheck-theme.css">
 <style id="pc-tweak-styles">
 /* ── Header treatment: reversed cream bar ── */
@@ -318,7 +318,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="theme-icon"></svg>
     </button>
     <div style="position:relative;">
-      <button class="theme-toggle hamburger-btn" id="hamburger-btn" onclick="toggleHamburger()" title="Menu" aria-label="Menu">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleHamburger()" title="Menu" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="hamburger-menu" id="hamburger-menu" style="display:none;">
@@ -339,6 +339,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       <input type="file" id="csv-load" accept=".csv" style="display:none" onchange="loadCSV(event)">
       <button class="nav-btn" onclick="exportExcel()" title="Export to Excel">Excel</button>
       <button class="nav-btn" onclick="printChecklist()" title="Print gear checklist">Print</button>
+      <button class="nav-btn" onclick="showSendToPhone()" title="Send gear list to phone via QR code">📱</button>
     </div>
   </div>
 </nav>
@@ -2651,8 +2652,11 @@ function showSendToPhone(){
     errEl.textContent='Gear list too large for QR ('+Math.round(url.length/1024)+'KB). Copy the link and open it on your phone.';
   } else {
     errEl.style.display='none';
-    try{new QRCode(wrap,{text:url,width:240,height:240,correctLevel:QRCode.CorrectLevel.M});}
-    catch(e){errEl.style.display='block';errEl.textContent='QR generation failed — use the link below.';}
+    const canvas=document.createElement('canvas');
+    wrap.appendChild(canvas);
+    QRCode.toCanvas(canvas,url,{width:240,errorCorrectionLevel:'M'},function(err){
+      if(err){errEl.style.display='block';errEl.textContent='QR generation failed — use the link below.';}
+    });
   }
   document.getElementById('qr-modal').style.display='flex';
 }
