@@ -1201,27 +1201,23 @@ function renderCrewGear(){
             <input class="edit-input narrow" id="cei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');updateCrewEditTotal();" placeholder="oz">
             <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:2px;">unit · total: <span id="crew-edit-total">${ozToStr(item.oz)}</span></div>
           </td>
-          <td><input class="edit-input med" id="cei-notes" value="${item.notes||''}"></td>
-          <td></td>
+          <td><input class="edit-input wide" id="cei-notes" value="${item.notes||''}"></td>
           <td class="td-actions">
             <button class="action-btn" onclick="saveCrewEdit('${key}',${idx})">✓</button>
             <button class="action-btn" onclick="cancelCrewEdit()">✕</button>
           </td>
         </tr>`;
       }
-      const ipct=Math.round(item.oz/maxItem*100);
       const crewChecked=item.included!==false;
       const srcBadge=item.source==='philmont'?`<span style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);background:var(--bg3);padding:0.1rem 0.3rem;border-radius:2px;margin-left:4px;">PHI</span>`:'';
-      return `<tr class="data-row ${crewChecked?'':' unchecked'}">
+      return `<tr class="data-row ${crewChecked?'':' unchecked'}" ondblclick="startCrewEdit('${key}',${idx})">
         <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" ${crewChecked?'checked':''} onchange="toggleCrewItem('${key}',${idx},this.checked)"></td>
         <td class="td-name">${item.name}${srcBadge}</td>
         <td class="td-brand">${item.brand}</td>
         <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
         <td class="td-weight">${ozToStr(item.oz)}</td>
         <td class="td-notes">${item.notes||''}</td>
-        <td class="td-bar"><div class="item-bar"><div class="item-bar-fill" style="width:${ipct}%;background:${cat.color}"></div></div></td>
         <td class="td-actions">
-          <button class="action-btn" onclick="startCrewEdit('${key}',${idx})" title="Edit"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
           <button class="action-btn del" onclick="removeCrewItem('${key}',${idx})" title="Delete">✕</button>
         </td>
       </tr>`;
@@ -1244,18 +1240,17 @@ function renderCrewGear(){
         <table class="gear-table">
           <colgroup>
             <col style="width:24px">
-            <col style="width:155px">
-            <col style="width:120px">
+            <col style="width:220px">
+            <col style="width:110px">
             <col style="width:26px">
-            <col style="width:90px">
-            <col style="width:140px">
+            <col style="width:80px">
+            <col>
             <col style="width:40px">
-            <col style="width:48px">
           </colgroup>
           <thead><tr>
             <th style="padding:0.45rem 2px;"></th>
             <th>Item</th><th>Brand</th><th style="text-align:center">Qty</th>
-            <th style="text-align:right">Weight</th><th>Notes</th><th></th><th></th>
+            <th style="text-align:right">Weight</th><th>Notes</th><th></th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -1372,28 +1367,24 @@ function renderGear(){
             <input class="edit-input narrow" id="ei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');updateEditTotal();" placeholder="oz">
             <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:2px;">unit wt · total: <span id="edit-total">${ozToStr(item.oz)}</span></div>
           </td>
-          <td><input class="edit-input med" id="ei-notes" value="${item.notes||''}"></td>
-          <td></td>
+          <td><input class="edit-input wide" id="ei-notes" value="${item.notes||''}"></td>
           <td class="td-actions">
             <button class="action-btn" onclick="saveEdit('${key}',${idx})" title="Save">✓</button>
             <button class="action-btn" onclick="cancelEdit()" title="Cancel">✕</button>
           </td>
         </tr>`;
       }
-      const ipct=Math.round(item.oz/maxItem*100);
       const isChecked=item.included===true;
       const isCotton=item.warn==='cotton'||/\bcotton\b/i.test(item.name);
       const cottonFlag=isCotton?`<span class="cotton-warn">cotton</span>`:'';
-      return `<tr class="data-row ${isChecked?'':'unchecked'}">
+      return `<tr class="data-row ${isChecked?'':'unchecked'}" ondblclick="startEdit('${key}',${idx})">
         <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" ${isChecked?'checked':''} onchange="toggleItem('${key}',${idx},this.checked)"></td>
         <td class="td-name">${item.name}${cottonFlag}</td>
         <td class="td-brand">${item.brand}</td>
         <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
         <td class="td-weight">${ozToStr(item.oz)}</td>
         <td class="td-notes">${item.notes||''}</td>
-        <td class="td-bar"><div class="item-bar"><div class="item-bar-fill" style="width:${ipct}%;background:${cat.color}"></div></div></td>
         <td class="td-actions">
-          <button class="action-btn" onclick="startEdit('${key}',${idx})" title="Edit"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
           <button class="action-btn del" onclick="removeItem('${key}',${idx})" title="Delete">✕</button>
         </td>
       </tr>`;
@@ -1416,18 +1407,17 @@ function renderGear(){
         <table class="gear-table">
           <colgroup>
             <col style="width:24px">
-            <col style="width:155px">
-            <col style="width:120px">
+            <col style="width:220px">
+            <col style="width:110px">
             <col style="width:26px">
-            <col style="width:90px">
-            <col style="width:140px">
+            <col style="width:80px">
+            <col>
             <col style="width:40px">
-            <col style="width:48px">
           </colgroup>
           <thead><tr>
             <th style="padding:0.45rem 2px;"></th>
             <th>Item</th><th>Brand</th><th style="text-align:center">Qty</th>
-            <th style="text-align:right">Weight</th><th>Notes</th><th></th><th></th>
+            <th style="text-align:right">Weight</th><th>Notes</th><th></th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
