@@ -232,7 +232,8 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .gear-body.open{display:block;}
 
 /* ── GEAR TABLE ────────────────────────────────────── */
-.gear-table{width:100%;min-width:580px;border-collapse:collapse;table-layout:fixed;}
+/* border-collapse:separate required for position:sticky to work on td/th */
+.gear-table{width:100%;min-width:580px;border-collapse:separate;border-spacing:0;table-layout:fixed;}
 .gear-table th{font-family:var(--font-mono);font-size:.56rem;text-transform:uppercase;letter-spacing:.09em;
   color:var(--pc-ink-faint);padding:.5rem .85rem;text-align:left;border-bottom:1px solid var(--pc-line);
   background:var(--pc-bg);font-weight:500;}
@@ -242,8 +243,9 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .gear-table tr.data-row:hover td{background:var(--pc-surface-raised);}
 .gear-table tr.edit-row td{background:var(--pc-bg);padding:.35rem .5rem;}
 /* Sticky first and last columns so checkbox and ✕ are always visible */
-.gear-table td:first-child,.gear-table th:first-child{position:sticky;left:0;z-index:2;background:inherit;}
-.gear-table td:last-child,.gear-table th:last-child{position:sticky;right:0;z-index:2;background:inherit;}
+.gear-table td:first-child,.gear-table th:first-child{position:sticky;left:0;z-index:2;background:var(--pc-surface);}
+.gear-table td:last-child,.gear-table th:last-child{position:sticky;right:0;z-index:2;background:var(--pc-surface);}
+.gear-table th:first-child,.gear-table th:last-child{background:var(--pc-bg);}
 .gear-table tr.data-row:hover td:first-child,
 .gear-table tr.data-row:hover td:last-child{background:var(--pc-surface-raised);}
 .gear-table tr.unchecked td:first-child,
