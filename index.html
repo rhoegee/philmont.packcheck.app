@@ -1423,7 +1423,7 @@ function renderGear(){
         <td class="td-notes" ${item.notes?`title="${item.notes}"`:''}>${item.notes||''}</td>
         <td class="td-actions">
           <select class="move-cat-select" title="Move to category" onchange="moveItem('${key}',${idx},this)" onclick="event.stopPropagation()">
-            <option value="">↕</option>
+            <option value=""></option>
             ${Object.entries(gearData).filter(([k])=>k!==key).map(([k,c])=>`<option value="${k}">${c.label}</option>`).join('')}
           </select>
           <button class="action-btn del sel-toggle" id="sel-${key}-${idx}" onclick="toggleSel('${key}',${idx},this)" title="Select to delete">✕</button>

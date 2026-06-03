@@ -47,7 +47,7 @@ const HELP_CONTENT = [
       },
       {
         q: "Can I move an item to a different category?",
-        a: "Yes. In the actions column, use the ↕ icon to reassign an item to a different category."
+        a: "Yes. In the actions column, use the category dropdown to reassign an item to a different category."
       },
       {
         q: "What does the cotton warning mean?",
