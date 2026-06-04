@@ -123,7 +123,7 @@ const HELP_CONTENT = [
     items: [
       {
         q: "How does the itinerary work?",
-        a: "The Itinerary tab shows your trek day by day — camps, miles, elevation, and difficulty. It's pre-loaded for Trek 12-10."
+        a: "The Itinerary tab shows your trek day by day — camps, miles, elevation, and difficulty. Your itinerary is based on what you enter in your profile."
       },
       {
         q: "What about meals?",
