@@ -697,8 +697,9 @@ const COLORS = {
   luxury:'#BC4B33'    // clay rust
 };
 
-// Philmont 2026 Menus
-const MENUS = {
+// MENUS and ITINERARIES are loaded from itinerary-data.js
+// Legacy inline definition kept as comment reference only
+/* const MENUS = {
   breakfast:{
     1:['Buffalo Chicken Bites','Amazin Goldens Blue Raspberry','Animal Crackers','Kodiak Chewy S\'Mores Bar','Strawberry Granola','Skratch Orange Drink Mix'],
     2:['Original Smoked Hickory','Banana Chips','RXBAR Blueberry Protein','Caramel Rice Crisps','Chocolate Granola'],
@@ -735,11 +736,12 @@ const MENUS = {
     9:['Creamy Tomato Pasta with Chicken','Jalapeno Pretzel Pieces','Cinnamon Graham Goldfish'],
     10:['Stuffing Mix with Turkey & Cranberries','Turkey Spam','Chocolate Chip Waffles'],
   }
-};
+}; */
 
-// Itinerary 12-10
-const ITINERARY = [
-  // Day 1 = CHQ arrival ONLY. No hiking. Lunch + dinner at mess hall.
+// Itinerary data loaded from itinerary-data.js (ITINERARIES + MENUS globals)
+// ITINERARY constant removed — data now lives in itinerary-data.js as ITINERARIES registry
+// Legacy single-trek data kept as comment for reference only
+/* const ITINERARY = [
   {day:1,camp:'Camping HQ',miles:0,gain:0,loss:0,type:'chq',dry:false,food:false,chuck:false,
    staffMeals:{b:false,l:true,d:true},
    program:'Arrive CHQ (after breakfast) · Medical recheck · Gear shakedown · Opening campfire',
@@ -789,7 +791,7 @@ const ITINERARY = [
    staffMeals:{b:false,l:false,d:true},
    program:'Hike to Turkey Creek Trailhead · Closing campfire',
    note:'Breakfast & lunch on trail. Dinner at CHQ mess hall'},
-];
+]; */
 
 let gearData = {
   bags:{label:'Bags',color:COLORS.bags,items:[
@@ -934,8 +936,8 @@ let crewGearData = {
   ]},
 };
 
-let profile = {name:'',crew:'',troop:'',council:'',arrival:'2026-06-16',day0:false};
-let trekConfig = {days:12,crewSize:8,crewGearOz:564.8,bodyWeight:175,resupplyDays:[1,5,10],dryCampDays:[7,10],staffDays:[4]};
+let profile = {name:'',crew:'',troop:'',council:'',arrival:'',itinNumber:'',day0:false};
+let trekConfig = {days:12,crewSize:8,crewGearOz:564.8,bodyWeight:175,resupplyDays:[],dryCampDays:[],staffDays:[]};
 let donutChart = null;
 let weightChart = null;
 let editingRow = null;
@@ -974,10 +976,17 @@ function catOz(key){return gearData[key].items.reduce((s,i)=>s+i.oz,0);}
 
 function getArrivalDate(){
   try {
-    var d = new Date((profile.arrival||'2026-06-16')+'T12:00:00');
-    if(isNaN(d.getTime())) return new Date('2026-06-16T12:00:00');
+    if(!profile.arrival) return new Date();
+    var d = new Date(profile.arrival+'T12:00:00');
+    if(isNaN(d.getTime())) return new Date();
     return d;
-  } catch(e) { return new Date('2026-06-16T12:00:00'); }
+  } catch(e) { return new Date(); }
+}
+function getActiveItinerary(){
+  if(profile.itinNumber && ITINERARIES && ITINERARIES[profile.itinNumber]){
+    return ITINERARIES[profile.itinNumber];
+  }
+  return null;
 }
 function getDayDate(trekDay){
   const arr=getArrivalDate();
@@ -1075,12 +1084,21 @@ function saveProfile(){
     profile.name=(getVal('p-name','')||'').trim();
     profile.troop=(getVal('p-troop','')||'').trim();
     profile.council=(getVal('p-council','')||'').trim();
-    profile.arrival=getVal('p-arrival','2026-06-16')||'2026-06-16';
+    profile.arrival=getVal('p-arrival','')||'';
     profile.crewNumber=(getVal('p-crew-num','')||'').trim().toUpperCase();
     profile.itinNumber=(getVal('p-itin-num','')||'').trim();
     profile.trekLength=safeInt(getVal('p-trek-length',12),12);
     profile.day0=getVal('p-day0','no')==='yes';
-    trekConfig.days=profile.trekLength||12;
+    // Sync trekConfig from selected itinerary
+    const selectedItin = getActiveItinerary();
+    if(selectedItin){
+      trekConfig.days = selectedItin.days;
+      trekConfig.resupplyDays = selectedItin.dayData.filter(d=>d.resupply).map(d=>d.day);
+      trekConfig.dryCampDays = selectedItin.dayData.filter(d=>d.dry).map(d=>d.day);
+      trekConfig.staffDays = selectedItin.dayData.filter(d=>d.type==='staff'||d.staffed).map(d=>d.day);
+    } else {
+      trekConfig.days=profile.trekLength||12;
+    }
     closeProfileModal();
     renderProfileCard();
     renderItinerary();
@@ -1860,7 +1878,8 @@ function alignDaySlider(chart){
 // ═══════════════════════════════════════════════
 
 function getItinScores(){
-  return ITINERARY.filter(function(d){return d.miles>0;}).map(function(d){return d.miles*(d.gain/1000);});
+  const ai=getActiveItinerary(); if(!ai)return[];
+  return ai.dayData.filter(function(d){return d.miles>0;}).map(function(d){return d.miles*(d.gain/1000);});
 }
 
 function getDifficultyRating(miles,gain){
@@ -1879,11 +1898,23 @@ function getDifficultyRating(miles,gain){
 function renderItinerary(){
   const tbody=document.getElementById('itin-body');
   tbody.innerHTML='';
-  // Update eyebrow with correct date range
+  const itin=getActiveItinerary();
   const startDate=profile.day0?new Date(getArrivalDate().getTime()-86400000):getArrivalDate();
-  const endDate=new Date(getArrivalDate().getTime()+12*86400000); // Day 13
+  const endDate=new Date(getArrivalDate().getTime()+trekConfig.days*86400000);
   const eyebrow=document.getElementById('itin-eyebrow');
-  if(eyebrow)eyebrow.textContent=`Itinerary 12-10 · Rugged · 62 Miles · South Country · ${formatDate(startDate)} – ${formatDate(endDate)}`;
+  if(eyebrow){
+    if(itin){
+      const itinId=itin.label.replace('Itinerary ','');
+      eyebrow.textContent=`Itinerary ${itinId} · ${itin.difficulty} · ${itin.miles} Miles${itin.region?' · '+itin.region+' Country':''} · ${formatDate(startDate)} – ${formatDate(endDate)}`;
+    } else {
+      eyebrow.textContent='Enter your itinerary number in Profile Setup to load your trek schedule';
+    }
+  }
+
+  if(!itin){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--pc-ink-soft)">Enter your itinerary number in Profile Setup to load your trek schedule.</td></tr>';
+    return;
+  }
 
   // Day 0 row if early arrival selected
   if(profile.day0){
@@ -1897,7 +1928,7 @@ function renderItinerary(){
       <td>
         <div class="itin-camp">Camping HQ</div>
         <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">Early arrival · Optional</div>
-        <div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">Arrive early — lunch & dinner at CHQ</div>
+        <div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">Arrive early — lunch &amp; dinner at CHQ</div>
       </td>
       <td class="itin-miles">—</td>
       <td class="itin-elev">—</td>
@@ -1914,7 +1945,8 @@ function renderItinerary(){
     tbody.appendChild(tr0);
   }
 
-  ITINERARY.forEach(day=>{
+  const totalDays=itin.dayData.length;
+  itin.dayData.forEach(day=>{
     const date=getDayDate(day.day);
     const mealNum=getMealNum(date);
     const net=day.gain-day.loss;
@@ -1922,54 +1954,51 @@ function renderItinerary(){
     const packOz=getPackOzForDay(day.day);
     const packLbs=packOz/16;
     const packClass=packLbs>40?'heavy':packLbs<30?'light':'';
+    const isDay1=day.day===1;
+    const isLastDay=day.day===totalDays;
+    const chqBreakfast=day.day===2;
 
     // Badges
     let badges='';
     if(day.type==='chq')badges+=`<span class="badge badge-chq">CHQ</span>`;
-    if(day.type==='staffed')badges+=`<span class="badge badge-staff">Staffed</span>`;
-    if(day.food)badges+=`<span class="badge badge-food">Resupply</span>`;
+    if(day.staffed||day.type==='staff')badges+=`<span class="badge badge-staff">Staffed</span>`;
+    if(day.resupply)badges+=`<span class="badge badge-food">Resupply</span>`;
     if(day.dry)badges+=`<span class="badge badge-dry">Dry Camp</span>`;
     if(day.chuck)badges+=`<span class="badge badge-chuck">Chuckwagon</span>`;
-    if(day.conserv)badges+=`<span class="badge badge-conserv">Conservation</span>`;
-    if(day.fuel)badges+=`<span class="badge badge-fuel">Fuel Resupply</span>`;
 
     // Meals
     let mealsHtml='';
-    if(day.type==='chq'||day.staffMeals.b||day.staffMeals.l||day.staffMeals.d){
-      mealsHtml+='<div class="menu-block">';
-      if(day.staffMeals.b)mealsHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">☕ Breakfast @ CHQ</div>`;
-      if(day.staffMeals.l)mealsHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">🍽 Lunch @ CHQ</div>`;
-      if(day.staffMeals.d&&!day.chuck)mealsHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">🍽 Dinner @ CHQ</div>`;
-      if(day.chuck)mealsHtml+=`<div style="font-size:0.75rem;color:var(--gold)">🍖 Chuckwagon Dinner</div>`;
-      mealsHtml+='</div>';
-    }
+    if(isDay1){
+      mealsHtml='<div class="menu-block"><div style="font-size:0.75rem;color:var(--muted2)">🍽 Lunch @ CHQ</div><div style="font-size:0.75rem;color:var(--muted2)">🍽 Dinner @ CHQ</div></div>';
+    } else {
+      let providedHtml='<div class="menu-block">';
+      let hasProvided=false;
+      if(chqBreakfast){providedHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">☕ Breakfast @ CHQ</div>`;hasProvided=true;}
+      if(day.chuck){providedHtml+=`<div style="font-size:0.75rem;color:var(--gold)">🍖 Chuckwagon Dinner</div>`;hasProvided=true;}
+      else if(isLastDay){providedHtml+=`<div style="font-size:0.75rem;color:var(--muted2)">🍽 Dinner @ CHQ</div>`;hasProvided=true;}
+      providedHtml+='</div>';
+      if(hasProvided)mealsHtml=providedHtml;
 
-    // Carried meals
-    // Day 1: CHQ only, no carried meals
-    // Day 2: breakfast at CHQ, carries lunch + dinner
-    // Day 12: carries breakfast + lunch on trail, dinner at CHQ
-    const isDay1=day.day===1;
-    const isDay12=day.day===12;
-    const carriesB=day.day>=3&&!day.staffMeals.b||isDay12;
-    const carriesL=!day.staffMeals.l&&!isDay1&&day.day>=2;
-    const carriesBreakfastDay12=false; // handled by carriesB above
-    const carriesD=!day.staffMeals.d&&!day.chuck&&!isDay1&&!isDay12&&day.type!=='chq';
+      const carriesB=!chqBreakfast;
+      const carriesL=true;
+      const carriesD=!isLastDay&&!day.chuck;
 
-    if(carriesB||carriesL||carriesD){
-      mealsHtml+=`<div class="menu-block" style="margin-top:0.3rem;">`;
-      if((carriesB||carriesBreakfastDay12)&&MENUS.breakfast[mealNum]){
-        mealsHtml+=`<div class="menu-meal">Breakfast #${mealNum}</div>`;
-        mealsHtml+=`<div class="menu-items">${MENUS.breakfast[mealNum].join(', ')}</div>`;
+      if(carriesB||carriesL||carriesD){
+        mealsHtml+=`<div class="menu-block" style="margin-top:0.3rem;">`;
+        if(carriesB&&MENUS.breakfast[mealNum]){
+          mealsHtml+=`<div class="menu-meal">Breakfast #${mealNum}</div>`;
+          mealsHtml+=`<div class="menu-items">${MENUS.breakfast[mealNum].join(', ')}</div>`;
+        }
+        if(carriesL&&MENUS.lunch[mealNum]){
+          mealsHtml+=`<div class="menu-meal" style="margin-top:0.3rem;">Lunch #${mealNum}</div>`;
+          mealsHtml+=`<div class="menu-items">${MENUS.lunch[mealNum].join(', ')}</div>`;
+        }
+        if(carriesD&&MENUS.dinner[mealNum]){
+          mealsHtml+=`<div class="menu-meal" style="margin-top:0.3rem;">Dinner #${mealNum}</div>`;
+          mealsHtml+=`<div class="menu-items"><strong style="color:var(--text);font-weight:600;">${MENUS.dinner[mealNum][0]}</strong>${MENUS.dinner[mealNum].length>1?' · '+MENUS.dinner[mealNum].slice(1).join(', '):''}</div>`;
+        }
+        mealsHtml+=`</div>`;
       }
-      if(carriesL&&MENUS.lunch[mealNum]){
-        mealsHtml+=`<div class="menu-meal" style="margin-top:0.3rem;">Lunch #${mealNum}</div>`;
-        mealsHtml+=`<div class="menu-items">${MENUS.lunch[mealNum].join(', ')}</div>`;
-      }
-      if(carriesD&&MENUS.dinner[mealNum]){
-        mealsHtml+=`<div class="menu-meal" style="margin-top:0.3rem;">Dinner #${mealNum}</div>`;
-        mealsHtml+=`<div class="menu-items"><strong style="color:var(--text);font-weight:600;">${MENUS.dinner[mealNum][0]}</strong>${MENUS.dinner[mealNum].length>1?' · '+MENUS.dinner[mealNum].slice(1).join(', '):''}</div>`;
-      }
-      mealsHtml+=`</div>`;
     }
 
     const tr=document.createElement('tr');
@@ -1979,9 +2008,8 @@ function renderItinerary(){
         <div class="itin-date">${formatDate(date)}</div>
       </td>
       <td>
-        <div class="itin-camp ${day.type==='staffed'?'staffed':''}">${day.camp}</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${day.program}</div>
-        ${day.note?`<div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">${day.note}</div>`:''}
+        <div class="itin-camp ${(day.staffed||day.type==='staff')?'staffed':''}">${day.camp}</div>
+        ${day.foodPickup?`<div style="font-size:0.72rem;color:var(--gold);margin-top:0.15rem;font-style:italic;">Food pickup: ${day.foodPickup}</div>`:''}
       </td>
       <td class="itin-miles">${day.miles>0?day.miles+' mi':''}</td>
       <td class="itin-elev">
@@ -1992,7 +2020,7 @@ function renderItinerary(){
         `:'—'}
       </td>
       <td>
-        ${diff?`<div><span class="itin-diff ${diff.cls}">${diff.label}</span></div>${diff.note?`<div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">${diff.note}</div>`:''}`:'' }
+        ${diff?`<div><span class="itin-diff ${diff.cls}">${diff.label}</span></div>`:''}
       </td>
       <td>${badges}</td>
       <td class="itin-pack ${packClass} hide-sm">${day.miles>0?ozToStr(Math.round(packOz)):''}</td>
@@ -2188,7 +2216,8 @@ function exportExcel(){
     tbody.appendChild(tr0);
   }
 
-  ITINERARY.forEach(day=>{
+  const exportItin=getActiveItinerary();
+  (exportItin?exportItin.dayData:[]).forEach(day=>{
     const date=getDayDate(day.day);
     const foodOz=getFoodOzForDay(day.day);
     const waterOz=getWaterOzForDay(day.day);
