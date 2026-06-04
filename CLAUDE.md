@@ -1,12 +1,26 @@
 # CLAUDE.md — Packcheck: Philmont Edition
 
+## Product Vision
+
+Packcheck is a gear planning and pack weight platform for backcountry travelers. The core idea is simple: know what you're carrying before you leave the trailhead. The app helps users build a gear list, track weights, and simulate how their pack changes day by day as they consume food and water.
+
+The first release is **Packcheck: Philmont Edition** — purpose-built for Philmont Scout Ranch treks. Philmont is one of the most logistically complex backcountry experiences available to scouts, with crew-shared gear, resupply points, dry camps, and strict weight recommendations. The Philmont Edition addresses all of that specifically.
+
+The broader vision is a **platform of editions** — Philmont is the first, but the same core engine applies to any multi-day backcountry trip: BWCA, JMT, PCT thru-hiking, high-adventure base camps, and beyond. Each edition gets a tailored itinerary system, relevant defaults, and community-specific guidance. The brand — **Packcheck** — is the through-line.
+
+**Design philosophy:** No framework, no build step, no account required. The app works offline, saves locally, and loads fast. It should feel like a well-made tool, not a web app. Visual identity is strong and intentional — it should look like gear, not software.
+
+**Current status:** v1.0-beta, deployed at `beta.packcheck.app`, private beta for Crew 616-E (Trek 12-10, June 2026). Phase 2 opens the platform to all Philmont crews. Beyond that, additional editions.
+
+---
+
 ## Project Overview
 
-**Packcheck: Philmont Edition** is a single-page gear planning and pack weight simulator for Philmont Scout Ranch treks. It is deployed at **https://packcheck.app** via GitHub Pages from the `main` branch of `rhoegee/bagofholding`.
+**Packcheck: Philmont Edition** is a single-page gear planning and pack weight simulator for Philmont Scout Ranch treks. It is deployed at **https://beta.packcheck.app** via GitHub Pages from the `main` branch of `rhoegee/bagofholding`.
 
 - **Current trek:** Crew 616-E, Trek 12-10, June 16–27 2026
 - **No backend, no build step, no framework** — pure HTML/CSS/JS
-- **Two core files:** `index.html` (app) + `packcheck-theme.css` (styles)
+- **Core files:** `index.html` (app) + `packcheck-theme.css` (styles) + `pc-icons.js` (icon system) + `help-content.js` (user guide content)
 - **Feature branch convention:** `claude/adoring-mccarthy-d96BA` → merge to `main` to deploy
 
 ---
@@ -17,7 +31,8 @@
 index.html              — Full application (~2800 lines)
 packcheck-theme.css     — Trailhead v2 design system (~530 lines)
 wordmark-core.js        — PACKCHECK logo renderer
-pc-icons.js             — SVG category icon system
+pc-icons.js             — PNG/SVG category icon system (v2, border-fixed)
+help-content.js         — User guide Q&A content (edit to update in-app help)
 favicon.svg             — App icon
 BRIEF_phase1.md         — Original Phase 1 specification
 ```
@@ -56,7 +71,7 @@ All data lives as global JS variables in `index.html`. No external JSON files.
 ```
 **Important:** checked state is `item.included` (boolean), NOT `item.checked`.
 
-Category keys: `bags sleep equipment clothing rain cooking hygiene first_aid coords misc`
+Category keys: `bags sleep equipment clothing rain care food water utility luxury`
 
 ### `crewGearData` — Shared/crew gear
 Same item schema. Category keys: `shelter cook bear safety sanitation repair consumables water misc`
@@ -79,6 +94,71 @@ Pre-loaded for Trek 12-10 (Rugged, South Country).
 
 ### `MENUS` — Meal rotation
 10-meal cycle. Per meal: breakfast/lunch/dinner strings.
+
+---
+
+## Icon System (pc-icons.js)
+
+Icons are 168×168px PNG/SVG data URIs stored in a `PNG{}` object. The `bear` entry is an SVG data URI; all others are PNG.
+
+### Key → subject mapping
+| Key | Subject | Used by |
+|-----|---------|---------|
+| `pack` | backpack | personal: bags |
+| `sleep` | sleeping bag | personal: sleep |
+| `poles` | trekking poles | personal: equipment |
+| `jacket` | jacket | personal: clothing |
+| `rain` | rain jacket | personal: rain |
+| `soap` | soap/hygiene | personal: care |
+| `food` | spork | personal: food |
+| `bottle` | water droplet | personal: water, crew: water |
+| `firstaid` | first aid kit | personal: utility |
+| `chair` | camp chair | personal: luxury |
+| `cook` | pot/stove | crew: cook |
+| `bear` | bear face (SVG) | crew: bear |
+| `compass` | compass | crew: safety |
+| `trowel` | trowel | crew: sanitation |
+| `tape` | tape roll | crew: repair |
+| `consum` | sunscreen tube | crew: consumables |
+| `lantern` | lantern | crew: misc |
+| `tent` | tent | crew: shelter |
+| `checkbox` | brand lockup (STROKE only) | gear row checked state |
+
+### Category → icon key mappings (in index.html)
+```js
+const CAT_ICON = {
+  bags:'pack', sleep:'sleep', equipment:'poles', clothing:'jacket', rain:'rain',
+  care:'soap', food:'food', water:'bottle', utility:'firstaid', luxury:'chair'
+};
+const CREW_CAT_ICON = {
+  shelter:'tent', cook:'cook', bear:'bear', safety:'compass', sanitation:'trowel',
+  repair:'tape', consumables:'consum', water:'bottle', misc:'lantern'
+};
+```
+
+### pc-icons.js structure
+- `PNG{}` — data URI map (png or svg)
+- `STROKE{}` — SVG path glyphs; only `checkbox` lives here
+- `tile(key, size)` — renders a rounded-square badge at given size
+- `glyph(key, opts)` — renders icon as inline SVG (stroke style)
+- `ALL_KEYS` — full list of valid keys
+- `window.PCIcon` — exports: `{glyph, tile, PNG, STROKE, COL, keys:ALL_KEYS}`
+
+**When rebuilding icons:** border stroke must be inset by at least half stroke-width to avoid clipping. `bear` key stays as SVG data URI.
+
+---
+
+## Help System (help-content.js)
+
+Standalone file containing `HELP_CONTENT` array — edit this to update the in-app User Guide modal without touching `index.html`.
+
+```js
+const HELP_CONTENT = [
+  { title: "Section Title", items: [{ q: "Question?", a: "Answer." }] }
+]
+```
+
+`a` may contain basic HTML (`<strong>`, `<code>`, `<a>`, `<br>`). Modal is rendered dynamically by `showHelpModal()` in `index.html`.
 
 ---
 
@@ -129,6 +209,7 @@ Pre-loaded for Trek 12-10 (Rugged, South Country).
 - Sticky nav: `position:sticky; top:0; z-index:100`
 - **Two rows at ≤1024px:** logo+profile+theme+hamburger+save on top; tabs full-width below
 - `overflow-x:clip` on html/body (NOT `hidden` — hidden breaks sticky)
+- Help (?) button in nav opens User Guide modal — content served from `help-content.js`
 
 ### Five pages (tabs)
 | ID | Tab | Content |
@@ -143,6 +224,7 @@ Pre-loaded for Trek 12-10 (Rugged, South Country).
 `checkbox(3%) | item(27%) | brand(17%) | qty(5%) | weight(14%) | notes(auto) | actions(5%)`
 - `table-layout:fixed; border-collapse:separate; border-spacing:0` (separate required for sticky to work)
 - At ≤640px: brand and notes columns hidden via `display:none` on nth-child
+- Actions column: category move `<select>` (blank default + category options) + ✕ delete button
 
 ### Two-col layout (Gear and Crew tabs)
 - Desktop: `grid-template-columns: 1fr 330px` (main col | side panel)
@@ -182,11 +264,13 @@ Dark mode via `[data-theme="dark"]` on body — full palette inversion.
 
 ## Deployment
 
-- **Live URL:** https://packcheck.app (custom domain → GitHub Pages)
+- **Live URL:** https://beta.packcheck.app (custom subdomain → GitHub Pages)
+- **Root URL:** https://packcheck.app — reserved for v2.0 public launch
 - **Branch:** `main` (GitHub Pages source)
 - **Feature branch:** `claude/adoring-mccarthy-d96BA`
 - **Workflow:** edit on feature branch → merge to main → live within ~30 seconds
 - **HTTPS:** enforced in GitHub Pages settings; `overflow-x:clip` on html/body keeps nav sticky
+- **DNS:** `beta` CNAME → `rhoegee.github.io` (Namecheap); domain verified via TXT record
 
 ### Git workflow
 ```bash
@@ -198,7 +282,8 @@ git checkout claude/adoring-mccarthy-d96BA
 ```
 
 ### Versioning
-Tag stable releases: `git tag v1.0 -m "description" && git push origin v1.0`
+- Current: `v1.0-beta` (tagged in GitHub, private crew release)
+- Tag stable releases: create via GitHub Releases UI (remote environment blocks tag push)
 
 ---
 
@@ -214,15 +299,18 @@ Tag stable releases: `git tag v1.0 -m "description" && git push origin v1.0`
 8. **Google Sheets fetch** — crew gear loads from a published CSV URL; fails silently to hardcoded defaults.
 9. **Long-press edit** — 500ms `touchstart` timer triggers `startEdit()`; `touchmove` cancels it to preserve scrolling.
 10. **QR share format** — compact JSON (v:1, short keys) LZ-compressed to `?g=` URL param; `unpackGear()` handles import.
+11. **localStorage origin-bound** — data saved at `packcheck.app` is NOT accessible at `beta.packcheck.app`. Users moving between domains must export/import JSON.
+12. **Icon keys are internal labels only** — the key name (e.g. `bottle`) does not need to match the visual (a water droplet is fine). What matters is the key matches `CAT_ICON`/`CREW_CAT_ICON` in `index.html`.
 
 ---
 
 ## Phase 2 Planning (Not Yet Built)
 
-The next major version will open the app to all Philmont crews (not just 616-E). Key changes will include:
-- Remove hardcoded crew/trek info
+The next major version will open the app to all Philmont crews. Key changes will include:
+- Remove hardcoded crew/trek info (Crew 616-E, Trek 12-10)
+- Crew number lookup → auto-assign itinerary
 - Multi-crew / multi-trek configuration
-- Crew number lookup for itinerary assignment
-- Potential user accounts or crew codes for sync
+- Potential crew codes for shared crew gear sync
+- Deploy at `packcheck.app` (root) for public launch
 
-Current version should be tagged `v1.0` before Phase 2 begins.
+Phase 2 starts from `v1.0-beta` as the baseline. The `bagofholding` repo continues as the codebase.
