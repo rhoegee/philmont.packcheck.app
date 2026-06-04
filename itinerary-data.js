@@ -3222,6 +3222,7 @@ const ITINERARIES = {
   }
 };
 
+
 const MENUS = {
   breakfast:{
     1:['Buffalo Chicken Bites','Amazin Goldens Blue Raspberry','Animal Crackers','Kodiak Chewy S\'Mores Bar','Strawberry Granola','Skratch Orange Drink Mix'],
@@ -3260,3 +3261,6 @@ const MENUS = {
     10:['Stuffing Mix with Turkey & Cranberries','Turkey Spam','Chocolate Chip Waffles'],
   }
 };
+
+// Export for use in index.html (loaded via script tag)
+// ITINERARIES and MENUS are global
