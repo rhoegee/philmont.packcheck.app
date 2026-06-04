@@ -259,7 +259,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       <div class="modal-field">
         <label class="modal-label">Itinerary Number</label>
         <input class="modal-input" id="p-itin-num" placeholder="e.g. 12-10 (optional)" autocomplete="off" oninput="parseItinNumber()">
-        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Sets trek length. Leave blank if not yet assigned.</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;">Enter your assigned itinerary (e.g. 12-10, 9-3, 7-1). Loads your trek schedule and sets trek length.</div>
         <div id="itin-hint" style="font-size:0.72rem;color:var(--green);margin-top:0.2rem;font-style:italic;"></div>
       </div>
     </div>
@@ -1067,14 +1067,32 @@ function parseItinNumber(){
     if(!el) return;
     var val = el.value.trim();
     var hint = getEl('itin-hint');
-    if(!val){ if(hint) hint.textContent=''; return; }
-    // Match leading 7, 9, or 12 optionally followed by separator and digits
-    var match = val.match(/^(7|9|12)[-\/]?[0-9]*$/) || val.match(/^(7|9|12)[-\/]/);
-    if(match){
-      setSelectByValue('p-trek-length', match[1]);
-      if(hint) hint.textContent = 'Parsed: ' + match[1] + '-day trek';
+    if(!val){ if(hint){hint.textContent='';hint.style.color='';} return; }
+    // Normalize: uppercase, insert hyphen if missing (e.g. "1210" → "12-10")
+    var norm = val.toUpperCase().replace(/\s+/g,'');
+    if(!norm.includes('-')){
+      var ins = norm.match(/^(12|9|7)(\d+)$/);
+      if(ins) norm = ins[1]+'-'+ins[2];
+    }
+    if(typeof ITINERARIES !== 'undefined' && ITINERARIES[norm]){
+      var itin = ITINERARIES[norm];
+      el.value = norm;
+      setSelectByValue('p-trek-length', itin.days);
+      if(hint){
+        hint.textContent = '✓ '+itin.days+'-day · '+itin.difficulty+' · '+itin.miles+' mi'+(itin.region?' · '+itin.region+' Country':'');
+        hint.style.color = 'var(--pc-trim)';
+      }
     } else {
-      if(hint) hint.textContent = '';
+      // Still typing — suppress error while partial
+      var partial = norm.match(/^(12|9|7)(-\d*)?$/);
+      if(partial){
+        if(hint){hint.textContent='';hint.style.color='';}
+      } else {
+        if(hint){
+          hint.textContent = 'Not found — valid: 12-1 to 12-24, 9-1 to 9-12, 7-1 to 7-12';
+          hint.style.color = 'var(--pc-accent)';
+        }
+      }
     }
   } catch(e) { console.error('parseItinNumber error:', e); }
 }
