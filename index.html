@@ -2203,7 +2203,7 @@ function loadJSON(event){
       if(!data||typeof data!=='object') throw new Error('Invalid file format');
       if(data.profile)profile=data.profile;
       if(data.gearData)gearData=data.gearData;
-      if(data.crewGearData)crewGearData=data.crewGearData;
+      if(data.crewGearData)crewGearData=migrateCrewGearData(data.crewGearData);
       if(data.trekConfig){
         trekConfig=data.trekConfig;
         // Sync DOM inputs so updateCalc() reads the loaded values instead of overwriting them
@@ -2551,6 +2551,25 @@ function parseCrewCSV(csv) {
   return total > 0 ? fresh : null;
 }
 
+function migrateCrewGearData(data) {
+  if (!data) return data;
+  // Migrate old 'shelter' category → 'tents' + 'othershelter'
+  if (data.shelter && !data.tents) {
+    const tentNames = /tent|dome|ground.?cloth|stake/i;
+    const tents = [], other = [];
+    (data.shelter.items || []).forEach(i => {
+      (tentNames.test(i.name) ? tents : other).push(i);
+    });
+    data.tents = { label: 'Tents', color: CREW_COLORS.tents, items: tents };
+    data.othershelter = { label: 'Other Shelter', color: CREW_COLORS.othershelter, items: other };
+    delete data.shelter;
+  }
+  // Ensure both categories exist even if empty
+  if (!data.tents) data.tents = { label: 'Tents', color: CREW_COLORS.tents, items: [] };
+  if (!data.othershelter) data.othershelter = { label: 'Other Shelter', color: CREW_COLORS.othershelter, items: [] };
+  return data;
+}
+
 function setCrewSyncStatus(text) {
   const el = document.getElementById('crew-sync-status');
   if (el) el.textContent = text;
@@ -2586,7 +2605,7 @@ async function fetchCrewSheet() {
     const csv = await res.text();
     const parsed = parseCrewCSV(csv);
     if (!parsed) throw new Error('parse failed');
-    crewGearData = parsed;
+    crewGearData = migrateCrewGearData(parsed);
     const now = new Date();
     const stamp = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     setCrewSyncStatus(`Crew gear synced ${stamp}`);
@@ -2624,7 +2643,7 @@ function loadLocal() {
     const saved = JSON.parse(raw);
     if (saved.profile) Object.assign(profile, saved.profile);
     if (saved.gearData) gearData = saved.gearData;
-    if (saved.crewGearData) { crewGearData = saved.crewGearData; }
+    if (saved.crewGearData) { crewGearData = migrateCrewGearData(saved.crewGearData); }
     if (saved.crewGearCustomized) { crewGearCustomized = true; }
     if (saved.trekConfig) {
       Object.assign(trekConfig, saved.trekConfig);
