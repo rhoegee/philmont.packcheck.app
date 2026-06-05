@@ -460,9 +460,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
   <div class="stats-row">
     <div class="stat-box"><div class="stat-label">Total Crew Gear</div><div class="stat-val" id="cs-total">—</div><div class="stat-sub">ounces</div></div>
     <div class="stat-box"><div class="stat-label">In Pounds</div><div class="stat-val" id="cs-lbs">—</div><div class="stat-sub">lbs + oz</div></div>
-    <div class="stat-box"><div class="stat-label">Your Crew Share</div><div class="stat-val" id="cs-per">—</div><div class="stat-sub">oz (own tent)</div></div>
-    <div class="stat-box hide-sm"><div class="stat-label">Adult Share</div><div class="stat-val" id="cs-adult">—</div><div class="stat-sub">oz (no tent)</div></div>
-    <div class="stat-box hide-sm"><div class="stat-label">Scout Share</div><div class="stat-val" id="cs-scout">—</div><div class="stat-sub">oz (w/ tent)</div></div>
+    <div class="stat-box"><div class="stat-label">Your Crew Share</div><div class="stat-val" id="cs-per">—</div><div class="stat-sub" id="cs-per-sub">per person</div></div>
   </div>
 
   <div class="two-col">
@@ -1163,16 +1161,16 @@ function updateCrewStats(){
   const perLbs=Math.floor(adultShare/16),perRem=Math.round((adultShare%16)*10)/10;
 
   // Update stats bar
+  const isLeader=(profile.role==='leader');
+  const myShare=isLeader?adultShare:scoutShare;
   const csTotal=document.getElementById('cs-total');
   const csLbs=document.getElementById('cs-lbs');
   const csPer=document.getElementById('cs-per');
-  const csAdult=document.getElementById('cs-adult');
-  const csScout=document.getElementById('cs-scout');
+  const csPerSub=document.getElementById('cs-per-sub');
   if(csTotal)csTotal.textContent=Math.round(tot);
   if(csLbs)csLbs.innerHTML=`${lbs}<span class="u">lb</span> ${rem}<span class="u">oz</span>`;
-  if(csPer)csPer.textContent=ozToStr(Math.round(adultShare));
-  if(csAdult)csAdult.textContent=ozToStr(Math.round(adultShare));
-  if(csScout)csScout.textContent=ozToStr(Math.round(scoutShare));
+  if(csPer)csPer.textContent=ozToStr(Math.round(myShare));
+  if(csPerSub)csPerSub.textContent=isLeader?'leader (no tent)':'scout (w/ tent)';
 
   // Update header card
   const ctd=document.getElementById('crew-total-display');
