@@ -467,6 +467,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     <div class="main-col" id="crew-sections"></div>
     <div class="side-col">
       <div class="side-title">Crew Configuration</div>
+      <button onclick="showShareCrewGear()" style="width:100%;margin-bottom:1rem;padding:0.6rem;background:var(--pc-anchor);color:var(--pc-surface);border:none;border-radius:4px;font-family:'Oswald',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.06em;cursor:pointer;">&#9632; SHARE CREW GEAR LIST</button>
       <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.25rem;">
         <div class="calc-row"><span class="calc-label" style="font-size:0.85rem;">Adults (own tent)</span><input class="calc-input" id="crew-adults" type="number" value="3" min="1" max="6" onchange="updateCrewStats()"></div>
         <div class="calc-row"><span class="calc-label" style="font-size:0.85rem;">Scouts (share tent)</span><input class="calc-input" id="crew-scouts" type="number" value="5" min="1" max="11" onchange="updateCrewStats()"></div>
@@ -503,9 +504,6 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       </div>
       <div class="legend" id="crew-legend"></div>
       <div id="crew-custom-note" style="display:none;font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:1rem;">You've customized this list — it won't be replaced on refresh. <button style="background:none;border:none;color:var(--pc-accent);cursor:pointer;font-size:0.72rem;padding:0;text-decoration:underline;" onclick="resetCrewGear()">Reset to default</button></div>
-      <hr class="side-divider">
-      <button class="nav-btn" style="width:100%;margin-top:0.25rem;" onclick="showShareCrewGear()">&#9632; Share Crew Gear List</button>
-      <div style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.5rem;">Leaders: share this link with your crew. Each scout opens it once to load the crew gear list.</div>
     </div>
   </div>
 </div>
@@ -2863,6 +2861,12 @@ function unpackGear(data){
 function showShareCrewGear(){
   const compressed=LZString.compressToEncodedURIComponent(JSON.stringify(crewGearData));
   const shareUrl=location.origin+location.pathname+'?c='+compressed;
+  // Use native share sheet on mobile if available
+  if(navigator.share){
+    navigator.share({title:'Packcheck — Crew Gear List',text:'Open this link to load our crew gear list in Packcheck.',url:shareUrl}).catch(()=>{});
+    return;
+  }
+  // Fall back to modal with QR + copy link
   document.getElementById('crew-share-url-input').value=shareUrl;
   const wrap=document.getElementById('crew-share-qr-wrap');
   const errEl=document.getElementById('crew-share-qr-error');
@@ -2874,7 +2878,7 @@ function showShareCrewGear(){
   }catch(e){
     wrap.innerHTML='';
     errEl.style.display='block';
-    errEl.textContent='Data too large for QR ('+shareUrl.length+' chars). Copy the link below and share it directly.';
+    errEl.textContent='Data too large for QR. Copy the link below and share it directly.';
   }
   document.getElementById('crew-share-modal').style.display='flex';
 }
