@@ -11,6 +11,8 @@ jobs:
       DEPLOY_TOKEN: ${{ secrets.PHILMONT_DEPLOY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Configure git credentials
         run: |
