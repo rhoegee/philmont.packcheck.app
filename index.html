@@ -1844,6 +1844,11 @@ function updateCalc(){
   if(liveCrewOz>0){const cgEl=document.getElementById('crew-gear-oz');if(cgEl)cgEl.value=Math.round(liveCrewOz);}
   trekConfig.crewGearOz=Math.max(0,safeFloat(getVal('crew-gear-oz',0),0));
   trekConfig.bodyWeight=Math.max(50,safeFloat(getVal('body-weight',175),175));
+  // Auto-fill staff days from itinerary if field is blank
+  const sdEl=document.getElementById('staff-days');
+  if(sdEl&&!sdEl.value.trim()&&trekConfig.staffDays.length>0){
+    sdEl.value=trekConfig.staffDays.join(',');
+  }
   const sStr=getVal('staff-days','')||'';
   trekConfig.staffDays=sStr.split(',').map(function(s){return safeInt(s.trim(),NaN);}).filter(function(n){return !isNaN(n);});
   document.getElementById('day-slider').max=trekConfig.days;
