@@ -506,16 +506,6 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         </div>
       </div>
       <div class="legend" id="crew-legend"></div>
-      <hr class="side-divider">
-      <div class="rules-banner">
-        <div class="rules-title">Philmont vs Crew Provided</div>
-        <ul class="rules-list">
-          <li>Tents, pots, bear system issued by Philmont</li>
-          <li>Stoves & fuel must be crew-provided</li>
-          <li>Dining fly substituted with Paria Siltarp</li>
-          <li>Adults bringing own tents</li>
-        </ul>
-      </div>
     </div>
   </div>
 </div>
@@ -594,9 +584,9 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
 <!-- ═══════════ PAGE: ITINERARY ═══════════ -->
 <div class="page" id="page-itin">
   <div class="hero">
-    <div class="hero-eyebrow" id="itin-eyebrow">Itinerary 12-10 · Rugged · 62 Miles · South Country</div>
+    <div class="hero-eyebrow" id="itin-eyebrow">Select your itinerary in Profile Setup to load your trek schedule</div>
     <div class="hero-title">Your <span>Trek</span></div>
-    <div class="hero-sub">Mount Phillips 11,736 ft · Tooth of Time 9,003 ft · Conservation at Beaubien (7:30am)</div>
+    <div class="hero-sub" id="itin-hero-sub">Day-by-day schedule, menus, and estimated pack weights for your assigned itinerary.</div>
   </div>
   <div style="overflow-x:auto;">
     <table class="itin-table">
@@ -654,13 +644,6 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         <a href="#" onclick="printChecklist();return false;" style="color:var(--pc-anchor);font-weight:600;text-decoration:none;">Print My Gear Checklist ↗</a>
       </div>
     </div>
-    <div class="rules-card">
-      <div class="rules-card-title">Itinerary 12-10 Specifics</div>
-      <p><strong>Dry camps:</strong> Day 7 (Comanche Peak) and Day 10 (Devils Wash Basin). Carry water from Clear Creek and Ute Gulch respectively.</p>
-      <p style="margin-top:0.5rem;"><strong>Burn areas:</strong> Crosses Ute Park Fire Recovery Zone — prepare for sun exposure and exposed terrain.</p>
-      <p style="margin-top:0.5rem;"><strong>Conservation:</strong> Beaubien, 7:30am, Forest Fuel Reduction. Long pants required.</p>
-      <p style="margin-top:0.5rem;"><strong>Max elevation:</strong> 11,736 ft. Aggressive hydration first 2–3 days.</p>
-    </div>
   </div>
 </div>
 
@@ -688,7 +671,7 @@ function cssVar(name){return getComputedStyle(document.documentElement).getPrope
 // ── Category → icon glyph maps (pc-icons.js keys) ──
 const CAT_ICON={bags:'pack',sleep:'sleep',equipment:'poles',clothing:'jacket',rain:'rain',
   care:'soap',food:'food',water:'bottle',utility:'firstaid',luxury:'chair'};
-const CREW_CAT_ICON={tents:'tent',othershelter:'tent',cook:'cook',bear:'bear',safety:'compass',sanitation:'trowel',
+const CREW_CAT_ICON={tents:'tent',othershelter:'tent',cook:'cook',bear:'food',safety:'compass',sanitation:'trowel',
   repair:'tape',consumables:'consum',water:'bottle',misc:'lantern'};
 // Treatment per the App Brand Board §05: Camp Badge (B) on cream surfaces, reversed monoline in pine chrome.
 let GEAR_ICON_TREATMENT='auto';

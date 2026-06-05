@@ -109,14 +109,6 @@ const HELP_CONTENT = [
         a: "Crew gear is equipment shared across the whole crew — tents, crew cook sets, bear bags, etc. Packcheck divides the weight equally per person so you can see your true share."
       },
       {
-        q: "Hey wait a second, my crew gear changed. I didn't touch anything.",
-        a: "That's right. Your Lead Advisor has the ability to update the crew gear list for everyone on the trek. It updates automatically every time you refresh the app."
-      },
-      {
-        q: "Can I edit the crew gear?",
-        a: "Yes, but if the Lead Advisor makes an update it will override your changes. You should consider the crew gear list \"locked\"."
-      },
-      {
         q: "What is the Crew Weight Override?",
         a: "The Weight Override lets you skip the itemized crew gear list and enter a single total weight instead — in pounds. Your Lead Advisor may weigh the crew gear directly and give everyone a number like \"22 lbs.\" Enter that here and the app will use it for all pack weight calculations, dividing it evenly among the crew."
       },
