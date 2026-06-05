@@ -481,6 +481,15 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         <div id="crew-share-breakdown" style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.85rem;color:var(--muted2);"></div>
       </div>
       <hr class="side-divider">
+      <div class="side-title">Advisor Weight Override</div>
+      <div style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-bottom:0.6rem;">If your lead advisor weighed all crew gear, enter that number here. Overrides the calculated total — tent split still applies.</div>
+      <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.35rem;">
+        <input class="calc-input" id="crew-override-lbs" type="number" step="0.1" placeholder="lbs" style="width:80px;" oninput="updateCrewOverride()">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);">lbs total</span>
+        <button class="nav-btn" style="font-size:0.7rem;padding:0.2rem 0.6rem;color:var(--pc-ink-soft);border-color:var(--pc-line-2);background:transparent;" onclick="clearCrewOverride()">Clear</button>
+      </div>
+      <div id="crew-override-note" style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--pc-trim);display:none;margin-bottom:0.5rem;">⬤ Override active — calculated weight ignored</div>
+      <hr class="side-divider">
       <div class="side-title">Weight by Category</div>
       <div class="donut-wrap">
         <canvas id="crew-donut" width="170" height="170" role="img" aria-label="Crew gear weight by category"></canvas>
@@ -1612,34 +1621,21 @@ function updateCrewOverride(){
   try {
     var el=getEl('crew-override-lbs');
     if(!el)return;
-    var val=safeFloat(el.value,NaN);
-    crewOverrideOz=(isNaN(val)||val<0)?null:val*16;
-    var clearBtn=getEl('crew-override-clear-btn');
+    var lbs=safeFloat(el.value,NaN);
+    crewOverrideOz=(isNaN(lbs)||lbs<=0)?null:lbs*16;
     var note=getEl('crew-override-note');
-    if(crewOverrideOz!==null){
-      if(clearBtn)clearBtn.style.display='';
-      if(note){note.textContent='Override active — using '+val.toFixed(1)+' lbs. Tent split still applies.';note.style.color='var(--pc-trim)';}
-    } else {
-      if(clearBtn)clearBtn.style.display='none';
-      if(note){note.textContent="Enter the total crew gear weight your advisor measured. Tent split still applies — adults won't carry tent weight.";note.style.color='';}
-    }
-    updateCrewStats();
-    updateCalc();
-    scheduleAutoSave();
-  } catch(e){ console.error('updateCrewOverride error:',e); }
+    if(note)note.style.display=crewOverrideOz!==null?'block':'none';
+    updateCrewStats();updateCalc();scheduleAutoSave();
+  } catch(e){console.error('updateCrewOverride error:',e);}
 }
 
 function clearCrewOverride(){
   crewOverrideOz=null;
   var el=getEl('crew-override-lbs');
   if(el)el.value='';
-  var clearBtn=getEl('crew-override-clear-btn');
-  if(clearBtn)clearBtn.style.display='none';
   var note=getEl('crew-override-note');
-  if(note){note.textContent="Enter the total crew gear weight your advisor measured. Tent split still applies — adults won't carry tent weight.";note.style.color='';}
-  updateCrewStats();
-  updateCalc();
-  scheduleAutoSave();
+  if(note)note.style.display='none';
+  updateCrewStats();updateCalc();scheduleAutoSave();
 }
 
 function toggleItem(key,idx,checked){
@@ -1662,6 +1658,27 @@ function clearOverride(){
   document.getElementById('override-oz').value='';
   document.getElementById('override-banner-wrap').style.display='none';
   updateStats();scheduleAutoSave();
+}
+
+function updateCrewOverride(){
+  try {
+    var el=getEl('crew-override-lbs');
+    if(!el)return;
+    var lbs=safeFloat(el.value,NaN);
+    crewOverrideOz=(isNaN(lbs)||lbs<=0)?null:lbs*16;
+    var note=getEl('crew-override-note');
+    if(note)note.style.display=crewOverrideOz!==null?'block':'none';
+    updateCrewStats();updateCalc();scheduleAutoSave();
+  } catch(e){console.error('updateCrewOverride error:',e);}
+}
+
+function clearCrewOverride(){
+  crewOverrideOz=null;
+  var el=getEl('crew-override-lbs');
+  if(el)el.value='';
+  var note=getEl('crew-override-note');
+  if(note)note.style.display='none';
+  updateCrewStats();updateCalc();scheduleAutoSave();
 }
 
 function totalOzActive(){
@@ -2451,9 +2468,11 @@ function parseCrewCSV(csv) {
     const sourceRaw = get(iSource).toUpperCase();
     const source = sourceRaw === 'PHI' ? 'philmont' : 'crew';
 
+    const isTent = catKey==='shelter' && /tent|dome|tarp/i.test(name);
     fresh[catKey].items.push({
       name, brand: get(iBrand), qty, unitOz, oz,
       notes: get(iNotes), source, included: true,
+      ...(isTent && {isTent:true}),
     });
   }
 
@@ -2532,10 +2551,8 @@ function loadLocal() {
       crewOverrideOz = saved.crewOverrideOz;
       const el = document.getElementById('crew-override-lbs');
       if (el) el.value = (crewOverrideOz/16).toFixed(1);
-      const clearBtn = document.getElementById('crew-override-clear-btn');
-      if (clearBtn) clearBtn.style.display = '';
       const note = document.getElementById('crew-override-note');
-      if (note) { note.textContent = 'Override active — using '+(crewOverrideOz/16).toFixed(1)+' lbs. Tent split still applies.'; note.style.color='var(--pc-trim)'; }
+      if (note) note.style.display = 'block';
     }
     return true;
   } catch(e) { console.warn('loadLocal error:', e); return false; }
