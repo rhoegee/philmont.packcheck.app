@@ -13,7 +13,7 @@ const ITINERARIES = {
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Olympia", miles: 2.6, gain: 520, loss: 300, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
-      { day: 3, camp: "ABREU", miles: 3.3, gain: 600, loss: 110, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 3, camp: "ABREU", miles: 3.3, gain: 600, loss: 110, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
       { day: 4, camp: "Fish Camp", miles: 7.9, gain: 6970, loss: 5480, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 5, camp: "Buck Creek", miles: 7.5, gain: 3840, loss: 3380, dry: false, resupply: true, foodPickup: "Apache Springs", staffed: false, chuck: false, type: "trail" },
       { day: 6, camp: "BEAUBIEN", miles: 3.3, gain: 1740, loss: 1570, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
@@ -41,7 +41,7 @@ const ITINERARIES = {
       { day: 7, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 8, camp: "CROOKED CREEK", miles: 4.0, gain: 1800, loss: 1750, dry: false, resupply: true, foodPickup: "Phillips Junction", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "Agua Fria", miles: 7.3, gain: 2960, loss: 3550, dry: false, resupply: true, foodPickup: "Apache Springs", staffed: false, chuck: false, type: "trail" },
-      { day: 10, camp: "ABREU", miles: 9.2, gain: 6220, loss: 7820, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 10, camp: "ABREU", miles: 9.2, gain: 6220, loss: 7820, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
       { day: 11, camp: "Olympia", miles: 3.3, gain: 110, loss: 600, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 12, camp: "Camping HQ", miles: 2.6, gain: 300, loss: 520, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
     ]
@@ -55,7 +55,7 @@ const ITINERARIES = {
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Olympia", miles: 2.6, gain: 520, loss: 300, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
-      { day: 3, camp: "ABREU", miles: 3.3, gain: 600, loss: 110, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 3, camp: "ABREU", miles: 3.3, gain: 600, loss: 110, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
       { day: 4, camp: "Lookout Meadow", miles: 4.8, gain: 3490, loss: 1260, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 5, camp: "APACHE SPRINGS", miles: 6.6, gain: 3790, loss: 3820, dry: false, resupply: true, foodPickup: "Apache Springs", staffed: true, chuck: false, type: "staff" },
       { day: 6, camp: "Wild Horse", miles: 7.5, gain: 3360, loss: 2350, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
@@ -93,7 +93,7 @@ const ITINERARIES = {
     days: 12,
     miles: 57,
     difficulty: "Rugged",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "House Canyon", miles: 2.3, gain: 1010, loss: 560, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
@@ -177,7 +177,7 @@ const ITINERARIES = {
     days: 12,
     miles: 59,
     difficulty: "Rugged",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "DEAN COW", miles: 5.0, gain: 2970, loss: 2660, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: true, chuck: false, type: "staff" },
@@ -219,7 +219,7 @@ const ITINERARIES = {
     days: 12,
     miles: 57,
     difficulty: "Rugged",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Cimarron River", miles: 2.2, gain: 580, loss: 640, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
@@ -282,7 +282,7 @@ const ITINERARIES = {
     days: 12,
     miles: 60,
     difficulty: "Strenuous",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Herradura", miles: 3.4, gain: 1600, loss: 1200, dry: true, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "dry" },
@@ -303,7 +303,7 @@ const ITINERARIES = {
     days: 12,
     miles: 66,
     difficulty: "Strenuous",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "HARLAN", miles: 4.1, gain: 1630, loss: 710, dry: true, resupply: true, foodPickup: "Camping HQ", staffed: true, chuck: false, type: "staff" },
@@ -408,7 +408,7 @@ const ITINERARIES = {
     days: 12,
     miles: 69,
     difficulty: "Super Strenuous",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Aguila", miles: 5.9, gain: 2920, loss: 1510, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
@@ -450,7 +450,7 @@ const ITINERARIES = {
     days: 12,
     miles: 82,
     difficulty: "Super Strenuous",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Bluestem", miles: 3.7, gain: 2050, loss: 1210, dry: true, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "dry" },
@@ -471,7 +471,7 @@ const ITINERARIES = {
     days: 12,
     miles: 81,
     difficulty: "Super Strenuous",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Cimarron River", miles: 2.2, gain: 580, loss: 640, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
@@ -492,7 +492,7 @@ const ITINERARIES = {
     days: 12,
     miles: 87,
     difficulty: "Super Strenuous",
-    region: "Both",
+    region: "North/South",
     dayData: [
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Bluestem", miles: 3.7, gain: 2050, loss: 1210, dry: true, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "dry" },
@@ -1929,7 +1929,7 @@ const ITINERARIES = {
         "resupply": false,
         "foodPickup": "",
         "staffed": true,
-        "chuck": false,
+        "chuck": true,
         "type": "staff"
     },
     {

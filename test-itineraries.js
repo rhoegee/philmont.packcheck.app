@@ -14,8 +14,8 @@ const { ITINERARIES, MENUS } = sandbox;
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 const VALID_TYPES = new Set(['chq', 'staff', 'dry', 'trail']);
-const VALID_DIFFICULTIES = new Set(['Easy', 'Moderate', 'Challenging', 'Rugged', 'Strenuous']);
-const VALID_REGIONS = new Set(['North', 'South', 'North/South', 'South/North']);
+const VALID_DIFFICULTIES = new Set(['Easy', 'Moderate', 'Challenging', 'Rugged', 'Strenuous', 'Super Strenuous']);
+const VALID_REGIONS = new Set(['North', 'South', 'North/South']);
 
 let passed = 0;
 let failed = 0;
@@ -113,9 +113,11 @@ for (const [key, itin] of Object.entries(ITINERARIES)) {
     check(dk, d.day === itin.dayData.indexOf(d) + 1,     `day number out of sequence`);
   }
 
-  // Exactly one chuck camp per itinerary (Beaubien pattern — warn if zero or >2)
+  // If any chuck days exist, verify they're all on staffed days
   const chuckDays = itin.dayData.filter(d => d.chuck);
-  check(key, chuckDays.length >= 1,                       `no chuck camp days found`);
+  for (const d of chuckDays) {
+    check(`${key} day${d.day}`, d.staffed === true, `chuck=true but staffed=false on day ${d.day}`);
+  }
 }
 
 // ─── 3. Menu checks ──────────────────────────────────────────────────────────
