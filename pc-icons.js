@@ -22,12 +22,14 @@ const PNG={
   tent:`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKgAAACoCAIAAAD7KTLjAAAFnElEQVR4nO2dO24UQRRFx4iYpZAQmSWwCCRCVuQQicWQeTNeAUFLo9HM1Ov6vM99r+7JwPZUu06d6hq7BS9ff7xeyH58ir4AEgPFbwrFbwrFbwrFbwrFbwrFb8pn5/He3j+cR8zC729fPIfzEE/ZPdzOksMiMBRP39Ncp85uBeiLp29F7FaA8uGO1o1Qn1i14juvzPkIk4jTCTw+QWsCX1R+OydfNGWP4jCfq+Kp3A7TuV0S37oy+tbFYp7nD3e07kZrSldOfJPFPx2Syq1RnPaZ4mk9iqeTPNf9sHhaj0XL/Zh4WkdAxf3qT+5oPYT1aR8Q/7imaD2Qx8kfir5XPK0DsuJ+cqtPbf3f3z+nf5OFaRFd7+Mr5S44/v7zl+eVaDFn57z4StZLMrfhD2/1qa3LW/pWGz6fst2UE/GVnqjpCTpv9HecihsrPvU+X5tRNbts9f0pl4leRhJ/t10wd3DuBMm7/RbFtyJuvXHfIfotxJNH6ouXc982+qZ43uAz0n+bL158z919z+iLiyctKovvP8xvGH1l8USgrPjR9+67RV9WPJGpKX40d/mjJaMvKN7CUz33BcW36HmkLuljdxNUEz+3yfd8ZrHoq4knnZQSv567/PmVoi8lnvRTR7xW7vJXlYm+jngyRBHxurnLX1sj+iLiySgVxFvkLr9CgegriCcTpBdvl7v8OtmjTy+ezJFbvHXu8quljj63eDJNYvE+ucuvmTf6rOJxZhznSobIKr6F3ZMUxZ7RSCnec5Pvef2M0acUT9bJJz4qd3mUdNHnE09USCY+Nnd5rFzRJxNPtMgkHiF3ecRE0WcSTxRJIx4nd3ncLNGnEU90ySEeLXd59BTR5xBP1EkgHjN3+Rrwo08gnliALh4594Ok0aOLJ0ZAi8fP/SBj9LjikWetH9jvAld8C7TcDzCvSgBUfJZN/pZcGz6oeGINoviMuR8kih5RPHEATnze3A+yRA8nnviAJd4nd+v/Pz5F9J+jLyAGKAchABUflbv893PgRw8knniCIj42956PjgIePYp44gyE+Ozv3VsgRw8h3oee6UZQ4kO8+Kq5H8BGHy/eh/6JDlfiQ7D42rkfYEYfKd7tOx9dXuEX5gDiVl8p9wPA7yhMfPgmfwzkPNwjUdEjFq/L3MyWP+LFiA/PPQSo6IsX37PCoHy4ESB+z9wPcBZZ8eKf8jj7O6y5O7zFe+a+npFFiCDR71g8uTiLR8i9NZZniAjRs/hN8ROPcJiXx0K4ErfoaxavO30l39A7icfPvf9ztIiNvmDxFhNXL3oP8Qi5YxIYvbl451bWF1n4sctnuLCtnrkfRM2DrXiQTX50OJDLM42+1OHOenusdMQzFA+Sewr8o69TvO46Azni2WElnrmP4rzU6hT/lJV1VnuNmoj3z91zB7YbyzP64sWTFvricXJfH9H/iOc2IovfFGXxlXKXXyd79Cx+U5rif3/7cvvHt/eP09fCee+uOyLO9Z9Gf6fpTuItuYuP/Tla6p/ivXz98dr6WP/yuSSfhVwIO9AuxZNpJPH9t3nm7klrtod2aJ1/vfq6+XAFmKJ4zBzb6nvO9iSEUTUn4uXtgsByKo6Hu00Zvse/vX8Iq6n277BhmbgFnxf/qJl3eigedfTcoLu2et7pE9Epa/Iez+hBmBbRK54bPiBzm/zBQPF0D8WK9cv62zm6D2F92sfEP11TdO/M0wkfPYAPF0/3sahYv8xt9XQfhZb1i/wgxsRFTF8HkVGf7fnDXWtIpq+ORWPzxR/Imln/CqZzuyr+gPp1cZhPHfGX7h2ei6CF8wSqiT/gDd4O3WaUH8Rg0EaoT6zOw5a3XC+R9a9jF5K++CtcAdM4bJyG4q/cfhtcBC2c75Ie4m/hIQAEPmW7KRS/KRS/KRS/KRS/KRS/KRS/Kf8BIUvBWOqaWaQAAAAASUVORK5CYII=`,
 };
 const STROKE={
+  fly:{base:`<path d="M8 72 L50 24 L92 72"/>`,
+       accent:`<path d="M30 54 L50 36 L70 54"/>`},
   checkbox:{base:`<rect x="22" y="22" width="56" height="56" rx="4"/>`,
             accent:`<path d="M33 52 L46 65 L69 35"/>`},
 };
 const ALL_KEYS=['pack','sleep','poles','jacket','rain','soap',
   'food','bottle','firstaid','chair','cook','bear',
-  'compass','trowel','tape','consum','lantern','tent','checkbox'];
+  'compass','trowel','tape','consum','lantern','tent','fly','checkbox'];
 function glyph(key,opts){
   const o=Object.assign({ic:'#f4ecd8',ac:'#c5172b',bw:6,size:52},opts);
   if(PNG[key]){const r=Math.round(o.size*0.25);
