@@ -110,11 +110,11 @@ const HELP_CONTENT = [
       },
       {
         q: "Hey wait a second, my crew gear changed. I didn't touch anything.",
-        a: "That's right. Your Lead Advisor has the ability to update the crew gear list for everyone on the trek. It updates automatically every time you refresh the app."
+        a: "The crew gear list loads from a shared template each time the app opens. If the template was updated, your list will reflect that. Any edits you've made locally will be replaced on the next refresh."
       },
       {
         q: "Can I edit the crew gear?",
-        a: "Yes, but if the Lead Advisor makes an update it will override your changes. You should consider the crew gear list \"locked\"."
+        a: "Yes. Just know that your changes are local — they only exist on your device. If the app refreshes and pulls a new version of the template, your edits will be overwritten."
       },
       {
         q: "What is the Crew Weight Override?",
