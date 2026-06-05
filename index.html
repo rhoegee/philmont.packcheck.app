@@ -483,6 +483,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         </div>
         <div id="crew-override-note" style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.35rem;">Enter the total crew gear weight your advisor measured. Tent split still applies.</div>
       </div>
+      <div id="crew-custom-note" style="display:none;font-size:0.72rem;color:var(--muted);font-style:italic;margin-bottom:1rem;">You've customized this list — it won't be replaced on refresh. <button style="background:none;border:none;color:var(--pc-accent);cursor:pointer;font-size:0.72rem;padding:0;text-decoration:underline;" onclick="resetCrewGear()">Reset to default</button></div>
       <div style="margin-bottom:1.25rem;">
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Tent Weight Override</div>
         <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -1290,6 +1291,7 @@ function renderCrewGear(){
   const container=document.getElementById('crew-sections');
   if(!container)return;
   container.innerHTML='';
+  updateCrewCustomNote();
   // Migrate unitOz
   Object.values(crewGearData).forEach(cat=>{
     cat.items.forEach(item=>{
@@ -1336,6 +1338,10 @@ function renderCrewGear(){
         <td class="td-weight">${ozToStr(item.oz)}</td>
         <td class="td-notes" ${item.notes?`title="${item.notes}"`:''}>${item.notes||''}</td>
         <td class="td-actions">
+          <select class="move-cat-select" title="Move to category" onchange="moveCrewItem('${key}',${idx},this)" onclick="event.stopPropagation()">
+            <option value=""></option>
+            ${Object.entries(crewGearData).filter(([k])=>k!==key).map(([k,c])=>`<option value="${k}">${c.label}</option>`).join('')}
+          </select>
           <button class="action-btn del" onclick="removeCrewItem('${key}',${idx})" title="Delete">✕</button>
         </td>
       </tr>`;
@@ -1396,8 +1402,10 @@ function startCrewEdit(key,idx){crewEditingRow={key,idx};renderCrewGear();}
 function cancelCrewEdit(){crewEditingRow=null;renderCrewGear();}
 function toggleCrewItem(key,idx,checked){
   crewGearData[key].items[idx].included=checked;
+  crewGearCustomized=true;
   renderCrewGear();
   updateCrewStats();
+  scheduleAutoSave();
 }
 function updateCrewEditTotal(){
   const qty=parseInt(document.getElementById('cei-qty')?.value)||1;
@@ -1419,7 +1427,9 @@ function saveCrewEdit(key,idx){
     notes:document.getElementById('cei-notes').value.trim(),
   };
   crewEditingRow=null;
+  crewGearCustomized=true;
   renderCrewGear();
+  scheduleAutoSave();
 }
 function addCrewItem(key){
   try {
@@ -1440,13 +1450,17 @@ function addCrewItem(key){
       source:'crew',
       included:true
     });
+    crewGearCustomized=true;
     renderCrewGear();
+    scheduleAutoSave();
   } catch(e) { console.error('addCrewItem error:', e); }
 }
 function removeCrewItem(key,idx){
   if(!confirm(`Remove "${crewGearData[key].items[idx].name}"?`))return;
   crewGearData[key].items.splice(idx,1);
+  crewGearCustomized=true;
   renderCrewGear();
+  scheduleAutoSave();
 }
 
 function renderGear(){
@@ -1646,6 +1660,7 @@ function moveCrewItem(fromKey,idx,select){
   if(!toKey){return;}
   const item=crewGearData[fromKey].items.splice(idx,1)[0];
   crewGearData[toKey].items.push(item);
+  crewGearCustomized=true;
   renderCrewGear();updateCrewStats();scheduleAutoSave();
 }
 
@@ -2541,7 +2556,28 @@ function setCrewSyncStatus(text) {
   if (el) el.textContent = text;
 }
 
+let crewGearCustomized = false;
+
+function updateCrewCustomNote(){
+  const el=document.getElementById('crew-custom-note');
+  if(el) el.style.display=crewGearCustomized?'block':'none';
+}
+
+function resetCrewGear(){
+  if(!confirm('Reset crew gear to the default list? Your changes will be lost.')) return;
+  crewGearCustomized=false;
+  updateCrewCustomNote();
+  fetchCrewSheet();
+  scheduleAutoSave();
+}
+
 async function fetchCrewSheet() {
+  // Don't overwrite crew gear the user has already customized
+  if (crewGearCustomized) {
+    setCrewSyncStatus('Using your saved crew list');
+    updateCrewCustomNote();
+    return;
+  }
   const params = new URLSearchParams(window.location.search);
   const url = params.get('sheet') || DEFAULT_SHEET_URL;
   try {
@@ -2557,7 +2593,6 @@ async function fetchCrewSheet() {
     try { renderCrewGear(); } catch(e) {}
     try { updateCalc(); } catch(e) {}
   } catch(e) {
-    // Silent fallback — hardcoded crewGearData remains in place
     console.warn('Crew sheet fetch failed, using fallback data:', e.message);
   }
 }
@@ -2572,7 +2607,7 @@ let _saveTimer = null;
 function saveLocal() {
   try {
     localStorage.setItem(LOCAL_KEY, JSON.stringify({
-      profile, gearData, trekConfig, overrideOz, crewOverrideOz, tentOverrideOz
+      profile, gearData, trekConfig, overrideOz, crewOverrideOz, tentOverrideOz, crewGearData, crewGearCustomized
     }));
   } catch(e) { console.warn('saveLocal error:', e); }
 }
@@ -2589,6 +2624,8 @@ function loadLocal() {
     const saved = JSON.parse(raw);
     if (saved.profile) Object.assign(profile, saved.profile);
     if (saved.gearData) gearData = saved.gearData;
+    if (saved.crewGearData) { crewGearData = saved.crewGearData; }
+    if (saved.crewGearCustomized) { crewGearCustomized = true; }
     if (saved.trekConfig) {
       Object.assign(trekConfig, saved.trekConfig);
       setVal('trek-days', trekConfig.days||12);
