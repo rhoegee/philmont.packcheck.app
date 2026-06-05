@@ -503,6 +503,9 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       </div>
       <div class="legend" id="crew-legend"></div>
       <div id="crew-custom-note" style="display:none;font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:1rem;">You've customized this list — it won't be replaced on refresh. <button style="background:none;border:none;color:var(--pc-accent);cursor:pointer;font-size:0.72rem;padding:0;text-decoration:underline;" onclick="resetCrewGear()">Reset to default</button></div>
+      <hr class="side-divider">
+      <button class="nav-btn" style="width:100%;margin-top:0.25rem;" onclick="showShareCrewGear()">&#9632; Share Crew Gear List</button>
+      <div style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.5rem;">Leaders: share this link with your crew. Each scout opens it once to load the crew gear list.</div>
     </div>
   </div>
 </div>
@@ -2760,6 +2763,18 @@ window.onload=()=>{
       history.replaceState({},'',location.pathname);
     }
   }catch(e){console.warn('URL import failed',e);}
+  try{
+    const _cParam=new URLSearchParams(location.search).get('c');
+    if(_cParam){
+      const data=JSON.parse(LZString.decompressFromEncodedURIComponent(_cParam));
+      if(data&&confirm('Load crew gear list from your leader?\n\nThis will replace your current crew gear list.')){
+        crewGearData=migrateCrewGearData(data);
+        crewGearCustomized=true;
+        saveLocal();
+      }
+      history.replaceState({},'',location.pathname);
+    }
+  }catch(e){console.warn('Crew URL import failed',e);}
   try{renderGear();}catch(e){console.error('renderGear error:',e);}
   try{renderCrewGear();}catch(e){console.error('renderCrewGear error:',e);}
   try{renderProfileCard();}catch(e){console.error('renderProfileCard error:',e);}
@@ -2845,6 +2860,32 @@ function unpackGear(data){
     if(data.tc.bw)trekConfig.bodyWeight=data.tc.bw;
   }
 }
+function showShareCrewGear(){
+  const compressed=LZString.compressToEncodedURIComponent(JSON.stringify(crewGearData));
+  const shareUrl=location.origin+location.pathname+'?c='+compressed;
+  document.getElementById('crew-share-url-input').value=shareUrl;
+  const wrap=document.getElementById('crew-share-qr-wrap');
+  const errEl=document.getElementById('crew-share-qr-error');
+  wrap.innerHTML='';errEl.style.display='none';
+  const canvas=document.createElement('canvas');
+  wrap.appendChild(canvas);
+  try{
+    new QRious({element:canvas,value:shareUrl,size:248,level:'L'});
+  }catch(e){
+    wrap.innerHTML='';
+    errEl.style.display='block';
+    errEl.textContent='Data too large for QR ('+shareUrl.length+' chars). Copy the link below and share it directly.';
+  }
+  document.getElementById('crew-share-modal').style.display='flex';
+}
+function closeCrewShareModal(){document.getElementById('crew-share-modal').style.display='none';}
+function copyCrewShareUrl(e){
+  const inp=document.getElementById('crew-share-url-input');
+  inp.select();
+  try{navigator.clipboard.writeText(inp.value);}catch(_){document.execCommand('copy');}
+  const btn=e.target;const orig=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=orig,1500);
+}
+
 function showSendToPhone(){
   const compact=packGear();
   const compressed=LZString.compressToEncodedURIComponent(compact);
@@ -2939,6 +2980,23 @@ function clearBatchSelection(){
       <button onclick="closeHelpModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--pc-ink-soft);line-height:1;">&times;</button>
     </div>
     <div id="help-body" style="font-size:.88rem;line-height:1.6;color:var(--pc-ink);"></div>
+  </div>
+</div>
+
+<!-- Share Crew Gear modal -->
+<div id="crew-share-modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeCrewShareModal()">
+  <div class="modal" style="text-align:center;max-width:320px;">
+    <div class="modal-title">Share Crew Gear List</div>
+    <p style="font-size:.85rem;color:var(--pc-ink-soft);margin:.25rem 0 1rem;">Send this link to your crew. When they open it, they'll be prompted to load your crew gear list.</p>
+    <div id="crew-share-qr-wrap" style="display:flex;justify-content:center;margin:.5rem 0;min-height:60px;"></div>
+    <div id="crew-share-qr-error" style="display:none;font-size:.82rem;color:var(--red);margin:.5rem 0;"></div>
+    <div style="margin:.75rem 0;">
+      <input id="crew-share-url-input" type="text" readonly style="width:100%;font-size:.65rem;padding:.45rem .6rem;border:1px solid var(--pc-line);border-radius:4px;background:var(--pc-bg);color:var(--pc-ink-soft);box-sizing:border-box;">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="copyCrewShareUrl(event)">Copy Link</button>
+      <button class="modal-btn primary" onclick="closeCrewShareModal()">Done</button>
+    </div>
   </div>
 </div>
 
