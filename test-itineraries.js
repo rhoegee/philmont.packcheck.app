@@ -13,7 +13,7 @@ vm.runInContext(`(function(){ ${src}; this.ITINERARIES=ITINERARIES; this.MENUS=M
 const { ITINERARIES, MENUS } = sandbox;
 
 // ─── helpers ───────────────────────────────────────────────────────────────
-const VALID_TYPES = new Set(['chq', 'staff', 'dry', 'trail']);
+const VALID_TYPES = new Set(['chq', 'staff', 'dry', 'trail', 'conservation']);
 const VALID_DIFFICULTIES = new Set(['Easy', 'Moderate', 'Challenging', 'Rugged', 'Strenuous', 'Super Strenuous']);
 const VALID_REGIONS = new Set(['North', 'South', 'North/South']);
 
@@ -73,9 +73,10 @@ for (const [key, itin] of Object.entries(ITINERARIES)) {
   check(key, day1 && day1.camp === 'Camping HQ',         `Day 1 camp="${day1?.camp}", expected "Camping HQ"`);
   check(key, day1 && day1.miles === 0,                   `Day 1 miles=${day1?.miles}, expected 0`);
 
-  // Last day must be CHQ
+  // Last day must be CHQ (conservation at CHQ on last day is also valid)
   const lastDay = itin.dayData[itin.dayData.length - 1];
-  check(key, lastDay && lastDay.type === 'chq',          `Last day type="${lastDay?.type}", expected "chq"`);
+  check(key, lastDay && (lastDay.type === 'chq' || (lastDay.type === 'conservation' && lastDay.camp === 'Camping HQ')),
+                                                         `Last day type="${lastDay?.type}", expected "chq" or conservation at CHQ`);
   check(key, lastDay && lastDay.camp === 'Camping HQ',   `Last day camp="${lastDay?.camp}", expected "Camping HQ"`);
 
   // Per-day checks

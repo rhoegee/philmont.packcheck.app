@@ -17,7 +17,7 @@ const ITINERARIES = {
       { day: 4, camp: "Fish Camp", miles: 7.9, gain: 6970, loss: 5480, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 5, camp: "Buck Creek", miles: 7.5, gain: 3840, loss: 3380, dry: false, resupply: true, foodPickup: "Apache Springs", staffed: false, chuck: false, type: "trail" },
       { day: 6, camp: "BEAUBIEN", miles: 3.3, gain: 1740, loss: 1570, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
-      { day: 7, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 7, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 8, camp: "MINERS PARK", miles: 8.6, gain: 4320, loss: 5640, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "Bear Caves", miles: 3.1, gain: 1780, loss: 1380, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 10, camp: "URRACA", miles: 4.6, gain: 1780, loss: 2210, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -35,7 +35,7 @@ const ITINERARIES = {
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Hunting Lodge", miles: 3.6, gain: 1200, loss: 490, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
       { day: 3, camp: "Shaefers Pass", miles: 4.9, gain: 2960, loss: 1970, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
-      { day: 4, camp: "MINERS PARK", miles: 3.7, gain: 1490, loss: 2250, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
+      { day: 4, camp: "MINERS PARK", miles: 3.7, gain: 1490, loss: 2250, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "conservation" },
       { day: 5, camp: "Bear Caves", miles: 3.1, gain: 1780, loss: 1380, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 6, camp: "BEAUBIEN", miles: 8.5, gain: 4110, loss: 3190, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
       { day: 7, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -62,7 +62,7 @@ const ITINERARIES = {
       { day: 7, camp: "CLEAR CREEK", miles: 2.8, gain: 1210, loss: 1310, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 8, camp: "Divide", miles: 8.4, gain: 3800, loss: 3550, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 9, camp: "BLACK MOUNTAIN", miles: 4.3, gain: 1930, loss: 3400, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 10, camp: "MINERS PARK", miles: 5.2, gain: 2450, loss: 3540, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
+      { day: 10, camp: "MINERS PARK", miles: 5.2, gain: 2450, loss: 3540, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "conservation" },
       { day: 11, camp: "Magpie", miles: 5.1, gain: 1590, loss: 2210, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 12, camp: "Camping HQ", miles: 4.4, gain: 470, loss: 1170, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
     ]
@@ -84,7 +84,7 @@ const ITINERARIES = {
       { day: 8, camp: "BALDY TOWN", miles: 3.6, gain: 2140, loss: 1200, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "BALDY TOWN", miles: 10.3, gain: 5960, loss: 5960, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "Pueblano Ruins", miles: 5.5, gain: 2210, loss: 3660, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 11, camp: "Sioux", miles: 8.2, gain: 3160, loss: 4190, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
+      { day: 11, camp: "Sioux", miles: 8.2, gain: 3160, loss: 4190, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
       { day: 12, camp: "Camping HQ", miles: 2.2, gain: 990, loss: 1330, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
     ]
   },
@@ -105,7 +105,7 @@ const ITINERARIES = {
       { day: 8, camp: "Placer", miles: 8.7, gain: 5350, loss: 5350, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: false, chuck: false, type: "trail" },
       { day: 9, camp: "HEAD OF DEAN", miles: 5.6, gain: 1950, loss: 2740, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "New Dean", miles: 5.1, gain: 1080, loss: 2070, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 11, camp: "Cimarron River", miles: 3.6, gain: 1260, loss: 1740, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
+      { day: 11, camp: "Cimarron River", miles: 3.6, gain: 1260, loss: 1740, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
       { day: 12, camp: "Camping HQ", miles: 2.2, gain: 640, loss: 580, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
     ]
   },
@@ -123,7 +123,7 @@ const ITINERARIES = {
       { day: 5, camp: "PONIL", miles: 7.5, gain: 2920, loss: 4540, dry: false, resupply: true, foodPickup: "Ponil", staffed: true, chuck: true, type: "staff" },
       { day: 6, camp: "Beatty Lakes", miles: 10.5, gain: 3320, loss: 2180, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 7, camp: "RING PLACE", miles: 3.2, gain: 290, loss: 440, dry: false, resupply: true, foodPickup: "Ring Place", staffed: true, chuck: false, type: "staff" },
-      { day: 8, camp: "WHITEMAN VEGA", miles: 2.8, gain: 120, loss: 180, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 8, camp: "WHITEMAN VEGA", miles: 2.8, gain: 120, loss: 180, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 9, camp: "DAN BEARD", miles: 9.8, gain: 820, loss: 980, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "Cottonwood", miles: 9.3, gain: 2750, loss: 3250, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 11, camp: "House Canyon", miles: 6.2, gain: 2480, loss: 2720, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
@@ -141,7 +141,7 @@ const ITINERARIES = {
       { day: 2, camp: "Sioux", miles: 2.5, gain: 1340, loss: 1000, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
       { day: 3, camp: "DAN BEARD", miles: 5.5, gain: 2560, loss: 2040, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 4, camp: "WHITEMAN VEGA", miles: 9.8, gain: 980, loss: 820, dry: false, resupply: true, foodPickup: "Ring Place", staffed: true, chuck: false, type: "staff" },
-      { day: 5, camp: "RING PLACE", miles: 2.8, gain: 180, loss: 120, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 5, camp: "RING PLACE", miles: 2.8, gain: 180, loss: 120, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 6, camp: "Beatty Lakes", miles: 3.2, gain: 440, loss: 290, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 7, camp: "PONIL", miles: 10.5, gain: 2180, loss: 3320, dry: false, resupply: true, foodPickup: "Ponil", staffed: true, chuck: true, type: "staff" },
       { day: 8, camp: "Pueblano Ruins", miles: 6.8, gain: 3870, loss: 2570, dry: false, resupply: true, foodPickup: "Pueblano", staffed: false, chuck: false, type: "trail" },
@@ -163,7 +163,7 @@ const ITINERARIES = {
       { day: 3, camp: "DEAN COW", miles: 4.5, gain: 2810, loss: 2650, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 4, camp: "New Dean", miles: 3.9, gain: 1630, loss: 1120, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 5, camp: "Bluestem", miles: 7.6, gain: 2840, loss: 2700, dry: true, resupply: true, foodPickup: "Ponil", staffed: false, chuck: false, type: "dry" },
-      { day: 6, camp: "PUEBLANO", miles: 7.5, gain: 3020, loss: 2850, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 6, camp: "PUEBLANO", miles: 7.5, gain: 3020, loss: 2850, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 7, camp: "Ewells Park", miles: 4.0, gain: 2300, loss: 970, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 8, camp: "Ewells Park", miles: 12.1, gain: 6810, loss: 6810, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: false, chuck: false, type: "trail" },
       { day: 9, camp: "MIRANDA", miles: 2.3, gain: 410, loss: 880, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -184,7 +184,7 @@ const ITINERARIES = {
       { day: 3, camp: "New Dean", miles: 3.9, gain: 1630, loss: 1120, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 4, camp: "Bluestem", miles: 7.6, gain: 2840, loss: 2700, dry: true, resupply: true, foodPickup: "Ponil", staffed: false, chuck: false, type: "dry" },
       { day: 5, camp: "Elkhorn", miles: 3.5, gain: 1710, loss: 1090, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 6, camp: "HEAD OF DEAN", miles: 3.1, gain: 1100, loss: 870, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 6, camp: "HEAD OF DEAN", miles: 3.1, gain: 1100, loss: 870, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 7, camp: "Minnette Meadows", miles: 12.6, gain: 4260, loss: 5150, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 8, camp: "CIMARRONCITO", miles: 5.7, gain: 2460, loss: 2160, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "CIMARRONCITO", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -204,7 +204,7 @@ const ITINERARIES = {
       { day: 2, camp: "Old Abreu", miles: 3.1, gain: 900, loss: 420, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
       { day: 3, camp: "Fish Camp", miles: 7.2, gain: 6520, loss: 5210, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 4, camp: "BEAUBIEN", miles: 6.9, gain: 3780, loss: 3140, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
-      { day: 5, camp: "Porcupine", miles: 2.7, gain: 1260, loss: 1410, dry: false, resupply: true, foodPickup: "Phillips Junction", staffed: false, chuck: false, type: "trail" },
+      { day: 5, camp: "Porcupine", miles: 2.7, gain: 1260, loss: 1410, dry: false, resupply: true, foodPickup: "Phillips Junction", staffed: false, chuck: false, type: "conservation" },
       { day: 6, camp: "CLEAR CREEK", miles: 6.8, gain: 2960, loss: 1830, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 7, camp: "Comanche Peak", miles: 6.0, gain: 3210, loss: 2420, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 8, camp: "CYPHERS MINE", miles: 4.5, gain: 1960, loss: 3720, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -224,7 +224,7 @@ const ITINERARIES = {
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Cimarron River", miles: 2.2, gain: 580, loss: 640, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
       { day: 3, camp: "Black Jacks", miles: 3.9, gain: 1970, loss: 1030, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 4, camp: "Elkhorn", miles: 5.4, gain: 1940, loss: 1650, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
+      { day: 4, camp: "Elkhorn", miles: 5.4, gain: 1940, loss: 1650, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
       { day: 5, camp: "PONIL", miles: 5.1, gain: 2100, loss: 3490, dry: false, resupply: true, foodPickup: "Ponil", staffed: true, chuck: true, type: "staff" },
       { day: 6, camp: "METCALF STATION", miles: 5.9, gain: 1930, loss: 1840, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 7, camp: "DAN BEARD", miles: 6.0, gain: 2110, loss: 1410, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -249,7 +249,7 @@ const ITINERARIES = {
       { day: 5, camp: "CLEAR CREEK", miles: 10.4, gain: 4250, loss: 3340, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 6, camp: "Red Hills", miles: 7.8, gain: 3500, loss: 3420, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 7, camp: "BEAUBIEN", miles: 7.4, gain: 3230, loss: 4290, dry: false, resupply: true, foodPickup: "Phillips Junction", staffed: true, chuck: true, type: "staff" },
-      { day: 8, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 8, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 9, camp: "Lower Bonito", miles: 4.6, gain: 1750, loss: 2110, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 10, camp: "MINERS PARK", miles: 6.5, gain: 2360, loss: 3310, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
       { day: 11, camp: "Tooth Ridge", miles: 7.6, gain: 4230, loss: 3930, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
@@ -268,7 +268,7 @@ const ITINERARIES = {
       { day: 3, camp: "Magpie", miles: 3.6, gain: 1550, loss: 2010, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 4, camp: "MINERS PARK", miles: 6.2, gain: 2310, loss: 1690, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
       { day: 5, camp: "Lower Bonito", miles: 6.5, gain: 3310, loss: 2360, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 6, camp: "BLACK MOUNTAIN", miles: 8.0, gain: 4020, loss: 3900, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 6, camp: "BLACK MOUNTAIN", miles: 8.0, gain: 4020, loss: 3900, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 7, camp: "Lamberts Mine", miles: 8.4, gain: 5930, loss: 5990, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 8, camp: "CIMARRONCITO", miles: 4.1, gain: 2070, loss: 2960, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "CIMARRONCITO", miles: 4.7, gain: 1740, loss: 1740, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -287,11 +287,11 @@ const ITINERARIES = {
       { day: 1, camp: "Camping HQ", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
       { day: 2, camp: "Herradura", miles: 3.4, gain: 1600, loss: 1200, dry: true, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "dry" },
       { day: 3, camp: "MINERS PARK", miles: 3.1, gain: 1020, loss: 510, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 4, camp: "CLARKS FORK", miles: 6.8, gain: 3800, loss: 4290, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 4, camp: "CLARKS FORK", miles: 6.8, gain: 3800, loss: 4290, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 5, camp: "Minnette Meadows", miles: 8.8, gain: 3410, loss: 3080, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
-      { day: 6, camp: "CIMARRONCITA", miles: 1.7, gain: 230, loss: 670, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 6, camp: "CIMARRONCITA", miles: 1.7, gain: 230, loss: 670, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 7, camp: "Elkhorn", miles: 10.8, gain: 4560, loss: 3460, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 8, camp: "Pueblano Ruins", miles: 5.4, gain: 2120, loss: 2210, dry: false, resupply: true, foodPickup: "Pueblano", staffed: false, chuck: false, type: "trail" },
+      { day: 8, camp: "Pueblano Ruins", miles: 5.4, gain: 2120, loss: 2210, dry: false, resupply: true, foodPickup: "Pueblano", staffed: false, chuck: false, type: "conservation" },
       { day: 9, camp: "BALDY TOWN", miles: 4.0, gain: 2340, loss: 890, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "BALDY TOWN", miles: 10.3, gain: 5960, loss: 5960, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 11, camp: "Maxwell", miles: 4.1, gain: 930, loss: 2280, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
@@ -313,7 +313,7 @@ const ITINERARIES = {
       { day: 6, camp: "BALDY TOWN", miles: 10.9, gain: 4990, loss: 3580, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: true, chuck: false, type: "staff" },
       { day: 7, camp: "BALDY TOWN", miles: 6.3, gain: 4050, loss: 4050, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 8, camp: "PUEBLANO", miles: 6.6, gain: 2570, loss: 4380, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 9, camp: "Elkhorn", miles: 4.0, gain: 1760, loss: 1310, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
+      { day: 9, camp: "Elkhorn", miles: 4.0, gain: 1760, loss: 1310, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
       { day: 10, camp: "PONIL", miles: 5.1, gain: 2100, loss: 3490, dry: false, resupply: true, foodPickup: "Ponil", staffed: true, chuck: true, type: "staff" },
       { day: 11, camp: "INDIAN WRITINGS", miles: 4.5, gain: 1910, loss: 2080, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 12, camp: "Camping HQ", miles: 3.8, gain: 1260, loss: 1500, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
@@ -330,7 +330,7 @@ const ITINERARIES = {
       { day: 2, camp: "Horse Canyon", miles: 5.3, gain: 3000, loss: 1950, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
       { day: 3, camp: "DAN BEARD", miles: 2.7, gain: 390, loss: 590, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 4, camp: "WHITEMAN VEGA", miles: 9.8, gain: 980, loss: 820, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 5, camp: "Beatty Lakes", miles: 6.0, gain: 620, loss: 410, dry: true, resupply: true, foodPickup: "Ring Place", staffed: false, chuck: false, type: "dry" },
+      { day: 5, camp: "Beatty Lakes", miles: 6.0, gain: 620, loss: 410, dry: true, resupply: true, foodPickup: "Ring Place", staffed: false, chuck: false, type: "conservation" },
       { day: 6, camp: "Flume Canyon", miles: 10.8, gain: 2700, loss: 3210, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 7, camp: "Copper Park", miles: 7.4, gain: 4970, loss: 2210, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 8, camp: "Copper Park", miles: 11.2, gain: 6430, loss: 6430, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: false, chuck: false, type: "trail" },
@@ -356,7 +356,7 @@ const ITINERARIES = {
       { day: 7, camp: "Lost Cabin", miles: 6.5, gain: 2540, loss: 2290, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 8, camp: "Lower Bonito", miles: 5.7, gain: 3400, loss: 3650, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 9, camp: "CRATER LAKE", miles: 4.5, gain: 1430, loss: 2020, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 10, camp: "MINERS PARK", miles: 4.9, gain: 2500, loss: 2870, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
+      { day: 10, camp: "MINERS PARK", miles: 4.9, gain: 2500, loss: 2870, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "conservation" },
       { day: 11, camp: "Tooth Ridge", miles: 7.6, gain: 4230, loss: 3930, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 12, camp: "Camping HQ", miles: 7.0, gain: 1980, loss: 3590, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
     ]
@@ -376,7 +376,7 @@ const ITINERARIES = {
       { day: 6, camp: "Wild Horse", miles: 7.5, gain: 3360, loss: 2350, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 7, camp: "Mount Phillips", miles: 7.3, gain: 3880, loss: 2610, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 8, camp: "Whistle Punk", miles: 6.5, gain: 2680, loss: 4460, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 9, camp: "SAWMILL", miles: 2.0, gain: 450, loss: 1150, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 9, camp: "SAWMILL", miles: 2.0, gain: 450, loss: 1150, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 10, camp: "CLARKS FORK", miles: 11.9, gain: 3640, loss: 5340, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
       { day: 11, camp: "Tooth Ridge", miles: 7.6, gain: 4800, loss: 4010, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 12, camp: "Camping HQ", miles: 5.6, gain: 1340, loss: 2950, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
@@ -393,7 +393,7 @@ const ITINERARIES = {
       { day: 2, camp: "Toothache Springs", miles: 2.5, gain: 1150, loss: 200, dry: false, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "trail" },
       { day: 3, camp: "CRATER LAKE", miles: 4.8, gain: 2410, loss: 1880, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 4, camp: "BEAUBIEN", miles: 7.3, gain: 3660, loss: 2710, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
-      { day: 5, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 5, camp: "BEAUBIEN", miles: 0.0, gain: 0, loss: 0, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 6, camp: "APACHE SPRINGS", miles: 7.3, gain: 3220, loss: 3150, dry: false, resupply: true, foodPickup: "Apache Springs", staffed: true, chuck: false, type: "staff" },
       { day: 7, camp: "Wild Horse", miles: 7.5, gain: 3360, loss: 2350, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 8, camp: "Mount Phillips", miles: 7.3, gain: 3870, loss: 2590, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
@@ -415,7 +415,7 @@ const ITINERARIES = {
       { day: 3, camp: "MINERS PARK", miles: 4.6, gain: 2000, loss: 2310, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 4, camp: "CLARKS FORK", miles: 6.8, gain: 3800, loss: 4290, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 5, camp: "Minnette Meadows", miles: 8.2, gain: 3290, loss: 2960, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
-      { day: 6, camp: "Mistletoe", miles: 6.9, gain: 3290, loss: 2730, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
+      { day: 6, camp: "Mistletoe", miles: 6.9, gain: 3290, loss: 2730, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
       { day: 7, camp: "HEAD OF DEAN", miles: 5.5, gain: 1820, loss: 1480, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 8, camp: "Ewells Park", miles: 4.7, gain: 2320, loss: 1670, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 9, camp: "Ewells Park", miles: 11.9, gain: 6650, loss: 6650, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: false, chuck: false, type: "trail" },
@@ -435,7 +435,7 @@ const ITINERARIES = {
       { day: 2, camp: "Magpie", miles: 4.4, gain: 1170, loss: 470, dry: true, resupply: true, foodPickup: "Camping HQ", staffed: false, chuck: false, type: "dry" },
       { day: 3, camp: "URRACA", miles: 1.9, gain: 1140, loss: 550, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 4, camp: "MINERS PARK", miles: 6.9, gain: 2520, loss: 2500, dry: false, resupply: true, foodPickup: "Miners Park", staffed: true, chuck: false, type: "staff" },
-      { day: 5, camp: "BLACK MOUNTAIN", miles: 5.2, gain: 3540, loss: 2450, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 5, camp: "BLACK MOUNTAIN", miles: 5.2, gain: 3540, loss: 2450, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 6, camp: "Porcupine", miles: 6.2, gain: 3410, loss: 3330, dry: false, resupply: true, foodPickup: "Phillips Junction", staffed: false, chuck: false, type: "trail" },
       { day: 7, camp: "CLEAR CREEK", miles: 6.8, gain: 2960, loss: 1830, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 8, camp: "SAWMILL", miles: 12.6, gain: 5980, loss: 7080, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
@@ -460,7 +460,7 @@ const ITINERARIES = {
       { day: 6, camp: "Mistletoe", miles: 11.3, gain: 3200, loss: 4330, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 7, camp: "Cimarron River", miles: 6.6, gain: 2520, loss: 3660, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 8, camp: "SAWMILL", miles: 8.8, gain: 4250, loss: 2310, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 9, camp: "CYPHERS MINE", miles: 5.3, gain: 3220, loss: 3090, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 9, camp: "CYPHERS MINE", miles: 5.3, gain: 3220, loss: 3090, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 10, camp: "CIMARRONCITO", miles: 10.0, gain: 4510, loss: 5700, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 11, camp: "Shaefers Pass", miles: 6.1, gain: 3090, loss: 2470, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 12, camp: "Camping HQ", miles: 10.1, gain: 3670, loss: 5740, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
@@ -480,7 +480,7 @@ const ITINERARIES = {
       { day: 5, camp: "Black Horse Creek", miles: 5.2, gain: 2520, loss: 1580, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 6, camp: "Black Horse Creek", miles: 9.1, gain: 5820, loss: 5820, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: false, chuck: false, type: "trail" },
       { day: 7, camp: "PUEBLANO", miles: 7.3, gain: 2370, loss: 4000, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 8, camp: "PONIL", miles: 8.2, gain: 3030, loss: 3980, dry: false, resupply: true, foodPickup: "Ponil", staffed: true, chuck: false, type: "staff" },
+      { day: 8, camp: "PONIL", miles: 8.2, gain: 3030, loss: 3980, dry: false, resupply: true, foodPickup: "Ponil", staffed: true, chuck: false, type: "conservation" },
       { day: 9, camp: "DEAN COW", miles: 8.1, gain: 3460, loss: 3340, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "Vaca", miles: 10.0, gain: 4050, loss: 3890, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 11, camp: "CLARKS FORK", miles: 7.7, gain: 2630, loss: 2510, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: true, type: "staff" },
@@ -500,7 +500,7 @@ const ITINERARIES = {
       { day: 4, camp: "BALDY TOWN", miles: 6.6, gain: 4380, loss: 2570, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: true, chuck: false, type: "staff" },
       { day: 5, camp: "BALDY TOWN", miles: 6.3, gain: 4050, loss: 4050, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 6, camp: "Mistletoe", miles: 12.4, gain: 3910, loss: 5370, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
-      { day: 7, camp: "CIMARRONCITA", miles: 5.2, gain: 2060, loss: 3060, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
+      { day: 7, camp: "CIMARRONCITA", miles: 5.2, gain: 2060, loss: 3060, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "conservation" },
       { day: 8, camp: "Whistle Punk", miles: 13.1, gain: 6550, loss: 4050, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 9, camp: "Red Hills", miles: 6.8, gain: 3610, loss: 3130, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
       { day: 10, camp: "BEAUBIEN", miles: 7.4, gain: 3230, loss: 4290, dry: false, resupply: true, foodPickup: "Phillips Junction", staffed: true, chuck: true, type: "staff" },
@@ -565,7 +565,7 @@ const ITINERARIES = {
         "foodPickup": "Ponil",
         "staffed": true,
         "chuck": true,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -604,7 +604,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -678,7 +678,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "dry"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -704,7 +704,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -752,7 +752,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 4,
@@ -804,7 +804,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -891,7 +891,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 7,
@@ -904,7 +904,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -965,7 +965,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": true,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -1004,7 +1004,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1091,7 +1091,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 7,
@@ -1104,7 +1104,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1152,7 +1152,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 4,
@@ -1204,7 +1204,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1265,7 +1265,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -1304,7 +1304,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1378,7 +1378,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -1404,7 +1404,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1491,7 +1491,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 7,
@@ -1504,7 +1504,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1591,7 +1591,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "trail"
+        "type": "conservation"
     },
     {
         "day": 7,
@@ -1604,7 +1604,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1678,7 +1678,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -1704,7 +1704,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1791,7 +1791,7 @@ const ITINERARIES = {
         "foodPickup": "Miners Park",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 7,
@@ -1830,7 +1830,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -1917,7 +1917,7 @@ const ITINERARIES = {
         "foodPickup": "Phillips Junction",
         "staffed": false,
         "chuck": false,
-        "type": "trail"
+        "type": "conservation"
     },
     {
         "day": 7,
@@ -1956,7 +1956,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2017,7 +2017,7 @@ const ITINERARIES = {
         "foodPickup": "Ponil",
         "staffed": false,
         "chuck": false,
-        "type": "trail"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -2082,7 +2082,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2143,7 +2143,7 @@ const ITINERARIES = {
         "foodPickup": "Ponil",
         "staffed": false,
         "chuck": false,
-        "type": "trail"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -2208,7 +2208,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2282,7 +2282,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "trail"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -2334,7 +2334,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2447,7 +2447,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "dry"
+        "type": "conservation"
     },
     {
         "day": 9,
@@ -2460,7 +2460,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2534,7 +2534,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "dry"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -2586,7 +2586,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2699,7 +2699,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 9,
@@ -2712,7 +2712,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2773,7 +2773,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": true,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -2838,7 +2838,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -2912,7 +2912,7 @@ const ITINERARIES = {
         "foodPickup": "Phillips Junction",
         "staffed": true,
         "chuck": false,
-        "type": "staff"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -2964,7 +2964,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -3025,7 +3025,7 @@ const ITINERARIES = {
         "foodPickup": "Ponil",
         "staffed": false,
         "chuck": false,
-        "type": "trail"
+        "type": "conservation"
     },
     {
         "day": 5,
@@ -3090,7 +3090,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   },
@@ -3164,7 +3164,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "dry"
+        "type": "conservation"
     },
     {
         "day": 6,
@@ -3216,7 +3216,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "chq"
+        "type": "conservation"
     }
 ]
   }
