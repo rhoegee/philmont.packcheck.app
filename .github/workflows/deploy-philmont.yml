@@ -19,7 +19,7 @@ jobs:
           git config user.email "deploy@packcheck.app"
           git config user.name "Packcheck Deploy"
           git config --global credential.helper store
-          printf 'https://%s@github.com\n' "$DEPLOY_TOKEN" > ~/.git-credentials
+          printf 'https://x-access-token:%s@github.com\n' "$DEPLOY_TOKEN" > ~/.git-credentials
 
       - name: Set CNAME
         run: echo "philmont.packcheck.app" > CNAME
