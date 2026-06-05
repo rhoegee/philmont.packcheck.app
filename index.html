@@ -368,7 +368,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
   <div class="hero">
     <div class="hero-eyebrow">Philmont Scout Ranch · Packing Checklist</div>
     <div class="hero-title">Personal <span>Gear</span></div>
-    <div class="hero-sub">Build your pack against the official Philmont recommended list.</div>
+    <div class="hero-sub">Build your pack starting with the official Philmont recommended list.</div>
   </div>
 
   <div class="stats-row">
@@ -446,7 +446,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       <div style="flex:1;">
         <div class="hero-eyebrow">Shared Equipment · Split Among Crew</div>
         <div class="hero-title">Crew <span>Gear</span></div>
-        <div class="hero-sub">Philmont-issued and crew-provided shared equipment. Weight split per person feeds into the Pack Weight calculator.</div>
+        <div class="hero-sub">Philmont-issued and crew-provided shared equipment. Your per-person crew gear weight is calculated here.</div>
         <div id="crew-sync-status" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.25rem;"></div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
@@ -480,7 +480,6 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         </div>
         <div id="crew-override-note" style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.35rem;">Enter the total crew gear weight your advisor measured. Tent split still applies.</div>
       </div>
-      <div id="crew-custom-note" style="display:none;font-size:0.72rem;color:var(--muted);font-style:italic;margin-bottom:1rem;">You've customized this list — it won't be replaced on refresh. <button style="background:none;border:none;color:var(--pc-accent);cursor:pointer;font-size:0.72rem;padding:0;text-decoration:underline;" onclick="resetCrewGear()">Reset to default</button></div>
       <div style="margin-bottom:1.25rem;">
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Tent Weight Override</div>
         <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -503,6 +502,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         </div>
       </div>
       <div class="legend" id="crew-legend"></div>
+      <div id="crew-custom-note" style="display:none;font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:1rem;">You've customized this list — it won't be replaced on refresh. <button style="background:none;border:none;color:var(--pc-accent);cursor:pointer;font-size:0.72rem;padding:0;text-decoration:underline;" onclick="resetCrewGear()">Reset to default</button></div>
     </div>
   </div>
 </div>
@@ -1936,6 +1936,7 @@ function updateDayChart(){
     options:{
       responsive:true,maintainAspectRatio:false,
       onResize:()=>requestAnimationFrame(alignDaySlider),
+      onClick:(_,elements)=>{if(elements.length){const day=elements[0].index+1;onDaySlider(day);}},
       plugins:{legend:{display:false},tooltip:{callbacks:{
         label:ctx=>`${ctx.raw} lbs`,
         afterLabel:ctx=>{const d=ctx.dataIndex+1;const f=[];if(trekConfig.resupplyDays.includes(d))f.push('Resupply');if(trekConfig.dryCampDays.includes(d))f.push('Dry camp');return f.length?f.join(' · '):'';}
@@ -2525,7 +2526,7 @@ function updateCrewCustomNote(){
 }
 
 function resetCrewGear(){
-  if(!confirm('Reset crew gear to the default list? Your changes will be lost.')) return;
+  if(!confirm('You are about to reset your custom crew list to the default list. Your changes will be lost unless you save a backup first.')) return;
   crewGearCustomized=false;
   updateCrewCustomNote();
   fetchCrewSheet();
