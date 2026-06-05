@@ -84,8 +84,8 @@ const ITINERARIES = {
       { day: 8, camp: "BALDY TOWN", miles: 3.6, gain: 2140, loss: 1200, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "BALDY TOWN", miles: 10.3, gain: 5960, loss: 5960, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "Pueblano Ruins", miles: 5.5, gain: 2210, loss: 3660, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 11, camp: "Sioux", miles: 8.2, gain: 3160, loss: 4190, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
-      { day: 12, camp: "Camping HQ", miles: 2.2, gain: 990, loss: 1330, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
+      { day: 11, camp: "Sioux", miles: 8.2, gain: 3160, loss: 4190, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
+      { day: 12, camp: "Camping HQ", miles: 2.2, gain: 990, loss: 1330, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
     ]
   },
   "12-5": {
@@ -105,8 +105,8 @@ const ITINERARIES = {
       { day: 8, camp: "Placer", miles: 8.7, gain: 5350, loss: 5350, dry: false, resupply: true, foodPickup: "Baldy Town", staffed: false, chuck: false, type: "trail" },
       { day: 9, camp: "HEAD OF DEAN", miles: 5.6, gain: 1950, loss: 2740, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 10, camp: "New Dean", miles: 5.1, gain: 1080, loss: 2070, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
-      { day: 11, camp: "Cimarron River", miles: 3.6, gain: 1260, loss: 1740, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
-      { day: 12, camp: "Camping HQ", miles: 2.2, gain: 640, loss: 580, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
+      { day: 11, camp: "Cimarron River", miles: 3.6, gain: 1260, loss: 1740, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "trail" },
+      { day: 12, camp: "Camping HQ", miles: 2.2, gain: 640, loss: 580, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "conservation" },
     ]
   },
   "12-6": {
@@ -604,7 +604,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -704,7 +704,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -804,7 +804,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -891,7 +891,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "conservation"
+        "type": "staff"
     },
     {
         "day": 7,
@@ -1004,7 +1004,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1104,7 +1104,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1204,7 +1204,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1304,7 +1304,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1404,7 +1404,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1504,7 +1504,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1604,7 +1604,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1704,7 +1704,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1830,7 +1830,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -1956,7 +1956,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2082,7 +2082,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2208,7 +2208,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2334,7 +2334,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2460,7 +2460,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2586,7 +2586,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2699,7 +2699,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": true,
         "chuck": false,
-        "type": "conservation"
+        "type": "staff"
     },
     {
         "day": 9,
@@ -2838,7 +2838,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -2964,7 +2964,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -3090,7 +3090,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   },
@@ -3216,7 +3216,7 @@ const ITINERARIES = {
         "foodPickup": "",
         "staffed": false,
         "chuck": false,
-        "type": "conservation"
+        "type": "chq"
     }
 ]
   }
