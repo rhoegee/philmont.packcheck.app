@@ -27,7 +27,8 @@ jobs:
 
       - name: Commit and push
         run: |
+          git rm -rf --cached .github/ 2>/dev/null || true
           git add CNAME
-          git diff --staged --quiet || git commit -m "Set CNAME for philmont.packcheck.app"
+          git diff --staged --quiet || git commit -m "Deploy to philmont.packcheck.app"
           git remote add philmont https://github.com/rhoegee/philmont.packcheck.app.git
           git push philmont HEAD:main --force
