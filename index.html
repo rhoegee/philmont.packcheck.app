@@ -459,6 +459,27 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     <div class="stat-box hide-sm"><div class="stat-label">Scout Share</div><div class="stat-val" id="cs-scout">—</div><div class="stat-sub">oz (w/ tent)</div></div>
   </div>
 
+  <div id="crew-override-banner-wrap" style="display:none;">
+    <div class="override-banner">
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <span style="width:9px;height:9px;border-radius:2px;background:var(--pc-trim);flex-shrink:0;"></span>
+        <div>
+          <div class="override-label">Crew Weight Override Active</div>
+          <div class="override-note">Using advisor-provided total. Item list below is for reference only.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <label style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">lbs</label>
+        <input class="calc-input" id="crew-override-lbs" type="number" step="0.1" min="0" placeholder="lbs" style="width:80px;" oninput="updateCrewOverride()">
+        <button class="nav-btn" style="color:var(--pc-ink-soft);border-color:var(--pc-line-2);background:transparent;" onclick="clearCrewOverride()">Clear</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap" style="justify-content:space-between;">
+    <span class="progress-label" style="font-size:0.85rem;font-weight:600;">Lead Advisor provided a total crew gear weight? Enter it here.</span>
+    <button class="nav-btn primary" id="crew-override-toggle-btn" style="font-size:0.75rem;padding:0.3rem 0.9rem;" onclick="document.getElementById('crew-override-banner-wrap').style.display='block';document.getElementById('crew-override-lbs').focus();">Weight Override</button>
+  </div>
+
   <div class="two-col">
     <div class="main-col" id="crew-sections"></div>
     <div class="side-col">
@@ -1165,7 +1186,7 @@ function updateCrewStats(){
   const adults=Math.max(1,safeInt((getEl('crew-adults')||{value:3}).value,3));
   const scouts=Math.max(1,safeInt((getEl('crew-scouts')||{value:5}).value,5));
   const crewSize=adults+scouts;
-  const tot=crewTotalOz();
+  const tot=crewOverrideOz!==null?crewOverrideOz:crewTotalOz();
   const tents=tentOz();
   const nonTentOz=tot-tents;
   const adultShare=nonTentOz/crewSize;
@@ -1598,6 +1619,29 @@ function moveItem(fromKey,idx,select){
 }
 
 let overrideOz=null;
+let crewOverrideOz=null;
+
+function updateCrewOverride(){
+  try {
+    var el=getEl('crew-override-lbs');
+    if(!el)return;
+    var val=safeFloat(el.value,NaN);
+    crewOverrideOz=(isNaN(val)||val<0)?null:val*16;
+    updateCrewStats();
+    updateCalc();
+    scheduleAutoSave();
+  } catch(e){ console.error('updateCrewOverride error:',e); }
+}
+
+function clearCrewOverride(){
+  crewOverrideOz=null;
+  var el=getEl('crew-override-lbs');
+  if(el)el.value='';
+  document.getElementById('crew-override-banner-wrap').style.display='none';
+  updateCrewStats();
+  updateCalc();
+  scheduleAutoSave();
+}
 
 function toggleItem(key,idx,checked){
   gearData[key].items[idx].included=checked;
@@ -1754,9 +1798,10 @@ function getPackOzForDay(day){
     var adults=Math.max(1,safeInt((getEl('crew-adults')||{value:3}).value,3));
     var scouts=Math.max(1,safeInt((getEl('crew-scouts')||{value:5}).value,5));
     var crewSize=adults+scouts;
-    var tentShareOz=tentOz();
-    var nonTentOz=safeFloat(trekConfig.crewGearOz,0)-tentShareOz;
-    var crewShare=ownTent?(nonTentOz/crewSize):(nonTentOz/crewSize+tentShareOz/scouts);
+    var tentShareOz=crewOverrideOz!==null?0:tentOz();
+    var crewTot=crewOverrideOz!==null?crewOverrideOz:safeFloat(trekConfig.crewGearOz,0);
+    var nonTentOz=crewTot-tentShareOz;
+    var crewShare=crewOverrideOz!==null?(crewTot/crewSize):ownTent?(nonTentOz/crewSize):(nonTentOz/crewSize+tentShareOz/scouts);
     var food = getFoodOzForDay(day);
     var water = getWaterOzForDay(day);
     var total = base + crewShare + food + water;
@@ -1797,9 +1842,10 @@ function onDaySlider(day){
   const _adults=Math.max(1,safeInt((getEl('crew-adults')||{value:3}).value,3));
   const _scouts=Math.max(1,safeInt((getEl('crew-scouts')||{value:5}).value,5));
   const _crewSize=_adults+_scouts;
-  const _tentOz=tentOz();
-  const _nonTentOz=trekConfig.crewGearOz-_tentOz;
-  const crewOz=ownTent?(_nonTentOz/_crewSize):(_nonTentOz/_crewSize+_tentOz/_scouts);
+  const _tentOz=crewOverrideOz!==null?0:tentOz();
+  const _crewTot=crewOverrideOz!==null?crewOverrideOz:trekConfig.crewGearOz;
+  const _nonTentOz=_crewTot-_tentOz;
+  const crewOz=crewOverrideOz!==null?(_crewTot/_crewSize):ownTent?(_nonTentOz/_crewSize):(_nonTentOz/_crewSize+_tentOz/_scouts);
   const crewShareLabel=ownTent?'Crew share (own tent)':'Crew share (scout)';
   const foodOz=getFoodOzForDay(day);
   const waterOz=getWaterOzForDay(day);
@@ -2453,7 +2499,7 @@ let _saveTimer = null;
 function saveLocal() {
   try {
     localStorage.setItem(LOCAL_KEY, JSON.stringify({
-      profile, gearData, trekConfig, overrideOz
+      profile, gearData, trekConfig, overrideOz, crewOverrideOz
     }));
   } catch(e) { console.warn('saveLocal error:', e); }
 }
@@ -2482,6 +2528,13 @@ function loadLocal() {
       overrideOz = saved.overrideOz;
       const el = document.getElementById('override-oz');
       if (el) el.value = overrideOz;
+    }
+    if (saved.crewOverrideOz !== undefined && saved.crewOverrideOz !== null) {
+      crewOverrideOz = saved.crewOverrideOz;
+      const el = document.getElementById('crew-override-lbs');
+      if (el) el.value = (crewOverrideOz/16).toFixed(1);
+      const wrap = document.getElementById('crew-override-banner-wrap');
+      if (wrap) wrap.style.display = 'block';
     }
     return true;
   } catch(e) { console.warn('loadLocal error:', e); return false; }

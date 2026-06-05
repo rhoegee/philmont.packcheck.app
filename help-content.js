@@ -115,6 +115,18 @@ const HELP_CONTENT = [
       {
         q: "Can I edit the crew gear?",
         a: "Yes, but if the Lead Advisor makes an update it will override your changes. You should consider the crew gear list \"locked\"."
+      },
+      {
+        q: "What is the Crew Weight Override?",
+        a: "The Weight Override lets you skip the itemized crew gear list and enter a single total weight instead — in pounds. Your Lead Advisor may weigh the crew gear directly and give everyone a number like \"22 lbs.\" Enter that here and the app will use it for all pack weight calculations, dividing it evenly among the crew."
+      },
+      {
+        q: "My Lead Advisor gave me a crew gear weight. Where do I enter it?",
+        a: "Go to the <strong>Crew Gear</strong> tab. At the top you'll see a gold <strong>Weight Override</strong> button. Tap it, enter the number your advisor gave you in pounds, and the app immediately updates your pack weight calculations on every day of the trek. The item list below stays visible for reference — only the weight changes."
+      },
+      {
+        q: "How do Lead Advisors figure out the crew gear weight to share?",
+        a: "The simplest method is to weigh the crew gear directly — throw everything in a pile, put it on a bathroom scale, and that's your number. Some advisors use the itemized list in this app to estimate before the trip, then confirm on a scale at home before departure. Either way, share the final number in pounds with your crew."
       }
     ]
   },
