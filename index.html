@@ -238,6 +238,13 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       Setup Your Profile
     </div>
     <div class="modal-field">
+      <label class="modal-label">I am a</label>
+      <div style="display:flex;gap:0.5rem;">
+        <button id="role-scout" onclick="setRole('scout')" type="button" style="flex:1;padding:0.55rem;border-radius:4px;border:2px solid var(--pc-anchor);font-family:'Oswald',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.04em;cursor:pointer;transition:background 0.15s,color 0.15s;background:var(--pc-anchor);color:var(--pc-surface);">Scout</button>
+        <button id="role-leader" onclick="setRole('leader')" type="button" style="flex:1;padding:0.55rem;border-radius:4px;border:2px solid var(--pc-anchor);font-family:'Oswald',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.04em;cursor:pointer;transition:background 0.15s,color 0.15s;background:transparent;color:var(--pc-anchor);">Leader</button>
+      </div>
+    </div>
+    <div class="modal-field">
       <label class="modal-label">Your Name</label>
       <input class="modal-input" id="p-name" placeholder="Scout or Leader name" autocomplete="off">
     </div>
@@ -466,7 +473,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
       <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.25rem;">
         <div class="calc-row"><span class="calc-label" style="font-size:0.85rem;">Adults (own tent)</span><input class="calc-input" id="crew-adults" type="number" value="3" min="1" max="6" onchange="updateCrewStats()"></div>
         <div class="calc-row"><span class="calc-label" style="font-size:0.85rem;">Scouts (share tent)</span><input class="calc-input" id="crew-scouts" type="number" value="5" min="1" max="11" onchange="updateCrewStats()"></div>
-        <div style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:0.25rem;">Adults bring own tents — tent weight excluded from their share. If a scout is carrying their own solo tent, mark them as an adult.</div>
+        <div style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:0.25rem;">Leaders bring their own tent — tent weight is excluded from their crew share and split only among scouts. If a scout has their own tent, check "I'm carrying my own tent" on the Pack Weight tab.</div>
       </div>
       <div style="margin-bottom:1.25rem;">
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Advisor Weight Override</div>
@@ -474,7 +481,15 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
           <input class="calc-input" id="crew-override-lbs" type="number" step="0.1" min="0" placeholder="Total lbs" style="flex:1;" oninput="updateCrewOverride()">
           <button class="nav-btn" id="crew-override-clear-btn" style="display:none;color:var(--pc-ink-soft);border-color:var(--pc-line-2);background:transparent;" onclick="clearCrewOverride()">Clear</button>
         </div>
-        <div id="crew-override-note" style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.35rem;">Enter the total crew gear weight your advisor measured. Tent split still applies — adults won't carry tent weight.</div>
+        <div id="crew-override-note" style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.35rem;">Enter the total crew gear weight your advisor measured. Tent split still applies.</div>
+      </div>
+      <div style="margin-bottom:1.25rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.5rem;">Tent Weight Override</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <input class="calc-input" id="tent-override-lbs" type="number" step="0.1" min="0" placeholder="Tent lbs" style="flex:1;" oninput="updateTentOverride()">
+          <button class="nav-btn" id="tent-override-clear-btn" style="display:none;color:var(--pc-ink-soft);border-color:var(--pc-line-2);background:transparent;" onclick="clearTentOverride()">Clear</button>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);font-style:italic;margin-top:0.35rem;">Tent weight only (lbs). Used to calculate leader vs. scout crew share. If blank, reads from the Tents category above.</div>
       </div>
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:0.85rem;margin-bottom:1.25rem;">
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.6rem;">Share Breakdown</div>
@@ -524,7 +539,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
           <span class="calc-label">Carrying own tent</span>
           <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
             <input type="checkbox" id="own-tent" onchange="updateCalc()" style="width:16px;height:16px;accent-color:var(--pc-accent);">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);">Use adult share (no tent)</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);">I'm carrying my own tent</span>
           </label>
         </div>
         <div class="calc-row"><span class="calc-label">Body weight (lbs)</span><input class="calc-input" id="body-weight" type="number" value="175" onchange="updateCalc()"></div>
@@ -672,7 +687,7 @@ function cssVar(name){return getComputedStyle(document.documentElement).getPrope
 // ── Category → icon glyph maps (pc-icons.js keys) ──
 const CAT_ICON={bags:'pack',sleep:'sleep',equipment:'poles',clothing:'jacket',rain:'rain',
   care:'soap',food:'food',water:'bottle',utility:'firstaid',luxury:'chair'};
-const CREW_CAT_ICON={shelter:'tent',cook:'cook',bear:'bear',safety:'compass',sanitation:'trowel',
+const CREW_CAT_ICON={tents:'tent',othershelter:'tent',cook:'cook',bear:'bear',safety:'compass',sanitation:'trowel',
   repair:'tape',consumables:'consum',water:'bottle',misc:'lantern'};
 // Treatment per the App Brand Board §05: Camp Badge (B) on cream surfaces, reversed monoline in pine chrome.
 let GEAR_ICON_TREATMENT='auto';
@@ -870,7 +885,8 @@ let gearData = {
 };
 
 const CREW_COLORS = {
-  shelter:'#1F8A4D',     // emerald
+  tents:'#1F8A4D',       // emerald
+  othershelter:'#3DAE72',// lighter emerald
   cook:'#E97B2E',        // pumpkin
   bear:'#2E73C4',        // cobalt
   safety:'#EBB019',      // golden amber
@@ -882,13 +898,15 @@ const CREW_COLORS = {
 };
 
 let crewGearData = {
-  shelter:{label:'Shelter',color:CREW_COLORS.shelter,items:[
-    {name:'Half Dome 2p',brand:'REI',qty:1,unitOz:95,oz:95,notes:'Split between 2 people',source:'crew',isTent:true},
-    {name:'Half Dome 3p',brand:'REI',qty:1,unitOz:117,oz:117,notes:'Split between 3 people',source:'crew',isTent:true},
+  tents:{label:'Tents',color:CREW_COLORS.tents,items:[
+    {name:'MSR Hubba Hubba 2p',brand:'MSR',qty:1,unitOz:74,oz:74,notes:'Philmont-supplied',source:'philmont'},
+    {name:'MSR Hubba Hubba 3p',brand:'MSR',qty:1,unitOz:98,oz:98,notes:'Philmont-supplied',source:'philmont'},
+    {name:'Ground Cloth (per tent)',brand:'',qty:0,unitOz:6,oz:0,notes:'',source:'crew'},
+    {name:'Tent Stakes (extra set)',brand:'',qty:0,unitOz:4,oz:0,notes:'',source:'crew'},
+  ]},
+  othershelter:{label:'Other Shelter',color:CREW_COLORS.othershelter,items:[
     {name:'Dining Fly',brand:'Paria',qty:1,unitOz:30,oz:30,notes:'12x10 ft Paria siltarp, guy lines attached',source:'crew'},
     {name:'Dining Fly Poles set of 2',brand:'',qty:1,unitOz:28,oz:28,notes:'',source:'crew'},
-    {name:'Ground Cloth (per tent)',brand:'',qty:0,unitOz:0,oz:0,notes:'Included with tent',source:'crew'},
-    {name:'Tent Stakes set of 8',brand:'',qty:1,unitOz:4,oz:4,notes:'Extra stakes, included w tarps and tents',source:'crew'},
   ]},
   cook:{label:'Cook System',color:CREW_COLORS.cook,items:[
     {name:'Backpacking Stove - primary',brand:'MSR',qty:1,unitOz:16,oz:16,notes:'MSR Universal',source:'crew'},
@@ -944,7 +962,7 @@ let crewGearData = {
   ]},
 };
 
-let profile = {name:'',crew:'',troop:'',council:'',arrival:'',itinNumber:'',day0:false};
+let profile = {name:'',crew:'',troop:'',council:'',arrival:'',itinNumber:'',day0:false,role:'scout'};
 let trekConfig = {days:12,crewSize:8,crewGearOz:564.8,bodyWeight:175,resupplyDays:[],dryCampDays:[],staffDays:[]};
 let donutChart = null;
 let weightChart = null;
@@ -1023,6 +1041,19 @@ function setSelectByValue(id, val){
   }
 }
 
+function setRole(r){
+  profile.role = r;
+  const scout = getEl('role-scout'), leader = getEl('role-leader');
+  if(!scout||!leader) return;
+  const pine = 'var(--pc-anchor)', cream = 'var(--pc-surface)';
+  if(r==='scout'){
+    scout.style.background=pine; scout.style.color=cream;
+    leader.style.background='transparent'; leader.style.color=pine;
+  } else {
+    leader.style.background=pine; leader.style.color=cream;
+    scout.style.background='transparent'; scout.style.color=pine;
+  }
+}
 function openProfileModal(){
   setVal('p-name', profile.name||'');
   setVal('p-troop', profile.troop||'');
@@ -1032,6 +1063,7 @@ function openProfileModal(){
   setVal('p-itin-num', profile.itinNumber||'');
   setSelectByValue('p-trek-length', profile.trekLength||12);
   setSelectByValue('p-day0', profile.day0?'yes':'no');
+  setRole(profile.role||'scout');
   var modal = getEl('profile-modal');
   if(modal) modal.classList.remove('hidden');
 }
@@ -1115,6 +1147,9 @@ function saveProfile(){
     profile.itinNumber=(getVal('p-itin-num','')||'').trim();
     profile.trekLength=safeInt(getVal('p-trek-length',12),12);
     profile.day0=getVal('p-day0','no')==='yes';
+    // Sync own-tent checkbox from role (leader = own tent; can still be overridden manually)
+    const ownTentEl = getEl('own-tent');
+    if(ownTentEl) ownTentEl.checked = (profile.role === 'leader');
     // Sync trekConfig from selected itinerary
     const selectedItin = getActiveItinerary();
     if(selectedItin){
@@ -1166,7 +1201,9 @@ function crewCatOz(key){
   return crewGearData[key].items.reduce((s,i)=>s+i.oz,0);
 }
 function tentOz(){
-  return crewGearData.shelter.items.filter(i=>i.isTent||/tent|dome/i.test(i.name)).reduce((s,i)=>s+i.oz,0);
+  if(tentOverrideOz!==null) return tentOverrideOz;
+  if(!crewGearData.tents) return 0;
+  return crewGearData.tents.items.reduce((s,i)=>s+(i.included!==false?i.oz:0),0);
 }
 
 function updateCrewStats(){
@@ -1607,6 +1644,7 @@ function moveItem(fromKey,idx,select){
 
 let overrideOz=null;
 let crewOverrideOz=null;
+let tentOverrideOz=null;
 
 function updateCrewOverride(){
   try {
@@ -1636,7 +1674,32 @@ function clearCrewOverride(){
   var clearBtn=getEl('crew-override-clear-btn');
   if(clearBtn)clearBtn.style.display='none';
   var note=getEl('crew-override-note');
-  if(note){note.textContent="Enter the total crew gear weight your advisor measured. Tent split still applies — adults won't carry tent weight.";note.style.color='';}
+  if(note){note.textContent="Enter the total crew gear weight your advisor measured. Tent split still applies.";note.style.color='';}
+  updateCrewStats();
+  updateCalc();
+  scheduleAutoSave();
+}
+
+function updateTentOverride(){
+  try {
+    var el=getEl('tent-override-lbs');
+    if(!el) return;
+    var val=parseFloat(el.value);
+    tentOverrideOz=(isNaN(val)||val<0)?null:val*16;
+    var clearBtn=getEl('tent-override-clear-btn');
+    if(clearBtn)clearBtn.style.display=tentOverrideOz!==null?'inline-block':'none';
+    updateCrewStats();
+    updateCalc();
+    scheduleAutoSave();
+  } catch(e){ console.error('updateTentOverride error:',e); }
+}
+
+function clearTentOverride(){
+  tentOverrideOz=null;
+  var el=getEl('tent-override-lbs');
+  if(el)el.value='';
+  var clearBtn=getEl('tent-override-clear-btn');
+  if(clearBtn)clearBtn.style.display='none';
   updateCrewStats();
   updateCalc();
   scheduleAutoSave();
@@ -2369,7 +2432,11 @@ const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYwP
 const DEFAULT_PERSONAL_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTYwPYRlHgM08bg9AOZzWSpXbWhhxCVlHyIu_aMjaqiwVwkwnMNPMmH5m2FTBdDUW-V5MmXn26W-Sf5/pub?gid=918676065&single=true&output=csv';
 
 const CREW_CAT_MAP = {
-  'shelter': 'shelter',
+  'tents': 'tents',
+  'tent': 'tents',
+  'other shelter': 'othershelter',
+  'othershelter': 'othershelter',
+  'shelter': 'tents',
   'cook system': 'cook',
   'bear system': 'bear',
   'safety & navigation': 'safety',
@@ -2498,7 +2565,7 @@ let _saveTimer = null;
 function saveLocal() {
   try {
     localStorage.setItem(LOCAL_KEY, JSON.stringify({
-      profile, gearData, trekConfig, overrideOz, crewOverrideOz
+      profile, gearData, trekConfig, overrideOz, crewOverrideOz, tentOverrideOz
     }));
   } catch(e) { console.warn('saveLocal error:', e); }
 }
@@ -2536,6 +2603,13 @@ function loadLocal() {
       if (clearBtn) clearBtn.style.display = '';
       const note = document.getElementById('crew-override-note');
       if (note) { note.textContent = 'Override active — using '+(crewOverrideOz/16).toFixed(1)+' lbs. Tent split still applies.'; note.style.color='var(--pc-trim)'; }
+    }
+    if (saved.tentOverrideOz !== undefined && saved.tentOverrideOz !== null) {
+      tentOverrideOz = saved.tentOverrideOz;
+      const el = document.getElementById('tent-override-lbs');
+      if (el) el.value = (tentOverrideOz/16).toFixed(1);
+      const clearBtn = document.getElementById('tent-override-clear-btn');
+      if (clearBtn) clearBtn.style.display = '';
     }
     return true;
   } catch(e) { console.warn('loadLocal error:', e); return false; }
@@ -2672,6 +2746,8 @@ window.onload=()=>{
   try{initTheme();}catch(e){console.error('initTheme error:',e);}
   try{if(window.PCWordmark)PCWordmark.render();}catch(e){console.error('wordmark error:',e);}
   const hasSaved = loadLocal();
+  // Apply role → own-tent after load (role is persisted in profile)
+  try{ const ot=getEl('own-tent'); if(ot) ot.checked=(profile.role==='leader'); }catch(e){}
   try{
     const _gParam=new URLSearchParams(location.search).get('g');
     if(_gParam){
