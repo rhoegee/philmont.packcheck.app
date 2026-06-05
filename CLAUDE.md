@@ -245,9 +245,11 @@ Gear defaults load from a published Google Sheet on every page load.
 - Both point to `Packcheck_Gear_Template` spreadsheet (Rob's Google account)
 - Fetch fails silently → hardcoded defaults used instead
 - Personal gear only fetched for new users (no localStorage data)
-- Crew gear fetched fresh every load
+- Crew gear fetched fresh every load; overwrites any local edits
 
-**Crew gear override:** Lead advisors can weigh all crew gear and give scouts a single number in lbs. Scouts enter it in the Crew Gear tab side panel under "Advisor Weight Override." Tent split logic still applies (adults don't carry tent weight).
+**Tent detection from CSV:** `parseCrewCSV()` sets `isTent:true` on shelter items whose name matches `/tent|dome/i`. Tarps and dining flies are NOT marked as tents — they count as shared crew gear split among everyone.
+
+**Advisor Weight Override:** Scouts enter a total lbs number (given to them by their lead advisor who weighed the gear) in the Crew Gear tab side panel. Stored as `crewOverrideOz` (oz). Overrides `crewTotalOz()` in `updateCrewStats()`. Tent split logic still applies — `tentOz()` always reads from actual item data regardless of override.
 
 ---
 
