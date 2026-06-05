@@ -2468,7 +2468,7 @@ function parseCrewCSV(csv) {
     const sourceRaw = get(iSource).toUpperCase();
     const source = sourceRaw === 'PHI' ? 'philmont' : 'crew';
 
-    const isTent = catKey==='shelter' && /tent|dome|tarp/i.test(name);
+    const isTent = catKey==='shelter' && /tent|dome/i.test(name);
     fresh[catKey].items.push({
       name, brand: get(iBrand), qty, unitOz, oz,
       notes: get(iNotes), source, included: true,
