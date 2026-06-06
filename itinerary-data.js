@@ -3234,7 +3234,7 @@ const MENUS = {
     7:['Sunflower Seed Butter','Belvita Blueberry Breakfast Biscuits','BBQ Beef Bites','Bob\'s Peanut Butter Banana & Oats Bar','Chocolate Granola','Cran Raspberry Drink Mix'],
     8:['Bold Teriyaki','Apple Cinnamon Bar','Vanilla Waffle','Peanut Butter Cup Protein Bar','Tropical Treasure Fruit Blend'],
     9:['Pepperoni Bites','Original Instant Oatmeal - Plain','Pop Tarts Frosted Strawberry Crunchy Poppers','Kashi Chewy Granola Bar','Banana Chips','Sqwincher Watermelon'],
-    10:['SBR Sweet N\'t Spicy Jerky','Bob\'s Peanut Butter Jelly & Oats','Welch\'s Fruit Gummies','Blueberry Oat Snack Bar','Cocoa Puffs Cereal Bar'],
+    10:['SBR Sweet N\' Spicy Jerky','Bob\'s Peanut Butter Jelly & Oats','Welch\'s Fruit Gummies','Blueberry Oat Snack Bar','Cocoa Puffs Cereal Bar'],
   },
   lunch:{
     1:['Saltines','Chunk Chicken','Cheddar Goldfish','Crunchy PB Bar','Antioxidant Trail Mix','Sqwincher Mixed Berry'],
@@ -3252,7 +3252,7 @@ const MENUS = {
     1:['Beef Stroganoff','Goldfish Pretzels','Chocolate Chip Cookies'],
     2:['Fettuccine Alfredo with Chicken','Cheddar Cheese Combos','Oreos'],
     3:['Loaded Chili Mac','Honey Mustard & Onion Pretzel Pieces','Nutter Butters'],
-    4:['Four Cheese Mashed Potatoes with Chicken','Marshmallow Squares'],
+    4:['Four Cheese Mashed Potatoes with Chicken & Soup Mix','Marshmallow Squares'],
     5:['Chicken Curry','Cinnamon Graham Goldfish','Hot Buffalo Wings Pretzel Pieces'],
     6:['3-Cheese Mac & Cheese with Maple Bacon Jerky','Goldfish Pretzel','Maple Waffles'],
     7:['Beef Ramen Noodles with Summer Sausage','Cheddar Pretzel Pieces','Lorna Doone Cookies'],
