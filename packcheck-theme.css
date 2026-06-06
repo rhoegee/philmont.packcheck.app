@@ -565,6 +565,6 @@ input[type=range]{flex:1;accent-color:var(--pc-accent);}
   .gear-table th:nth-child(6),.gear-table td:nth-child(6){display:none;}
   .move-cat-select{display:none;}
 
-  /* Side panel below gear: visual separator + reserved height prevents CLS from JS content injection */
-  .side-col{border-top:2px solid var(--pc-accent);padding:1rem;min-height:660px;}
+  /* Side panel below gear: visual separator */
+  .side-col{border-top:2px solid var(--pc-accent);padding:1rem;}
 }
