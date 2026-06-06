@@ -209,7 +209,7 @@ const ITINERARIES = {
       { day: 7, camp: "Comanche Peak", miles: 6.0, gain: 3210, loss: 2420, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
       { day: 8, camp: "CYPHERS MINE", miles: 4.5, gain: 1960, loss: 3720, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 9, camp: "SAWMILL", miles: 5.3, gain: 3090, loss: 3220, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
-      { day: 10, camp: "Devils Wash Basin", miles: 8.7, gain: 3470, loss: 4190, dry: true, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "dry" },
+      { day: 10, camp: "Devils Wash Basin", miles: 8.7, gain: 3470, loss: 4190, dry: true, resupply: true, foodPickup: "Ute Gulch", staffed: false, chuck: false, type: "dry" },
       { day: 11, camp: "HARLAN", miles: 6.1, gain: 1530, loss: 2490, dry: false, resupply: false, foodPickup: "", staffed: true, chuck: false, type: "staff" },
       { day: 12, camp: "Camping HQ", miles: 4.1, gain: 710, loss: 1630, dry: false, resupply: false, foodPickup: "", staffed: false, chuck: false, type: "chq" },
     ]
