@@ -24,12 +24,10 @@ const PNG={
 const STROKE={
   fly:{base:`<path d="M8 72 L50 24 L92 72"/>`,
        accent:`<path d="M30 54 L50 36 L70 54"/>`},
-  checkbox:{base:`<rect x="22" y="22" width="56" height="56" rx="4"/>`,
-            accent:`<path d="M33 52 L46 65 L69 35"/>`},
 };
 const ALL_KEYS=['pack','sleep','poles','jacket','rain','soap',
   'food','bottle','firstaid','chair','cook','bear',
-  'compass','trowel','tape','consum','lantern','tent','fly','checkbox'];
+  'compass','trowel','tape','consum','lantern','tent','fly'];
 function glyph(key,opts){
   const o=Object.assign({ic:'#f4ecd8',ac:'#c5172b',bw:6,size:52},opts);
   if(PNG[key]){const r=Math.round(o.size*0.25);

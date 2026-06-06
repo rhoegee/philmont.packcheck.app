@@ -1427,9 +1427,9 @@ function renderGear(){
         <td class="td-weight">${ozToStr(item.oz)}</td>
         <td class="td-notes" ${item.notes?`title="${item.notes}"`:''}>${item.notes||''}</td>
         <td class="td-actions">
-          <select class="move-cat-select" title="Move to category" onchange="moveCrewItem('${key}',${idx},this)" onclick="event.stopPropagation()">
+          <select class="move-cat-select" title="Move to category" onchange="moveItem('${key}',${idx},this)" onclick="event.stopPropagation()">
             <option value=""></option>
-            ${Object.entries(crewGearData).filter(([k])=>k!==key).map(([k,c])=>`<option value="${k}">${c.label}</option>`).join('')}
+            ${Object.entries(gearData).filter(([k])=>k!==key).map(([k,c])=>`<option value="${k}">${c.label}</option>`).join('')}
           </select>
           <button class="action-btn del sel-toggle" id="sel-${key}-${idx}" onclick="toggleSel('${key}',${idx},this)" title="Select to delete">✕</button>
         </td>
@@ -1551,12 +1551,6 @@ function addItem(key){
     scheduleAutoSave();
   } catch(e) { console.error('addItem error:', e); }
 }
-function removeItem(key,idx){
-  if(!confirm(`Remove "${gearData[key].items[idx].name}"?`))return;
-  gearData[key].items.splice(idx,1);
-  renderGear();updateCalc();scheduleAutoSave();
-}
-
 function moveItem(fromKey,idx,select){
   const toKey=select.value;
   if(!toKey){return;}
@@ -1616,31 +1610,6 @@ function clearCrewOverride(){
   scheduleAutoSave();
 }
 
-function updateTentOverride(){
-  try {
-    var el=getEl('tent-override-lbs');
-    if(!el) return;
-    var val=parseFloat(el.value);
-    tentOverrideOz=(isNaN(val)||val<0)?null:val*16;
-    var clearBtn=getEl('tent-override-clear-btn');
-    if(clearBtn)clearBtn.style.display=tentOverrideOz!==null?'inline-block':'none';
-    updateCrewStats();
-    updateCalc();
-    scheduleAutoSave();
-  } catch(e){ console.error('updateTentOverride error:',e); }
-}
-
-function clearTentOverride(){
-  tentOverrideOz=null;
-  var el=getEl('tent-override-lbs');
-  if(el)el.value='';
-  var clearBtn=getEl('tent-override-clear-btn');
-  if(clearBtn)clearBtn.style.display='none';
-  updateCrewStats();
-  updateCalc();
-  scheduleAutoSave();
-}
-
 function toggleItem(key,idx,checked){
   gearData[key].items[idx].included=checked;
   renderGear();updateCalc();scheduleAutoSave();
@@ -1678,18 +1647,6 @@ function totalOzActive(){
     },0);
     return safeFloat(total, 0);
   } catch(e) { console.error('totalOzActive error:', e); return 0; }
-}
-
-function updateProgress(){
-  var allItems=Object.values(gearData).flatMap(function(c){return c.items;});
-  var total=allItems.length;
-  var weighed=allItems.filter(function(i){return i.oz>0;}).length;
-  var pct=total>0?Math.round(weighed/total*100):0;
-  var fill=document.getElementById('progress-fill');
-  var label=document.getElementById('progress-label');
-  if(fill)fill.style.width=pct+'%';
-  if(label)label.textContent=pct+'% of items weighed ('+weighed+'/'+total+')';
-  if(fill)fill.style.background=pct>=90?'var(--green)':pct>=60?'var(--gold)':'var(--warn)';
 }
 
 function updateStats(){
