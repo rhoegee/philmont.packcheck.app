@@ -31,7 +31,7 @@ const ALL_KEYS=['pack','sleep','poles','jacket','rain','soap',
 function glyph(key,opts){
   const o=Object.assign({ic:'#f4ecd8',ac:'#c5172b',bw:6,size:52},opts);
   if(PNG[key]){const r=Math.round(o.size*0.25);
-    return `<img src="${PNG[key]}" width="${o.size}" height="${o.size}" style="display:block;border-radius:${r}px">"`;}
+    return `<img src="${PNG[key]}" width="${o.size}" height="${o.size}" alt="" style="display:block;border-radius:${r}px">"`;}
   const d=STROKE[key];if(!d)return '';
   return `<svg viewBox="0 0 100 100" width="${o.size}" height="${o.size}" style="display:block">`+
     `<g fill="none" stroke="${o.ic}" stroke-width="${o.bw}" stroke-linecap="round" stroke-linejoin="round">${d.base}</g>`+
@@ -39,7 +39,7 @@ function glyph(key,opts){
     '</svg>';}
 function tile(key,t,tileSize,iconSize){
   const ts=tileSize||84;const r=Math.round(ts*0.25);
-  if(PNG[key]){return `<div style="width:${ts}px;height:${ts}px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;border-radius:${r}px"><img src="${PNG[key]}" width="${ts}" height="${ts}" style="display:block;border-radius:${r}px"></div>`;}
+  if(PNG[key]){return `<div style="width:${ts}px;height:${ts}px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;border-radius:${r}px"><img src="${PNG[key]}" width="${ts}" height="${ts}" alt="" style="display:block;border-radius:${r}px"></div>`;}
   const is=iconSize||Math.round(ts*0.62);
   return `<div style="width:${ts}px;height:${ts}px;display:flex;align-items:center;justify-content:center;background:#2e4a39;border:1px solid rgba(197,23,43,.55);border-radius:${r}px;overflow:hidden">`+glyph(key,{ic:'#f4ecd8',ac:'#c5172b',bw:6,size:is})+'</div>';}
 window.PCIcon={glyph,tile,PNG,STROKE,COL,keys:ALL_KEYS};

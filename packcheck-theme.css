@@ -93,10 +93,10 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .brand-sub b{font-family:var(--font-disp);font-weight:600;text-transform:uppercase;font-size:.72rem;
   letter-spacing:.06em;color:var(--pc-cream);}
 .brand-sub span{font-family:var(--font-mono);font-size:.54rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--pc-trim);margin-top:1px;}
+  text-transform:uppercase;color:rgba(244,236,216,.88);margin-top:1px;}
 .nav-tabs{display:flex;flex:1;overflow-x:auto;}
 .nav-tab{font-family:var(--font-disp);font-weight:600;font-size:.78rem;text-transform:uppercase;
-  letter-spacing:.07em;color:rgba(244,236,216,.62);padding:0 1.05rem;border:none;background:transparent;
+  letter-spacing:.07em;color:rgba(244,236,216,.72);padding:0 1.05rem;border:none;background:transparent;
   cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;
   white-space:nowrap;height:48px;}
 .nav-tab:hover{color:var(--pc-cream);}

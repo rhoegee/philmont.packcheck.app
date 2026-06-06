@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Packcheck: Philmont Edition — gear planning and pack weight simulator for Philmont Scout Ranch treks. Build your gear list, track weights, and plan your 2026 crew's food and resupply.">
 <title>Packcheck: Philmont Edition</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=optional" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js" defer></script>
 <link rel="stylesheet" href="packcheck-theme.css">
 <script src="help-content.js"></script>
 <script src="itinerary-data.js"></script>
@@ -348,6 +349,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
   </div>
 </nav>
 
+<main>
 <!-- ═══════════ PAGE: GEAR ═══════════ -->
 <div class="page active" id="page-gear">
 
@@ -1240,7 +1242,7 @@ function renderCrewGear(){
       const crewChecked=item.included!==false;
       const srcBadge=item.source==='philmont'?`<span style="font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);background:var(--bg3);padding:0.1rem 0.3rem;border-radius:2px;margin-left:4px;">PHI</span>`:'';
       return `<tr class="data-row ${crewChecked?'':' unchecked'}" ondblclick="startCrewEdit('${key}',${idx})">
-        <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" ${crewChecked?'checked':''} onchange="toggleCrewItem('${key}',${idx},this.checked)"></td>
+        <td style="width:24px;text-align:center;padding:0.45rem 2px;"><input type="checkbox" class="item-check" aria-label="${item.name}" ${crewChecked?'checked':''} onchange="toggleCrewItem('${key}',${idx},this.checked)"></td>
         <td class="td-name">${item.name}${srcBadge}</td>
         <td class="td-brand">${item.brand}</td>
         <td class="td-qty">${item.qty>1?`×${item.qty}`:''}</td>
@@ -1281,9 +1283,9 @@ function renderCrewGear(){
             <col style="width:5%">
           </colgroup>
           <thead><tr>
-            <th style="padding:0.45rem 2px;width:3%;"></th>
-            <th style="width:27%;">Item</th><th style="width:17%;">Brand</th><th style="text-align:center;width:5%;">Qty</th>
-            <th style="text-align:right;width:14%;">Weight</th><th>Notes</th><th style="width:5%;"></th>
+            <th scope="col" style="padding:0.45rem 2px;width:3%;"></th>
+            <th scope="col" style="width:27%;">Item</th><th scope="col" style="width:17%;">Brand</th><th scope="col" style="text-align:center;width:5%;">Qty</th>
+            <th scope="col" style="text-align:right;width:14%;">Weight</th><th scope="col">Notes</th><th scope="col" style="width:5%;"></th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -1419,7 +1421,7 @@ function renderGear(){
       const cottonFlag=isCotton?`<span class="cotton-warn">cotton</span>`:'';
       return `<tr class="data-row ${isChecked?'':'unchecked'}" ondblclick="startEdit('${key}',${idx})" ontouchstart="rowTouchStart(event,'${key}',${idx})" ontouchend="rowTouchEnd()" ontouchmove="rowTouchMove()" data-key="${key}" data-idx="${idx}">
         <td style="width:24px;text-align:center;padding:0.45rem 2px;">
-          <input type="checkbox" class="item-check" ${isChecked?'checked':''} onchange="toggleItem('${key}',${idx},this.checked)" onclick="event.stopPropagation()">
+          <input type="checkbox" class="item-check" aria-label="${item.name}" ${isChecked?'checked':''} onchange="toggleItem('${key}',${idx},this.checked)" onclick="event.stopPropagation()">
         </td>
         <td class="td-name">${item.name}${cottonFlag}</td>
         <td class="td-brand">${item.brand}</td>
@@ -1461,9 +1463,9 @@ function renderGear(){
             <col style="width:5%">
           </colgroup>
           <thead><tr>
-            <th style="padding:0.45rem 2px;width:3%;"></th>
-            <th style="width:27%;">Item</th><th style="width:17%;">Brand</th><th style="text-align:center;width:5%;">Qty</th>
-            <th style="text-align:right;width:14%;">Weight</th><th>Notes</th><th style="width:5%;"></th>
+            <th scope="col" style="padding:0.45rem 2px;width:3%;"></th>
+            <th scope="col" style="width:27%;">Item</th><th scope="col" style="width:17%;">Brand</th><th scope="col" style="text-align:center;width:5%;">Qty</th>
+            <th scope="col" style="text-align:right;width:14%;">Weight</th><th scope="col">Notes</th><th scope="col" style="width:5%;"></th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -3013,6 +3015,7 @@ function clearBatchSelection(){
   </div>
 </div>
 
+</main>
 <footer style="text-align:center;padding:1.5rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--pc-ink-soft);letter-spacing:0.04em;border-top:1px solid var(--pc-line);margin-top:2rem;">
   &copy; 2026 Packcheck &nbsp;&middot;&nbsp; Not affiliated with Philmont Scout Ranch or Scouting America
 </footer>
