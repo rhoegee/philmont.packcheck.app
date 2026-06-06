@@ -289,7 +289,9 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .td-notes{font-family:var(--font-body);font-style:italic;font-size:.84rem;color:var(--pc-ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .item-bar{height:4px;background:var(--pc-canvas);border-radius:999px;overflow:hidden;}
 .item-bar-fill{height:100%;border-radius:999px;opacity:.85;}
-.td-actions{text-align:center!important;white-space:nowrap;}
+.td-actions{text-align:center!important;white-space:nowrap;padding:.5rem .3rem!important;}
+.move-cat-select{font-size:.6rem;padding:1px 2px;border:1px solid var(--pc-line-2);border-radius:3px;
+  background:var(--pc-surface);color:var(--pc-ink-soft);max-width:48px;cursor:pointer;vertical-align:middle;}
 .action-btn{background:none;border:none;color:var(--pc-ink-faint);cursor:pointer;font-size:.72rem;
   padding:3px 6px;border-radius:3px;transition:color .15s;}
 .action-btn:hover{color:var(--pc-anchor);}
@@ -561,6 +563,7 @@ input[type=range]{flex:1;accent-color:var(--pc-accent);}
   .gear-table col:nth-child(7){width:8%!important;}
   .gear-table th:nth-child(3),.gear-table td:nth-child(3),
   .gear-table th:nth-child(6),.gear-table td:nth-child(6){display:none;}
+  .move-cat-select{display:none;}
 
   /* Side panel below gear: visual separator + reserved height prevents CLS from JS content injection */
   .side-col{border-top:2px solid var(--pc-accent);padding:1rem;min-height:660px;}
