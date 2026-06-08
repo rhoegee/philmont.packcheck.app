@@ -16,9 +16,9 @@ GOLD_DRK = (170, 120, 20)
 RED      = (197, 23, 43)
 
 # Fonts
-F_WORD   = ImageFont.truetype('/tmp/Oswald-Bold-v5.ttf', 88)
-F_KICK   = ImageFont.truetype('/tmp/Oswald-Regular-v5.ttf', 26)
-F_TAG    = ImageFont.truetype('/tmp/ZillaSlab-500-Italic.ttf', 34)
+F_WORD   = ImageFont.truetype('/tmp/Oswald-Bold-v5.ttf', 124)
+F_KICK   = ImageFont.truetype('/tmp/Oswald-Regular-v5.ttf', 36)
+F_TAG    = ImageFont.truetype('/tmp/ZillaSlab-500-Italic.ttf', 46)
 
 TOPO_PATH = '/tmp/packcheck-topo.jpg'
 
