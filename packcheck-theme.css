@@ -562,19 +562,22 @@ input[type=range]{flex:1;accent-color:var(--pc-accent);}
   .side-col{border-top:2px solid var(--pc-accent);padding:1rem;}
 }
 
+/* Qty column desktop default (no inline style on col/th so CSS controls it) */
+.col-qty{width:5%;}
+.th-qty{width:5%;}
+
 /* ── GEAR TABLE: phones portrait + landscape (≤900px) ── */
 @media(max-width:900px){
   .gear-table{table-layout:fixed;}
   .gear-table col:nth-child(1){width:5%!important;}
   .gear-table col:nth-child(2){width:47%!important;}
   .gear-table col:nth-child(3){width:0!important;}
-  .gear-table col:nth-child(4){width:16%!important;}
-  .gear-table col:nth-child(5){width:24%!important;}
   .gear-table col:nth-child(6){width:0!important;}
   .gear-table col:nth-child(7){width:8%!important;}
+  .col-qty{width:12%;}
+  .th-qty{width:12%;}
   .gear-table th:nth-child(3),.gear-table td:nth-child(3),
   .gear-table th:nth-child(6),.gear-table td:nth-child(6){display:none;}
   .gear-table th:nth-child(2){width:47%!important;}
-  .gear-table th:nth-child(4){width:16%!important;}
-  .gear-table th:nth-child(5){width:24%!important;}
+  .gear-table th:nth-child(5){width:28%!important;}
 }
