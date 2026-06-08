@@ -555,14 +555,17 @@ input[type=range]{flex:1;accent-color:var(--pc-accent);}
   /* Gear table: hide brand (col3) + notes (col6), redistribute widths */
   .gear-table{table-layout:fixed;}
   .gear-table col:nth-child(1){width:5%!important;}
-  .gear-table col:nth-child(2){width:44%!important;}
+  .gear-table col:nth-child(2){width:36%!important;}
   .gear-table col:nth-child(3){width:0!important;}
-  .gear-table col:nth-child(4){width:16%!important;}
-  .gear-table col:nth-child(5){width:27%!important;}
+  .gear-table col:nth-child(4){width:22%!important;}
+  .gear-table col:nth-child(5){width:29%!important;}
   .gear-table col:nth-child(6){width:0!important;}
   .gear-table col:nth-child(7){width:8%!important;}
   .gear-table th:nth-child(3),.gear-table td:nth-child(3),
   .gear-table th:nth-child(6),.gear-table td:nth-child(6){display:none;}
+  .gear-table th:nth-child(2){width:36%!important;}
+  .gear-table th:nth-child(4){width:22%!important;}
+  .gear-table th:nth-child(5){width:29%!important;}
   .move-cat-select{display:none;}
 
   /* Side panel below gear: visual separator */
