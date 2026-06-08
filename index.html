@@ -274,8 +274,8 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     </div>
     <div class="modal-row">
       <div class="modal-field">
-        <label class="modal-label">Arrival Date (auto-filled)</label>
-        <input class="modal-input" id="p-arrival" type="date">
+        <label class="modal-label">Arrival Date</label>
+        <input class="modal-input" id="p-arrival" type="text" placeholder="M/D/YY" maxlength="8" autocomplete="off">
       </div>
       <div class="modal-field">
         <label class="modal-label">Trek Length (auto-filled)</label>
@@ -968,7 +968,7 @@ function openProfileModal(){
   setVal('p-name', profile.name||'');
   setVal('p-troop', profile.troop||'');
   setVal('p-council', profile.council||'');
-  setVal('p-arrival', profile.arrival||'');
+  setVal('p-arrival', isoToArrivalDisplay(profile.arrival));
   setVal('p-crew-num', profile.crewNumber||'');
   setVal('p-itin-num', profile.itinNumber||'');
   setSelectByValue('p-trek-length', profile.trekLength||12);
@@ -978,6 +978,19 @@ function openProfileModal(){
   if(modal) modal.classList.remove('hidden');
 }
 function closeProfileModal(){document.getElementById('profile-modal').classList.add('hidden');}
+function isoToArrivalDisplay(iso){
+  if(!iso)return '';
+  const p=iso.split('-');
+  if(p.length!==3)return '';
+  return parseInt(p[1])+'/'+parseInt(p[2])+'/'+p[0].slice(2);
+}
+function arrivalDisplayToIso(text){
+  if(!text)return '';
+  const m=text.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+  if(!m)return '';
+  const yr=m[3]?(m[3].length===2?'20'+m[3]:m[3]):'2026';
+  return yr+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');
+}
 function parseCrewNumber(){
   try {
     var el = getEl('p-crew-num');
@@ -999,7 +1012,7 @@ function parseCrewNumber(){
     }
     var mmNum = parseInt(mm), ddNum = parseInt(dd);
     if(mmNum>=1 && mmNum<=12 && ddNum>=1 && ddNum<=31){
-      setVal('p-arrival', '2026-'+mm+'-'+dd);
+      setVal('p-arrival', parseInt(mm)+'/'+parseInt(dd)+'/26');
       var crewHint = getEl('crew-hint');
       if(crewHint) crewHint.textContent = 'Arrival: '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mmNum-1]+' '+parseInt(dd)+', 2026';
     }
@@ -1052,7 +1065,7 @@ function saveProfile(){
     profile.name=(getVal('p-name','')||'').trim();
     profile.troop=(getVal('p-troop','')||'').trim();
     profile.council=(getVal('p-council','')||'').trim();
-    profile.arrival=getVal('p-arrival','')||'';
+    profile.arrival=arrivalDisplayToIso(getVal('p-arrival','')||'');
     profile.crewNumber=(getVal('p-crew-num','')||'').trim().toUpperCase();
     profile.itinNumber=(getVal('p-itin-num','')||'').trim();
     profile.trekLength=safeInt(getVal('p-trek-length',12),12);
