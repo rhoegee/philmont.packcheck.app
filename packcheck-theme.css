@@ -181,7 +181,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--pc-anchor);
 .modal-input{width:100%;min-width:0;box-sizing:border-box;background:var(--pc-bg);border:1px solid var(--pc-line-2);color:var(--pc-ink);
   font-family:var(--font-body);font-size:1rem;padding:.55rem .75rem;border-radius:4px;outline:none;}
 .modal-input:focus{border-color:var(--pc-accent);}
-.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;align-items:end;}
 @media(max-width:540px){
   /* Overlay scrolls; modal anchors to top so nothing clips */
   .modal-overlay{align-items:flex-start;overflow-y:auto;padding:.5rem;}
