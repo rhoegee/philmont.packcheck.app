@@ -47,7 +47,7 @@ const HELP_CONTENT = [
       },
       {
         q: "Can I move an item to a different category?",
-        a: "Yes. In the actions column, use the category dropdown to reassign an item to a different category."
+        a: "Yes, on desktop. Use the category dropdown in the actions column to reassign an item. On mobile, this feature is not available — plan your categories on desktop, or delete and re-add the item in the correct category."
       },
       {
         q: "What does the cotton warning mean?",
@@ -89,7 +89,7 @@ const HELP_CONTENT = [
       },
       {
         q: "How do I save my list as a file?",
-        a: "Tap the red <strong>Save</strong> button in the header. This downloads a <code>.json</code> file you can reload anytime."
+        a: "On desktop, tap the red <strong>Save</strong> button in the header. On mobile, open the menu (☰) and tap <strong>Save</strong>. Both download a <code>.json</code> file you can reload on any device. Note: your list also saves automatically in your browser — the file is a portable backup."
       },
       {
         q: "How do I load a saved list?",

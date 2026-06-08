@@ -333,6 +333,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="hamburger-menu" id="hamburger-menu" style="display:none;">
+        <button class="ham-item" onclick="saveJSON();closeHamburger()">💾 Save</button>
         <button class="ham-item" onclick="document.getElementById('json-load').click();closeHamburger()">📂 Load</button>
         <button class="ham-item" onclick="document.getElementById('csv-load').click();closeHamburger()">📥 Import CSV</button>
         <button class="ham-item" onclick="exportExcel();closeHamburger()">📊 Export Excel</button>
@@ -2732,6 +2733,22 @@ window.onload=()=>{
       history.replaceState({},'',location.pathname);
     }
   }catch(e){console.warn('Crew URL import failed',e);}
+  try{
+    const _shareParam=new URLSearchParams(location.search).get('share');
+    if(_shareParam){
+      fetch('https://packcheck-share.rob-56e.workers.dev/'+_shareParam)
+      .then(r=>{if(!r.ok)throw new Error();return r.json();})
+      .then(data=>{
+        if(confirm('Import shared gear list?\n\nThis will replace your current list.')){
+          if(data.v===1)unpackGear(data);
+          else{if(data.gearData)Object.assign(gearData,data.gearData);if(data.profile)Object.assign(profile,data.profile);if(data.trekConfig)Object.assign(trekConfig,data.trekConfig);}
+          saveLocal();renderGear();updateCalc();
+        }
+      })
+      .catch(()=>alert('Could not load gear list. The link may have expired or be invalid.'));
+      history.replaceState({},'',location.pathname);
+    }
+  }catch(e){console.warn('Share URL import failed',e);}
   try{renderGear();}catch(e){console.error('renderGear error:',e);}
   try{renderCrewGear();}catch(e){console.error('renderCrewGear error:',e);}
   try{renderProfileCard();}catch(e){console.error('renderProfileCard error:',e);}
@@ -2886,23 +2903,42 @@ function copyCrewShareUrl(e){
 
 function showSendToPhone(){
   const compact=packGear();
-  const compressed=LZString.compressToEncodedURIComponent(compact);
-  const shareUrl=location.origin+location.pathname+'?g='+compressed;
-  document.getElementById('qr-url-input').value=shareUrl;
   const wrap=document.getElementById('qr-canvas-wrap');
   const errEl=document.getElementById('qr-error');
+  const inp=document.getElementById('qr-url-input');
   wrap.innerHTML='';errEl.style.display='none';
-  // QRious: canvas-based, client-side, error correction L = max data capacity
-  const canvas=document.createElement('canvas');
-  wrap.appendChild(canvas);
-  try{
-    new QRious({element:canvas,value:shareUrl,size:248,level:'L'});
-  }catch(e){
-    wrap.innerHTML='';
-    errEl.style.display='block';
-    errEl.textContent='Data too large for QR ('+shareUrl.length+' chars). Copy the link below and open it on your phone.';
-  }
+  inp.value='Generating link…';
   document.getElementById('qr-modal').style.display='flex';
+
+  function renderQR(url){
+    inp.value=url;
+    wrap.innerHTML='';
+    const canvas=document.createElement('canvas');
+    wrap.appendChild(canvas);
+    try{
+      new QRious({element:canvas,value:url,size:248,level:'L'});
+    }catch(e){
+      wrap.innerHTML='';
+      errEl.style.display='block';
+      errEl.textContent='QR generation failed. Copy the link below and open it on your phone.';
+    }
+  }
+
+  fetch('https://packcheck-share.rob-56e.workers.dev',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(compact)
+  })
+  .then(r=>{if(!r.ok)throw new Error();return r.json();})
+  .then(d=>{
+    const shortUrl=location.origin+location.pathname+'?share='+d.id;
+    renderQR(shortUrl);
+  })
+  .catch(()=>{
+    // Fallback to LZ-compressed URL if Worker unavailable
+    const compressed=LZString.compressToEncodedURIComponent(compact);
+    renderQR(location.origin+location.pathname+'?g='+compressed);
+  });
 }
 function closeQRModal(){document.getElementById('qr-modal').style.display='none';}
 function showHelpModal(){
