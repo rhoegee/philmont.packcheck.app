@@ -256,6 +256,16 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
     display:inline-block!important; width:9pt!important; height:9pt!important;
     border:1pt solid #999!important; border-radius:1pt!important;
   }
+
+  /* ── Crew print mode ── */
+  body[data-print-mode="crew"] .page:not(#page-crew){ display:none!important; }
+  body[data-print-mode="crew"] .page#page-crew{ display:block!important; padding:0!important; margin:0!important; }
+  body[data-print-mode="crew"] .page#page-gear{ display:none!important; }
+  body[data-print-mode="crew"] .stats-row{ display:none!important; }
+  body[data-print-mode="crew"] #crew-profile-card{ display:none!important; }
+  body[data-print-mode="crew"] .side-col{ display:none!important; }
+  body[data-print-mode="crew"] .two-col{ display:block!important; }
+  body[data-print-mode="crew"] .main-col{ width:100%!important; }
 }
 
 /* ── Day slider aligned over the bar chart (track widened to plot area; thumb = scout dot) ── */
@@ -404,7 +414,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
           <polyline points="22,52 42,72 78,30" fill="none" stroke="#c5172b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div id="ph-mark">PACK<span>CHECK</span></div>
-        <div id="ph-sub">Philmont Edition · Personal Gear Checklist</div>
+        <div id="ph-sub" data-personal="Philmont Edition · Personal Gear Checklist" data-crew="Philmont Edition · Crew Gear List">Philmont Edition · Personal Gear Checklist</div>
       </div>
       <div id="ph-right"></div>
     </div>
@@ -475,6 +485,7 @@ body[data-gear-layout="cards"] .gear-table tr.edit-row td{display:table-cell;}
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Total Crew Gear</div>
         <div style="font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.4rem;color:var(--pc-accent);" id="crew-total-display">— oz</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted2);" id="crew-per-person-display">— per person</div>
+        <button onclick="printCrewList()" style="margin-top:0.5rem;padding:0.3rem 0.7rem;background:var(--pc-anchor);color:var(--pc-surface);border:none;border-radius:4px;font-family:'Oswald',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.06em;cursor:pointer;">🖨 PRINT LIST</button>
       </div>
     </div>
   </div>
@@ -2757,6 +2768,40 @@ function printChecklist(){
   // Cleanup after print dialog
   blanks.forEach(tr => tr.parentNode && tr.parentNode.removeChild(tr));
   bodies.forEach(b => b.classList.remove('print-open'));
+}
+
+function printCrewList(){
+  // Update print header subtitle
+  const phSub = document.getElementById('ph-sub');
+  if(phSub) phSub.textContent = phSub.dataset.crew || 'Philmont Edition · Crew Gear List';
+
+  // Populate print header with crew info
+  const phRight = document.getElementById('ph-right');
+  if(phRight){
+    const arrDate = getArrivalDate();
+    const depDate = new Date(arrDate.getTime() + (trekConfig.days)*86400000);
+    const meta = [];
+    if(profile.crewNumber) meta.push('Crew ' + profile.crewNumber);
+    if(profile.troop) meta.push(profile.troop);
+    const dateRange = formatDate(arrDate) + '–' + formatDate(depDate) + ', 2026';
+    const itinLine = (profile.itinNumber ? 'Itinerary ' + profile.itinNumber + ' · ' : '') + dateRange;
+    phRight.innerHTML =
+      (profile.name ? `<strong>${profile.name}</strong>` : '') +
+      (meta.length ? `<span>${meta.join(' · ')}</span><br>` : '') +
+      `<span class="ph-trek">${itinLine}</span>`;
+  }
+
+  // Force all crew sections open
+  const bodies = document.querySelectorAll('#crew-sections .gear-body');
+  bodies.forEach(b => b.classList.add('print-open'));
+
+  document.body.setAttribute('data-print-mode', 'crew');
+  window.print();
+
+  // Cleanup
+  document.body.removeAttribute('data-print-mode');
+  bodies.forEach(b => b.classList.remove('print-open'));
+  if(phSub) phSub.textContent = phSub.dataset.personal || 'Philmont Edition · Personal Gear Checklist';
 }
 
 window.onload=()=>{
