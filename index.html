@@ -2183,6 +2183,26 @@ function loadCSV(event){
     const rows=parseCSV(e.target.result);
     if(rows.length<2){alert('CSV appears empty.');return;}
 
+    // Detect crew gear CSV by checking if category column contains known crew categories
+    const rawText=e.target.result;
+    const lowerText=rawText.toLowerCase();
+    const crewCatKeys=Object.keys(CREW_CAT_MAP);
+    const crewHits=crewCatKeys.filter(k=>lowerText.includes(k)).length;
+    const personalCatKeys=Object.values(gearData).map(c=>c.label.toLowerCase());
+    const personalHits=personalCatKeys.filter(k=>lowerText.includes(k)).length;
+    if(crewHits>personalHits){
+      // Route to crew gear import
+      const parsed=parseCrewCSV(rawText);
+      if(!parsed){alert('Could not parse this as a crew gear list.\nMake sure the CSV has Category and Item columns.');return;}
+      const count=Object.values(parsed).reduce((s,c)=>s+c.items.length,0);
+      if(!confirm(`Import ${count} crew gear items?\n\nThis will replace your current crew gear list.`))return;
+      crewGearData=parsed;
+      crewGearCustomized=true;
+      saveLocal();renderCrewGear();updateCrewStats();updateCalc();
+      alert(`Imported ${count} crew gear items.`);
+      return;
+    }
+
     // Build category lookup: label (lowercase) and key → key
     const catByLabel={};
     Object.entries(gearData).forEach(([key,cat])=>{
@@ -2470,8 +2490,8 @@ function parseCrewCSV(csv) {
     const unitOz = parseFloat(get(iUnitOz)) || 0;
     const totalOzRaw = parseFloat(get(iTotalOz));
     const oz = !isNaN(totalOzRaw) && totalOzRaw > 0 ? totalOzRaw : unitOz * qty;
-    const sourceRaw = get(iSource).toUpperCase();
-    const source = sourceRaw === 'PHI' ? 'philmont' : 'crew';
+    const sourceRaw = get(iSource).toLowerCase();
+    const source = (sourceRaw.includes('philmont') || sourceRaw === 'phi') ? 'philmont' : 'crew';
 
     fresh[catKey].items.push({
       name, brand: get(iBrand), qty, unitOz, oz,
