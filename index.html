@@ -2251,7 +2251,7 @@ function loadCSV(event){
       if(iCat>=0&&c[iCat]){
         const raw=c[iCat].trim().toLowerCase();
         catKey=catByLabel[raw]||catByLabel[Object.keys(catByLabel).find(k=>raw.includes(k))||'']||'utility';
-        if(catKey==='utility'&&raw)fallback++;
+        if(catKey==='utility'&&raw&&!catByLabel[raw]&&!Object.keys(catByLabel).some(k=>raw.includes(k)))fallback++;
       }
 
       gearData[catKey].items.push({name,brand,qty,oz,notes,included:false});
