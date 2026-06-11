@@ -2220,6 +2220,7 @@ function loadCSV(event){
     const iBrand=col('brand');
     const iQty=col('qty','quantity');
     const iOz=col('oz','weight','gram');
+    const iLbs=col('lbs','lb','scale');  // fallback: decimal lbs column
     const iNotes=col('note','desc','comment');
     console.log('[CSV import] col map — cat:',iCat,'name:',iName,'brand:',iBrand,'qty:',iQty,'oz:',iOz,'notes:',iNotes);
 
@@ -2241,6 +2242,8 @@ function loadCSV(event){
       let oz=parseFloat(iOz>=0?c[iOz]:'0')||0;
       // If column name contains 'gram', convert g→oz
       if(oz&&headers[iOz].includes('gram'))oz=oz/28.3495;
+      // Fallback: if oz still 0, try decimal lbs column (scale reading)
+      if(!oz&&iLbs>=0){const lbsVal=parseFloat(c[iLbs])||0;if(lbsVal)oz=Math.round(lbsVal*16*10)/10;}
       const notes=(iNotes>=0?c[iNotes]:'')||'';
       if(!oz){skipped++;return;}
 
