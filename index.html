@@ -1591,7 +1591,8 @@ function saveEdit(key,idx){
     unitOz,
     oz:unitOz*qty, // total = unit * qty
     notes:document.getElementById('ei-notes').value.trim(),
-    warn:gearData[key].items[idx].warn
+    warn:gearData[key].items[idx].warn,
+    included:gearData[key].items[idx].included
   };
   editingRow=null;
   renderGear();updateCalc();scheduleAutoSave();
