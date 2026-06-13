@@ -1296,7 +1296,7 @@ function renderCrewGear(){
           <td><input class="edit-input med" id="cei-brand" value="${item.brand}"></td>
           <td><input class="edit-input narrow" id="cei-qty" type="number" value="${item.qty}" oninput="updateCrewEditTotal()"></td>
           <td>
-            <input class="edit-input narrow" id="cei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');updateCrewEditTotal();" placeholder="oz">
+            <input class="edit-input narrow" id="cei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="updateCrewEditTotal();" placeholder="oz">
           </td>
           <td><input class="edit-input wide" id="cei-notes" value="${item.notes||''}"></td>
           <td class="td-actions">
@@ -1473,7 +1473,7 @@ function renderGear(){
           <td><input class="edit-input med" id="ei-brand" value="${item.brand}"></td>
           <td><input class="edit-input narrow" id="ei-qty" type="number" value="${item.qty}" oninput="updateEditTotal()"></td>
           <td>
-            <input class="edit-input narrow" id="ei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="this.value=this.value.replace(/[^0-9.]/g,'');updateEditTotal();" placeholder="oz">
+            <input class="edit-input narrow" id="ei-oz" type="number" step="0.1" value="${unitWt.toFixed(1)}" oninput="updateEditTotal();" placeholder="oz">
           </td>
           <td><input class="edit-input wide" id="ei-notes" value="${item.notes||''}"></td>
           <td class="td-actions">
